@@ -12,14 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,28 +45,41 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(...) */
 
         //region Location
-        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context),mMapView);
+        /*this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), map);
         this.mLocationOverlay.enableMyLocation();
-        map.getOverlays().add(this.mLocationOverlay);
+        map.getOverlays().add(this.mLocationOverlay);*/
         //endregion
 
-
+        //region Cache configuration
         Configuration.getInstance().setOsmdroidBasePath(new File(getCacheDir().getAbsolutePath(), "osmdroid"));
         Configuration.getInstance().setOsmdroidTileCache(new File(Configuration.getInstance().getOsmdroidBasePath().getAbsolutePath(), "tile"));
+        //endregion
+
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_main);
 
+        // Инициализация объекта MapView.
         map = (MapView) findViewById(R.id.map);
 
+        //region Map Settings
         // Отключение дублирования карты гориз и верт.
         map.setVerticalMapRepetitionEnabled(false);
         map.setHorizontalMapRepetitionEnabled(false);
-
         map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setMultiTouchControls(true);
+        //endregion
 
-        //region  Marks
+        //region IMapController(zoom, center, etc)
+        // Отвечает за масштабирование и начальную точку.
+        IMapController mapController = map.getController();
+        mapController.setZoom(19.5);
+        GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
+        mapController.setCenter(startPoint);
+        //endregion
+
+        //region Marks
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
 
@@ -85,6 +102,26 @@ public class MainActivity extends AppCompatActivity {
         mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
         //endregion
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().save(this, prefs);
+        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
 
