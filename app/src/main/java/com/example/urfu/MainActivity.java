@@ -3,10 +3,6 @@ package com.example.urfu;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Picture;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -86,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         //region Marks
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
-        //items.get(0).setMarker(BitmapFactory.decodeResource(getResources(), ));
 
             //the overlay
 
