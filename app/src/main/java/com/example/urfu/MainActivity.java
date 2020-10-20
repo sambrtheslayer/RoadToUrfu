@@ -1,12 +1,19 @@
 package com.example.urfu;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private MapView map = null;
+    Bitmap bitmap = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
 
 
     @Override
@@ -80,8 +88,11 @@ public class MainActivity extends AppCompatActivity {
         //endregion
 
         //region Marks
-        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+        ArrayList<OverlayItem> items = new ArrayList<>();
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
+
+        //items.get(0).setMarker();
+
 
             //the overlay
 
@@ -89,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        Log.e("HUI", "tapped");
+                        buildAlertMessageNoGps();
                         return true;
                     }
                     @Override
@@ -102,6 +113,26 @@ public class MainActivity extends AppCompatActivity {
         mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
         //endregion
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Тестовый текст")
+                .setCancelable(false)
+                .setNegativeButton("Понятно!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton("Перейти", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
     @Override
