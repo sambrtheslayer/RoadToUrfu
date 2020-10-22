@@ -3,6 +3,7 @@ package com.example.urfu;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private MapView map = null;
+
+    private MyLocationNewOverlay locationOverlay;
 
 
     @Override
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         //region Marks
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
-
+        items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
             //the overlay
 
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
@@ -102,6 +105,21 @@ public class MainActivity extends AppCompatActivity {
         mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
         //endregion
+
+        //region User Location
+
+        GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
+        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
+        locationOverlay = new MyLocationNewOverlay(provider, map);
+        locationOverlay.enableFollowLocation();
+        locationOverlay.runOnFirstFix(new Runnable() {
+            public void run() {
+                Log.d("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+            }
+        });
+        map.getOverlayManager().add(locationOverlay);
+
+        //endregion
     }
 
     @Override
@@ -110,8 +128,9 @@ public class MainActivity extends AppCompatActivity {
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
         map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        locationOverlay.enableMyLocation();
     }
 
     @Override
@@ -121,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
+        locationOverlay.disableMyLocation();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
