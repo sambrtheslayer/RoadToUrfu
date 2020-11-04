@@ -3,26 +3,33 @@ package com.example.urfu;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.routing.OSRMRoadManager;
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.bonuspack.routing.RoadNode;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -33,8 +40,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private MapView map = null;
+    private TextView debugText;
 
     private MyLocationNewOverlay locationOverlay;
+    private LocationManager locationManager;
+    private MyLocationListener listener;
+    private Location currentLocation;
+
 
 
     @Override
@@ -65,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Инициализация объекта MapView.
         map = (MapView) findViewById(R.id.map);
+        debugText = (TextView) findViewById(R.id.debugText);
 
         //region Map Settings
         // Отключение дублирования карты гориз и верт.
@@ -87,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
         items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
             //the overlay
+        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
+        items.get(1).setMarker(getDrawable(R.drawable.placeholder));
 
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -112,12 +127,56 @@ public class MainActivity extends AppCompatActivity {
         provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
         locationOverlay = new MyLocationNewOverlay(provider, map);
         locationOverlay.enableFollowLocation();
+
+        // Отвечает за первый старт локации (полезно ли?).
         locationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
-                Log.d("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
             }
         });
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        listener = new MyLocationListener();
+        listener.debugText = (TextView) findViewById(R.id.debugText);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, (LocationListener) listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, listener);
+
         map.getOverlayManager().add(locationOverlay);
+
+        //endregion
+
+
+        //region Roads and Routes
+
+        RoadManager roadManager = new OSRMRoadManager(this);
+        ArrayList<GeoPoint> waypoints = new ArrayList<>();
+        GeoPoint waypoint1 = new GeoPoint(56.800091d,59.909221d);
+        GeoPoint waypoint2 = new GeoPoint(56.79511011, 59.9230577);
+        waypoints.add(waypoint1);
+        waypoints.add(waypoint2);
+
+        Road road = new Road(waypoints);
+
+        Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+        for (int i=0; i<road.mNodes.size(); i++){
+            RoadNode node = road.mNodes.get(i);
+            Marker nodeMarker = new Marker(map);
+            nodeMarker.setPosition(node.mLocation);
+            nodeMarker.setIcon(nodeIcon);
+            nodeMarker.setTitle("Step "+i);
+            map.getOverlays().add(nodeMarker);
+        }
+
+        Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+
+        map.getOverlays().add(roadOverlay);
+
+        map.invalidate();
 
         //endregion
     }
@@ -143,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
         locationOverlay.disableMyLocation();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
-
 
     private void checkUserLocationPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
