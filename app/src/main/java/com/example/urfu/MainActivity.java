@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -53,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkUserLocationPermission();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         /*Configuration.getInstance().setCachePath(...)
         Configuration.getInstance().setCacheSizes(...)
@@ -154,15 +159,24 @@ public class MainActivity extends AppCompatActivity {
         //region Roads and Routes
 
         RoadManager roadManager = new OSRMRoadManager(this);
+
         ArrayList<GeoPoint> waypoints = new ArrayList<>();
+
         GeoPoint waypoint1 = new GeoPoint(56.800091d,59.909221d);
-        GeoPoint waypoint2 = new GeoPoint(56.79511011, 59.9230577);
+        GeoPoint waypoint2 = new GeoPoint(56.79511011d, 59.9230577d);
         waypoints.add(waypoint1);
         waypoints.add(waypoint2);
 
-        Road road = new Road(waypoints);
+        Log.e("Waypoints size", String.valueOf(waypoints.size()));
+        Log.e("Waypoints", waypoints.toString());
 
-        Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+        Road road = roadManager.getRoad(waypoints);
+
+        Log.e("road high", road.mRouteHigh.toString());
+        Log.e("road legs", road.mLegs.toString());
+
+
+        /*Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
         for (int i=0; i<road.mNodes.size(); i++){
             RoadNode node = road.mNodes.get(i);
             Marker nodeMarker = new Marker(map);
@@ -170,8 +184,10 @@ public class MainActivity extends AppCompatActivity {
             nodeMarker.setIcon(nodeIcon);
             nodeMarker.setTitle("Step "+i);
             map.getOverlays().add(nodeMarker);
-        }
+        }*/
 
+        //Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+        //Polyline roadOverlay = OSRMRoadManager.buildRoadOverlay(road);
         Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
 
         map.getOverlays().add(roadOverlay);
