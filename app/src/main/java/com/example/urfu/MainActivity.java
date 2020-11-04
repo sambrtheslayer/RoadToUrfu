@@ -1,6 +1,7 @@
 package com.example.urfu;
 
 import android.Manifest;
+import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -158,41 +159,39 @@ public class MainActivity extends AppCompatActivity {
 
         //region Roads and Routes
 
-        RoadManager roadManager = new OSRMRoadManager(this);
-
-        ArrayList<GeoPoint> waypoints = new ArrayList<>();
-
-        GeoPoint waypoint1 = new GeoPoint(56.800091d,59.909221d);
-        GeoPoint waypoint2 = new GeoPoint(56.79511011d, 59.9230577d);
-        waypoints.add(waypoint1);
-        waypoints.add(waypoint2);
-
-        Log.e("Waypoints size", String.valueOf(waypoints.size()));
-        Log.e("Waypoints", waypoints.toString());
-
-        Road road = roadManager.getRoad(waypoints);
-
-        Log.e("road high", road.mRouteHigh.toString());
-        Log.e("road legs", road.mLegs.toString());
+        try {
 
 
-        /*Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
-        for (int i=0; i<road.mNodes.size(); i++){
-            RoadNode node = road.mNodes.get(i);
-            Marker nodeMarker = new Marker(map);
-            nodeMarker.setPosition(node.mLocation);
-            nodeMarker.setIcon(nodeIcon);
-            nodeMarker.setTitle("Step "+i);
-            map.getOverlays().add(nodeMarker);
-        }*/
+            RoadManager roadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
+            roadManager.addRequestOption("vehicle=foot");
+            //roadManager.addRequestOption("optimize=true");
 
-        //Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
-        //Polyline roadOverlay = OSRMRoadManager.buildRoadOverlay(road);
-        Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+            ArrayList<GeoPoint> waypoints = new ArrayList<>();
 
-        map.getOverlays().add(roadOverlay);
+            GeoPoint waypoint1 = new GeoPoint(56.800091d, 59.909221d);
+            GeoPoint waypoint2 = new GeoPoint(56.79511011d, 59.9230577d);
+            waypoints.add(waypoint1);
+            waypoints.add(waypoint2);
 
-        map.invalidate();
+            Log.e("Waypoints size", String.valueOf(waypoints.size()));
+            Log.e("Waypoints", waypoints.toString());
+
+            Road road = roadManager.getRoad(waypoints);
+
+            Log.e("road high", road.mRouteHigh.toString());
+            Log.e("road legs", road.mLegs.toString());
+            Log.e("status", String.valueOf(road.mStatus));
+
+            Polyline roadOverlay = GraphHopperRoadManager.buildRoadOverlay(road);
+
+            map.getOverlays().add(roadOverlay);
+
+            map.invalidate();
+        }
+        catch(Exception e)
+        {
+            Log.e("ex", e.getMessage());
+        }
 
         //endregion
     }
