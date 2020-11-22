@@ -14,6 +14,7 @@ import org.osmdroid.util.GeoPoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -26,16 +27,16 @@ public class Database
 {
     private MapPoint mCustomPoint;
     private Context mContext;
-    private ArrayList<Category> categories = new ArrayList<>();
+    private HashMap<Integer, Category> categories = new HashMap<>();
 
     public Database(Context context)
     {
         mContext = context;
     }
 
-    public ArrayList<Category> getCategories()
+    public HashMap<Integer, Category> getCategories()
     {
-        return (categories == null) ? new ArrayList<>() : categories;
+        return (categories == null) ? new HashMap<>() : categories;
     }
 
     private GeoPoint getGeoPoint(String responseFromServer)
@@ -95,6 +96,7 @@ public class Database
 
     private void buildCategoriesByJson(JSONArray jsonArray)
     {
+        Log.e("somename", String.valueOf(jsonArray));
         for(int i = 0; i < jsonArray.length(); i++)
         {
             JSONObject object = null;
@@ -112,7 +114,7 @@ public class Database
                 int category_id = getIdFromString(object);
                 String name = object.getString("category_name");
 
-                categories.set(category_id, new Category(category_id, name, "While nothing here"));
+                categories.put(category_id - 1, new Category(category_id, name, "While nothing here"));;
             }
             catch (JSONException e)
             {

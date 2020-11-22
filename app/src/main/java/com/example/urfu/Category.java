@@ -12,14 +12,17 @@ public class Category {
     }
 
     public int getId() {
+
         return mId;
     }
 
     public String getName() {
+
         return mName;
     }
 
     public String getAltName() {
+
         return mAltName;
     }
 }
