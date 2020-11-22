@@ -1,7 +1,9 @@
 package com.example.urfu;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -10,9 +12,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 
-
-public class EducationalBuilding extends AppCompatActivity
-{
+public class EducationalBuilding extends AppCompatActivity {
     final String[] Learn_Campus = new String[]
             {
                     "主教学楼\nГУК",
@@ -25,30 +25,40 @@ public class EducationalBuilding extends AppCompatActivity
     SearchView searchView;
     ArrayAdapter<String> adapter;
     ImageButton btnBack;
+    int position;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Disable landscape mode
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setContentView(R.layout.educational_building);
 
-        searchView =  findViewById(R.id.searchView);
+        searchView = findViewById(R.id.searchView);
         listView = findViewById(R.id.myList);
         btnBack = findViewById(R.id.ButtonBack);
+        Bundle argument = getIntent().getExtras();
 
+        if (argument != null) {
+            position = argument.getInt("pos");
+        }
 
-        adapter = new ArrayAdapter<>(this,
-                R.layout.my_custom_layout, Learn_Campus);
+        if (position == 0) {
+            adapter = new ArrayAdapter<>(this,
+                    R.layout.array_adapter_custom_layout, Learn_Campus);
+        }
 
         listView.setAdapter(adapter);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               Intent intent = new Intent(EducationalBuilding.this, MainActivity.class);
-               startActivity(intent);
-               overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-           }
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EducationalBuilding.this, MainActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
         });
     }
 }
