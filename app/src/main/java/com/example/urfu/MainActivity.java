@@ -30,9 +30,12 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 =======
+=======
+>>>>>>> parent of 4e14d25... Completed code review
     String[] Category_Campus = new String[]
             {
                     "育大楼\nУчебные корпуса",
@@ -40,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
                     "宿舍\nОбщежития",
                     "大学医院\nМСЧ"
             };
+<<<<<<< HEAD
+>>>>>>> parent of 4e14d25... Completed code review
+=======
 >>>>>>> parent of 4e14d25... Completed code review
     ListView listView;
     SearchView searchView;
