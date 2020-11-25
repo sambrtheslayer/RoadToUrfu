@@ -30,9 +30,12 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
+    Database db = new Database(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Disabled landscape mode.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        db.getCategoriesFromHost();
+        Category_Campus = db.getCategories();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         setContentView(R.layout.activity_main);
 

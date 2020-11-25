@@ -1,9 +1,11 @@
 package com.example.urfu;
 
 public class Category {
+
     private final int mId;
     private final String mName;
     private final String mAltName;
+
 
     public Category(int mId, String mName, String mAltName) {
         this.mId = mId;
