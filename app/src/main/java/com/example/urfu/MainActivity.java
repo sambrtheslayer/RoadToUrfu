@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Categories из Json
+                        Log.e("json", String.valueOf(jsonArray));
+
                         MainActivity.this.runOnUiThread(() -> buildCategoriesByJson(jsonArray));
                     }
                     catch (JSONException e)
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String alt_name = object.getString("category_alt_name");
 
-                categories.put(category_id - 1, new Category(category_id, name, alt_name));;
+                categories.put(category_id, new Category(category_id, name, alt_name));
             }
             catch (JSONException e)
             {
