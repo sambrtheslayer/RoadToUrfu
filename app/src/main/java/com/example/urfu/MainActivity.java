@@ -4,11 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -173,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
             String alt_name = Objects.requireNonNull(categories.get(i)).getAltName();
 
-            String full_name = alt_name + "\n" + name;
+            String full_name = alt_name + " " +  "\n" + " " + name;
 
             local_Category_Campus[i] = full_name;
         }
@@ -194,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            Intent intent = new Intent(MainActivity.this, EducationalBuilding.class);
+            Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
 
             intent.putExtra("pos", position);
 

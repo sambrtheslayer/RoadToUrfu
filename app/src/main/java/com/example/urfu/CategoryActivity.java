@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 
-public class EducationalBuilding extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity {
     final String[] Learn_Campus = new String[]
             {
                     "主教学楼\nГУК",
@@ -55,7 +55,7 @@ public class EducationalBuilding extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EducationalBuilding.this, MainActivity.class);
+                Intent intent = new Intent(CategoryActivity.this, MainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }

@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".EducationalBuilding">
+        <activity android:name=".CategoryActivity">
 
         </activity>
     </application>
