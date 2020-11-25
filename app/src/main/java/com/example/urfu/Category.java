@@ -1,10 +1,16 @@
 package com.example.urfu;
 
 public class Category {
+<<<<<<< HEAD
 
     private final int mId;
     private final String mName;
     private final String mAltName;
+=======
+    private int mId;
+    private String mName;
+    private String mAltName;
+>>>>>>> parent of 4e14d25... Completed code review
 
 
     public Category(int mId, String mName, String mAltName) {

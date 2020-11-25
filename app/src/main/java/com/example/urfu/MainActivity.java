@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,8 +29,18 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+<<<<<<< HEAD
 
 
+=======
+    String[] Category_Campus = new String[]
+            {
+                    "育大楼\nУчебные корпуса",
+                    "体育设施\nСпортивные объекты",
+                    "宿舍\nОбщежития",
+                    "大学医院\nМСЧ"
+            };
+>>>>>>> parent of 4e14d25... Completed code review
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
@@ -41,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Disabled landscape mode.
+        // Disable landscape mode
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         db.getCategoriesFromHost();
@@ -56,25 +65,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         searchView = findViewById(R.id.searchView);
+        //listView = findViewById(R.id.myList);
 
-        try {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
-                }
+        /*adapter = new ArrayAdapter<>(this,
+                R.layout.array_adapter_custom_layout, Category_Campus);
+        listView.setAdapter(adapter);
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    adapter.getFilter().filter(newText);
-                    return false;
-                }
-            });
-        }
-        catch(Exception e)
-        {
-            Log.e("Search error", e.getMessage());
-        }
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(MainActivity.this, EducationalBuilding.class);
+                intent.putExtra("pos", position);
+                startActivity(intent);
+            }
+        });*/
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -116,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 if(response.isSuccessful())
                 {
-                    assert response.body() != null;
                     final String myResponse = response.body().string();
                     try
                     {
@@ -147,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
     {
         HashMap<Integer, Category> categories = new HashMap<>();
 
+        Log.e("somename", String.valueOf(jsonArray));
         for(int i = 0; i < jsonArray.length(); i++)
         {
             JSONObject object = null;
@@ -161,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
             try
             {
                 // Помещение точек в список.
-                assert object != null;
                 int category_id = getIdFromString(object);
                 String name = object.getString("category_name");
                 String alt_name = object.getString("category_alt_name");
@@ -178,20 +195,20 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i < categories.size(); i++)
         {
-            String name = Objects.requireNonNull(categories.get(i)).getName();
+            String name = categories.get(i).getName();
 
-            String alt_name = Objects.requireNonNull(categories.get(i)).getAltName();
+            String alt_name = categories.get(i).getAltName();
 
             String full_name = alt_name + "\n" + name;
 
             local_Category_Campus[i] = full_name;
         }
 
-        setupAdapterAndListview(local_Category_Campus);
+        setup_adapter_and_listview(local_Category_Campus);
 
     }
 
-    private void setupAdapterAndListview(String[] categories)
+    private void setup_adapter_and_listview(String[] categories)
     {
         searchView = findViewById(R.id.searchView);
         listView = findViewById(R.id.myList);
@@ -201,15 +218,17 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
 
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            Intent intent = new Intent(MainActivity.this, EducationalBuilding.class);
-            intent.putExtra("pos", position);
-            startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, EducationalBuilding.class);
+                intent.putExtra("pos", position);
+                startActivity(intent);
+            }
         });
     }
 
     private int getIdFromString(JSONObject object) throws JSONException {
-        return Integer.parseInt(object.getString("id"));
+        return Integer.valueOf(object.getString("id"));
     }
 }
