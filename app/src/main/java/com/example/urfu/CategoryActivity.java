@@ -139,6 +139,10 @@ public class CategoryActivity extends AppCompatActivity {
 
         HashMap<Integer, Point> points = new HashMap<>();
 
+        boolean firstItemFlag = false;
+
+        int firstItemId = 0;
+
         for(int i = 0; i < jsonArray.length(); i++)
         {
             JSONObject object = null;
@@ -157,6 +161,13 @@ public class CategoryActivity extends AppCompatActivity {
 
                 int category_id = getIdFromString(object);
 
+                if(!firstItemFlag)
+                {
+                    firstItemFlag = true;
+
+                    firstItemId = category_id;
+                }
+
                 String name = object.getString("point_name");
 
                 String alt_name = object.getString("point_alt_name");
@@ -173,9 +184,9 @@ public class CategoryActivity extends AppCompatActivity {
 
         for(int i = 0; i < points.size(); i++)
         {
-            String name = Objects.requireNonNull(points.get(i)).getName();
+            String name = Objects.requireNonNull(points.get(i + firstItemId)).getName();
 
-            String alt_name = Objects.requireNonNull(points.get(i)).getAltName();
+            String alt_name = Objects.requireNonNull(points.get(i + firstItemId)).getAltName();
 
             String full_name = alt_name + " " +  "\n" + " " + name;
 
