@@ -81,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
     {
         OkHttpClient client = new OkHttpClient();
 
+        final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
+
         // Конечный ресурс, где идёт обработка логина и пароля
         // TODO: вынести в константу основной путь
-        String url = "https://roadtourfu.000webhostapp.com/api/data/get_categories.php";
+        String url = baseHostApiUrl + "/data/get_categories.php";
 
         FormBody formBody = new FormBody.Builder()
                 .build();
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 .url(url)
                 .build();
         client.newCall(request).enqueue(new Callback() {
+
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -105,7 +108,9 @@ public class MainActivity extends AppCompatActivity {
                 if(response.isSuccessful())
                 {
                     assert response.body() != null;
+
                     final String myResponse = response.body().string();
+
                     try
                     {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
@@ -114,12 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Categories из Json
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                buildCategoriesByJson(jsonArray);
-                            }
-                        });
+                        MainActivity.this.runOnUiThread(() -> buildCategoriesByJson(jsonArray));
                     }
                     catch (JSONException e)
                     {
@@ -150,8 +150,11 @@ public class MainActivity extends AppCompatActivity {
             {
                 // Помещение точек в список.
                 assert object != null;
+
                 int category_id = getIdFromString(object);
+
                 String name = object.getString("category_name");
+
                 String alt_name = object.getString("category_alt_name");
 
                 categories.put(category_id - 1, new Category(category_id, name, alt_name));;
@@ -176,23 +179,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupAdapterAndListview(local_Category_Campus);
-
     }
 
     private void setupAdapterAndListview(String[] categories)
     {
         searchView = findViewById(R.id.searchView);
+
         listView = findViewById(R.id.myList);
 
         adapter = new ArrayAdapter<>(this,
                 R.layout.array_adapter_custom_layout, categories);
-        listView.setAdapter(adapter);
 
+        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
             Intent intent = new Intent(MainActivity.this, EducationalBuilding.class);
+
             intent.putExtra("pos", position);
+
             startActivity(intent);
         });
     }
