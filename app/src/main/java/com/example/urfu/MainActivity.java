@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
 
         // Конечный ресурс, где идёт обработка логина и пароля
+        // TODO: вынести в константу основной путь
         String url = "https://roadtourfu.000webhostapp.com/api/data/get_categories.php";
 
         FormBody formBody = new FormBody.Builder()
