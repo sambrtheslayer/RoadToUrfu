@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 String alt_name = object.getString("category_alt_name");
 
                 categories.put(category_id, new Category(category_id, name, alt_name));
+
             }
             catch (JSONException e)
             {
