@@ -8,6 +8,12 @@
 
     >
 
+    <!--
+
+    TODO: Add Refresh button;
+
+    -->
+
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="46dp"
