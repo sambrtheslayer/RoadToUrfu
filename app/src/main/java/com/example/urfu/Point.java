@@ -60,6 +60,5 @@ public class Point implements Parcelable {
         dest.writeString(mName);
         dest.writeString(mAltName);
 
-        //dest.writeStringArray(new String[] {String.valueOf(mId), mName, mAltName });
     }
 }
