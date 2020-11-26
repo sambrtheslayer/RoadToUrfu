@@ -55,6 +55,11 @@ public class Point implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {String.valueOf(mId), mName, mAltName });
+
+        dest.writeInt(mId);
+        dest.writeString(mName);
+        dest.writeString(mAltName);
+
+        //dest.writeStringArray(new String[] {String.valueOf(mId), mName, mAltName });
     }
 }

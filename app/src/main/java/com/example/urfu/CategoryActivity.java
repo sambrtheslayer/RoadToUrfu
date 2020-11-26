@@ -206,6 +206,14 @@ public class CategoryActivity extends AppCompatActivity {
 
             Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
 
+            Log.e("position", String.valueOf(position));
+
+            Log.e("hashMapPoints", String.valueOf(hashMapPoints.size()));
+
+            Log.e("hashMapPoints getname", hashMapPoints.get(position).getName());
+
+            Log.e("hash getaltname", hashMapPoints.get(position).getAltName());
+
             intent.putExtra("point", hashMapPoints.get(position));
 
             startActivity(intent);

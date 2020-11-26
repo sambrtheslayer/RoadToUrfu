@@ -14,7 +14,7 @@ public class MapActivity extends AppCompatActivity {
         Point point = (Point) getIntent().getParcelableExtra("point");
 
         Log.e("name", point.getName());
-        Log.e("id", String.valueOf(point.getId()));
-        Log.e("Altname", point.getName());
+        Log.e("id точки в базе", String.valueOf(point.getId()));
+        Log.e("Altname", point.getAltName());
     }
 }
