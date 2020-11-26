@@ -204,7 +204,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
+            Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
 
             intent.putExtra("point", hashMapPoints.get(position));
 
