@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -35,6 +36,7 @@ public class CategoryActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     ImageButton btnBack;
     int position;
+    HashMap<Integer, Point> hashMapPoints = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class CategoryActivity extends AppCompatActivity {
         // Disable landscape mode
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        setContentView(R.layout.educational_building);
+        setContentView(R.layout.category_activity);
 
         searchView = findViewById(R.id.searchView);
         //listView = findViewById(R.id.myList);
@@ -137,7 +139,7 @@ public class CategoryActivity extends AppCompatActivity {
             point_alt_name
         */
 
-        HashMap<Integer, Point> points = new HashMap<>();
+
 
         for(int i = 0; i < jsonArray.length(); i++)
         {
@@ -161,7 +163,7 @@ public class CategoryActivity extends AppCompatActivity {
 
                 String alt_name = object.getString("point_alt_name");
 
-                points.put(i, new Point(category_id, name, alt_name));
+                hashMapPoints.put(i, new Point(category_id, name, alt_name));
             }
             catch (JSONException e)
             {
@@ -169,13 +171,13 @@ public class CategoryActivity extends AppCompatActivity {
             }
         }
 
-        String[] local_points = new String[points.size()];
+        String[] local_points = new String[hashMapPoints.size()];
 
-        for(int i = 0; i < points.size(); i++)
+        for(int i = 0; i < hashMapPoints.size(); i++)
         {
-            String name = Objects.requireNonNull(points.get(i)).getName();
+            String name = Objects.requireNonNull(hashMapPoints.get(i)).getName();
 
-            String alt_name = Objects.requireNonNull(points.get(i)).getAltName();
+            String alt_name = Objects.requireNonNull(hashMapPoints.get(i)).getAltName();
 
             String full_name = alt_name + " " +  "\n" + " " + name;
 
@@ -200,13 +202,13 @@ public class CategoryActivity extends AppCompatActivity {
 
         listView.setAdapter(adapter);
 
-        /*listView.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener((parent, view, position, id) -> {
 
             Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
 
-            intent.putExtra("pos", position);
+            intent.putExtra("point", hashMapPoints.get(position));
 
             startActivity(intent);
-        });*/
+        });
     }
 }

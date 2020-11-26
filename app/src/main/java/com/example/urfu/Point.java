@@ -1,6 +1,9 @@
 package com.example.urfu;
 
-public class Point {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Point implements Parcelable {
 
     private final int mId;
     private final String mName;
@@ -11,6 +14,24 @@ public class Point {
         this.mName = mName;
         this.mAltName = mAltName;
     }
+
+    protected Point(Parcel in) {
+        mId = in.readInt();
+        mName = in.readString();
+        mAltName = in.readString();
+    }
+
+    public static final Creator<Point> CREATOR = new Creator<Point>() {
+        @Override
+        public Point createFromParcel(Parcel in) {
+            return new Point(in);
+        }
+
+        @Override
+        public Point[] newArray(int size) {
+            return new Point[size];
+        }
+    };
 
     public int getId() {
 
@@ -25,5 +46,15 @@ public class Point {
     public String getAltName() {
 
         return mAltName;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {String.valueOf(mId), mName, mAltName });
     }
 }
