@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import org.json.JSONArray;
@@ -183,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupAdapterAndListview(String[] categories)
     {
+        ProgressBar progress = findViewById(R.id.progressbar);
+        progress.setVisibility(ProgressBar.GONE);
+
         searchView = findViewById(R.id.searchView);
 
         listView = findViewById(R.id.myList);

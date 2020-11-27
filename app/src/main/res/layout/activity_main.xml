@@ -74,6 +74,18 @@
 
         </SearchView>
 
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="365dp"
+            android:layout_height="41dp"
+            android:layout_marginTop="75dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.347"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints"
+            tools:visibility="visible"></ProgressBar>
+
         <ListView
             android:id="@+id/myList"
             android:layout_width="match_parent"

@@ -82,7 +82,7 @@ public class CategoryActivity extends AppCompatActivity {
         final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
 
         // Конечный ресурс, где идёт обработка логина и пароля
-        String url = baseHostApiUrl + "/data/get_points_not_map.php";
+        String url = baseHostApiUrl + "/data/get_points.php";
 
         FormBody formBody = new FormBody.Builder()
                 .add("category", String.valueOf(position))
@@ -137,6 +137,11 @@ public class CategoryActivity extends AppCompatActivity {
             point_id
             point_name
             point_alt_name
+            point_latitude
+            point_longitude
+            point_image
+            point_description
+            point_alt_description
         */
 
 
@@ -157,13 +162,23 @@ public class CategoryActivity extends AppCompatActivity {
                 // Помещение точек в список.
                 assert object != null;
 
-                int category_id = getIdFromString(object);
+                int category_id = object.getInt("point_id");//getIdFromString(object);
 
                 String name = object.getString("point_name");
 
                 String alt_name = object.getString("point_alt_name");
 
-                hashMapPoints.put(i, new Point(category_id, name, alt_name));
+                double latitude = object.getDouble("point_latitude");
+
+                double longitude = object.getDouble("point_longitude");
+
+                String image = object.getString("point_image");
+
+                String description = object.getString("point_description");
+
+                String alt_description = object.getString("point_alt_description");
+
+                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
             }
             catch (JSONException e)
             {

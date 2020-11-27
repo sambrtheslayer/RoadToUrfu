@@ -1,24 +1,77 @@
 package com.example.urfu;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import android.widget.ImageView;
+
+import java.io.InputStream;
 
 public class Point implements Parcelable {
 
     private final int mId;
     private final String mName;
     private final String mAltName;
+    private final double mLatitude;
+    private final double mLongitude;
+    private final String mDescription;
+    private final String mAltDescription;
+    private Bitmap mDescriptionImage;
 
-    public Point(int mId, String mName, String mAltName) {
+    private final String basePath = "https://roadtourfu.000webhostapp.com/image/";
+
+    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription) {
         this.mId = mId;
         this.mName = mName;
         this.mAltName = mAltName;
+        this.mLatitude = mLatitude;
+        this.mLongitude = mLongitude;
+        this.mDescription = mDescription;
+        this.mAltDescription = mAltDescription;
+        //new DownloadImageTask(mDescriptionImage).execute(basePath);
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        Bitmap localBitMap;
+
+        public DownloadImageTask(Bitmap bitmap) {
+            localBitMap = bitmap;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+
+            String pathToImage = strings[0] + "point_" + mId + ".PNG";
+
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(pathToImage).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            mDescriptionImage = result;
+        }
     }
 
     protected Point(Parcel in) {
         mId = in.readInt();
         mName = in.readString();
         mAltName = in.readString();
+        mLatitude = in.readDouble();
+        mLongitude = in.readDouble();
+        mDescription = in.readString();
+        mAltDescription = in.readString();
+
     }
 
     public static final Creator<Point> CREATOR = new Creator<Point>() {
@@ -34,18 +87,35 @@ public class Point implements Parcelable {
     };
 
     public int getId() {
-
         return mId;
     }
 
     public String getName() {
-
         return mName;
     }
 
     public String getAltName() {
-
         return mAltName;
+    }
+
+    public double getLatitude(){
+        return  mLatitude;
+    }
+
+    public double getLongitude(){
+        return  mLongitude;
+    }
+
+    public String getDescription(){
+        return mDescription;
+    }
+
+    public String getAltDescription(){
+        return mAltDescription;
+    }
+
+    public Bitmap getDescriptionImage(){
+        return mDescriptionImage;
     }
 
     @Override
@@ -59,6 +129,10 @@ public class Point implements Parcelable {
         dest.writeInt(mId);
         dest.writeString(mName);
         dest.writeString(mAltName);
+        dest.writeDouble(mLatitude);
+        dest.writeDouble(mLongitude);
+        dest.writeString(mDescription);
+        dest.writeString(mAltDescription);
 
         //dest.writeStringArray(new String[] {String.valueOf(mId), mName, mAltName });
     }
