@@ -21,71 +21,6 @@ public class Point implements Parcelable {
     private final String mAltDescription;
     private Bitmap mDescriptionImage;
 
-    private final String basePath = "https://roadtourfu.000webhostapp.com/image/";
-
-    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription) {
-        this.mId = mId;
-        this.mName = mName;
-        this.mAltName = mAltName;
-        this.mLatitude = mLatitude;
-        this.mLongitude = mLongitude;
-        this.mDescription = mDescription;
-        this.mAltDescription = mAltDescription;
-        //new DownloadImageTask(mDescriptionImage).execute(basePath);
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-
-        Bitmap localBitMap;
-
-        public DownloadImageTask(Bitmap bitmap) {
-            localBitMap = bitmap;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-
-            String pathToImage = strings[0] + "point_" + mId + ".PNG";
-
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(pathToImage).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            mDescriptionImage = result;
-        }
-    }
-
-    protected Point(Parcel in) {
-        mId = in.readInt();
-        mName = in.readString();
-        mAltName = in.readString();
-        mLatitude = in.readDouble();
-        mLongitude = in.readDouble();
-        mDescription = in.readString();
-        mAltDescription = in.readString();
-
-    }
-
-    public static final Creator<Point> CREATOR = new Creator<Point>() {
-        @Override
-        public Point createFromParcel(Parcel in) {
-            return new Point(in);
-        }
-
-        @Override
-        public Point[] newArray(int size) {
-            return new Point[size];
-        }
-    };
-
     public int getId() {
         return mId;
     }
@@ -117,6 +52,41 @@ public class Point implements Parcelable {
     public Bitmap getDescriptionImage(){
         return mDescriptionImage;
     }
+
+
+
+    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription) {
+        this.mId = mId;
+        this.mName = mName;
+        this.mAltName = mAltName;
+        this.mLatitude = mLatitude;
+        this.mLongitude = mLongitude;
+        this.mDescription = mDescription;
+        this.mAltDescription = mAltDescription;
+    }
+
+    protected Point(Parcel in) {
+        mId = in.readInt();
+        mName = in.readString();
+        mAltName = in.readString();
+        mLatitude = in.readDouble();
+        mLongitude = in.readDouble();
+        mDescription = in.readString();
+        mAltDescription = in.readString();
+
+    }
+
+    public static final Creator<Point> CREATOR = new Creator<Point>() {
+        @Override
+        public Point createFromParcel(Parcel in) {
+            return new Point(in);
+        }
+
+        @Override
+        public Point[] newArray(int size) {
+            return new Point[size];
+        }
+    };
 
     @Override
     public int describeContents() {

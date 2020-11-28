@@ -184,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupAdapterAndListview(String[] categories)
     {
-        ProgressBar progress = findViewById(R.id.progressbar);
-        progress.setVisibility(ProgressBar.GONE);
+        disableProgressBar();
 
         searchView = findViewById(R.id.searchView);
 
@@ -204,6 +203,12 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+    }
+
+    private void disableProgressBar()
+    {
+        ProgressBar progress = findViewById(R.id.progressbar);
+        progress.setVisibility(ProgressBar.GONE);
     }
 
     private int getIdFromString(JSONObject object) throws JSONException {

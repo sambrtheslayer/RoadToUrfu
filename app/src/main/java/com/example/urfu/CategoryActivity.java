@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import org.json.JSONArray;
@@ -208,6 +209,8 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void setupAdapterAndListview(String[] points)
     {
+        disableProgressBar();
+
         searchView = findViewById(R.id.searchView);
 
         listView = findViewById(R.id.myList);
@@ -233,5 +236,10 @@ public class CategoryActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+    }
+    private void disableProgressBar()
+    {
+        ProgressBar progress = findViewById(R.id.progressbar);
+        progress.setVisibility(ProgressBar.GONE);
     }
 }
