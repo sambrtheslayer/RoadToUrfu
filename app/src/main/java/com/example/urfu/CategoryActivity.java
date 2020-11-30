@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
@@ -62,9 +63,10 @@ public class CategoryActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CategoryActivity.this, MainActivity.class);
+                /*Intent intent = new Intent(CategoryActivity.this, MainActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);*/
+                finish();
             }
         });
     }
@@ -74,6 +76,26 @@ public class CategoryActivity extends AppCompatActivity {
         super.onStart();
 
         getPointsFromHost();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e("Category Activ. Resume", "Method has resumed");
+
+        if(listView != null) {
+
+            disableProgressBar();
+
+            listView.setVisibility(ListView.VISIBLE);
+        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("Category Activ. Pause", "Method has paused");
     }
 
     public void getPointsFromHost()
@@ -222,7 +244,11 @@ public class CategoryActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
+            new MapActivityHandler(position).run();
+
+            disableProgressBar();
+
+            /*Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
 
             Log.e("position", String.valueOf(position));
 
@@ -234,12 +260,58 @@ public class CategoryActivity extends AppCompatActivity {
 
             intent.putExtra("point", hashMapPoints.get(position));
 
-            startActivity(intent);
+            startActivity(intent);*/
         });
     }
     private void disableProgressBar()
     {
         ProgressBar progress = findViewById(R.id.progressbar);
         progress.setVisibility(ProgressBar.GONE);
+    }
+
+    private void enableProgressBar()
+    {
+        ProgressBar progress = findViewById(R.id.progressbar);
+        progress.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    class MapActivityHandler implements Runnable
+    {
+        private final int position;
+
+        public MapActivityHandler(int position)
+        {
+            this.position = position;
+        }
+
+        @Override
+        public void run() {
+
+            Handler mapActivityHandler = new Handler();
+            mapActivityHandler.post(new Runnable() {
+                @Override
+                public void run() {
+
+                    listView.setVisibility(ListView.GONE);
+
+                    enableProgressBar();
+
+                    Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
+
+                    Log.e("position", String.valueOf(position));
+
+                    Log.e("hashMapPoints", String.valueOf(hashMapPoints.size()));
+
+                    Log.e("hashMapPoints getname", hashMapPoints.get(position).getName());
+
+                    Log.e("hash getaltname", hashMapPoints.get(position).getAltName());
+
+                    intent.putExtra("point", hashMapPoints.get(position));
+
+                    startActivity(intent);
+                }
+
+            });
+        }
     }
 }

@@ -75,6 +75,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e("Main Activ. Resume", "Method has resumed");
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e("Main Activ. Pause", "Method has paused");
+    }
+
     public void getCategoriesFromHost()
     {
         OkHttpClient client = new OkHttpClient();
