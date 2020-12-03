@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-
+    android:background="@color/white"
     >
 
     <!--
@@ -16,15 +16,15 @@
 
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="46dp"
-        android:layout_height="43dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#FFFFFF"
         android:contentDescription="TODO"
-        app:layout_constraintStart_toEndOf="@id/guideline_right"
+        app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/outline_settings_black_24dp_1x"
-        tools:visibility="visible" />
+        app:srcCompat="@drawable/ic_settings_36dp" />
 
     <Button
         android:id="@+id/btn2"
