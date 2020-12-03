@@ -10,13 +10,14 @@
 
     <ImageButton
         android:id="@+id/ButtonBack"
-        android:layout_width="46dp"
-        android:layout_height="43dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:backgroundTint="#FFFFFF"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_left"
+        app:layout_constraintEnd_toStartOf="@+id/campus"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/homeAsUpIndicator" />
+        app:srcCompat="@drawable/backspace_black_36dp" />
 
     <ImageButton
         android:id="@+id/imageButton"
