@@ -47,12 +47,15 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     // private MyLocationListener listener;
     private Location currentLocation;
+    private Point selectedPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         checkUserLocationPermission();
+
+        selectedPoint = getIntent().getParcelableExtra("point");
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -75,7 +78,8 @@ public class MapActivity extends AppCompatActivity {
         // Отключение дублирования карты гориз и верт.
         map.setVerticalMapRepetitionEnabled(false);
         map.setHorizontalMapRepetitionEnabled(false);
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setTileSource(TileSourceFactory.WIKIMEDIA);
+        //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         //endregion
 
@@ -83,7 +87,11 @@ public class MapActivity extends AppCompatActivity {
         // Отвечает за масштабирование и начальную точку.
         IMapController mapController = map.getController();
         mapController.setZoom(19.5);
-        GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
+
+
+        //GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
+        GeoPoint startPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
+
         mapController.setCenter(startPoint);
         //endregion
 
@@ -94,6 +102,10 @@ public class MapActivity extends AppCompatActivity {
         //the overlay
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
         items.get(1).setMarker(getDrawable(R.drawable.place_holder));
+
+        Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
+        items.add(selectedPoint.getOverlayItem());
+        items.get(2).setMarker(getDrawable(R.drawable.wine_bottle));
 
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -109,7 +121,8 @@ public class MapActivity extends AppCompatActivity {
                     }
                 }, ctx);
 
-        mOverlay.setFocus(items.get(0));
+        mOverlay.setFocus(selectedPoint.getOverlayItem());
+        //mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
         //endregion
 
@@ -200,12 +213,12 @@ public class MapActivity extends AppCompatActivity {
 
     }
 
-    /*@Override
+    @Override
     protected void onStart() {
         super.onStart();
 
-        new DownloadImageTask().execute("https://roadtourfu.000webhostapp.com/image/");
-    }*/
+        new DownloadImageTask().execute(selectedPoint);
+    }
 
     @Override
     public void onResume() {
@@ -269,12 +282,12 @@ public class MapActivity extends AppCompatActivity {
             return loadedImage;
         }
 
-       /* protected void onPostExecute(Bitmap result){
+        protected void onPostExecute(Bitmap result){
 
-            ImageView image = findViewById(R.id.imageView);
+            ImageView image = findViewById(R.id.mainImg);
 
             image.setImageBitmap(result);
 
-        } */
+        }
     }
 }

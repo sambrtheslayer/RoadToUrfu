@@ -8,6 +8,9 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ImageView;
 
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.OverlayItem;
+
 import java.io.InputStream;
 
 public class Point implements Parcelable {
@@ -104,5 +107,10 @@ public class Point implements Parcelable {
         dest.writeString(mDescription);
         dest.writeString(mAltDescription);
 
+    }
+
+    public OverlayItem getOverlayItem()
+    {
+        return new OverlayItem(this.mAltName, this.mName, new GeoPoint(this.mLatitude, this.mLongitude));
     }
 }
