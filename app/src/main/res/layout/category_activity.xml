@@ -13,9 +13,9 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:backgroundTint="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/campus"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/backspace_black_36dp" />
 
@@ -23,10 +23,10 @@
         android:id="@+id/imageButton"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="#FFFFFF"
         android:contentDescription="TODO"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_settings_36dp" />
