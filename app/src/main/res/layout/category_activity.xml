@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toStartOf="@+id/campus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/backspace_black_36dp" />
+        app:srcCompat="@drawable/backspace_gray_36dp" />
 
     <ImageButton
         android:id="@+id/imageButton"
