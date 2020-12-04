@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.Manifest;
 import android.content.Context;
@@ -26,6 +28,7 @@ import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
@@ -48,6 +51,10 @@ public class MapActivity extends AppCompatActivity {
     // private MyLocationListener listener;
     private Location currentLocation;
     private Point selectedPoint;
+
+    private Button btn_zoom_in;
+    private Button btn_zoom_out;
+    private final long ANIMATION_ZOOM_DELAY = 500L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +88,33 @@ public class MapActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.WIKIMEDIA);
         //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
+        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         //endregion
 
         //region IMapController(zoom, center, etc)
         // Отвечает за масштабирование и начальную точку.
         IMapController mapController = map.getController();
         mapController.setZoom(19.5);
+
+
+        // Кастомные кнопки зума
+        btn_zoom_in = findViewById(R.id.zoom_in);
+        btn_zoom_out = findViewById(R.id.zoom_out);
+
+
+        btn_zoom_in.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                map.getController().zoomIn(ANIMATION_ZOOM_DELAY);
+            }
+        });
+
+        btn_zoom_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                map.getController().zoomOut(ANIMATION_ZOOM_DELAY);
+            }
+        });
 
 
         //GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
@@ -212,6 +240,7 @@ public class MapActivity extends AppCompatActivity {
 
 
     }
+
 
     @Override
     protected void onStart() {

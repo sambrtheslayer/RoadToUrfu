@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="36dp"
@@ -43,7 +44,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_bottom"
@@ -51,12 +52,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guideline_horizontal_top">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gline_zoom_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/zoom_out"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/custom_btn_zoom_out"
+            android:text="@string/ZoomOut"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gline_zoom_top" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/zoom_in"
+            android:layout_width="40dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/custom_btn_zoom_in"
+            android:text="@string/ZoomIn"
+            android:textSize="20sp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/gline_zoom_top"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
+        </org.osmdroid.views.MapView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -65,13 +103,6 @@
         <include layout="@layout/bottom_sheet" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
-
-
-
-
-
 
 
     <!-- <ImageView
@@ -117,6 +148,5 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
