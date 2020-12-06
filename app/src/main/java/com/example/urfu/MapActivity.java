@@ -185,7 +185,8 @@ public class MapActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
                         Log.e("HUI", "tapped");
-                        map.getController().setCenter(item.getPoint());
+                        //map.getController().setCenter(item.getPoint());
+                        map.getController().animateTo(item.getPoint());
                         return true;
                     }
 
