@@ -23,7 +23,7 @@
         android:contentDescription="TODO"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_settings_36dp" />
+        app:srcCompat="@drawable/settings_gray_36dp" />
 
     <Button
         android:id="@+id/btn2"

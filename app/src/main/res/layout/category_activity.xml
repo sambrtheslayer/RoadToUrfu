@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toStartOf="@+id/campus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/backspace_gray_36dp" />
+        app:srcCompat="@drawable/ic_backspace_gray_36dp" />
 
     <ImageButton
         android:id="@+id/imageButton"
@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_settings_36dp" />
+        app:srcCompat="@drawable/settings_gray_36dp" />
 
     <Button
         android:id="@+id/btn2"
