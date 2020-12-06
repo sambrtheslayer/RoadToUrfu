@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -38,6 +39,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -57,6 +59,8 @@ public class MapActivity extends AppCompatActivity {
 
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
+    private ImageButton user_location;
+
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
@@ -165,7 +169,14 @@ public class MapActivity extends AppCompatActivity {
         GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
         provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
         locationOverlay = new MyLocationNewOverlay(provider, map);
-        locationOverlay.enableFollowLocation();
+        user_location = findViewById(R.id.user_location);
+
+        user_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationOverlay.enableFollowLocation();
+            }
+        });
 
         // Отвечает за первый старт локации (полезно ли?).
         locationOverlay.runOnFirstFix(new Runnable() {
@@ -243,83 +254,83 @@ public class MapActivity extends AppCompatActivity {
         //Log.e("image", point.getDescriptionImage().toString());
     }
 
-        @Override
-        protected void onStart () {
-            super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-            new DownloadImageTask().execute(selectedPoint);
-        }
+        new DownloadImageTask().execute(selectedPoint);
+    }
 
-        @Override
-        public void onResume () {
-            super.onResume();
-            //this will refresh the osmdroid configuration on resuming.
-            //if you make changes to the configuration, use
-            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-            map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
-            locationOverlay.enableMyLocation();
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+        locationOverlay.enableMyLocation();
+    }
 
-        @Override
-        public void onPause () {
-            super.onPause();
-            //this will refresh the osmdroid configuration on resuming.
-            //if you make changes to the configuration, use
-            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            //Configuration.getInstance().save(this, prefs);
-            locationOverlay.disableMyLocation();
-            map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
-        }
+    @Override
+    public void onPause() {
+        super.onPause();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().save(this, prefs);
+        locationOverlay.disableMyLocation();
+        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+    }
 
-        private void checkUserLocationPermission () {
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{
-                                    android.Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_CODE_ASK_PERMISSIONS);
-                    return;
-                }
+    private void checkUserLocationPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{
+                                android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_CODE_ASK_PERMISSIONS);
+                return;
             }
         }
+    }
 
-        private class DownloadImageTask extends AsyncTask<Point, Void, Bitmap> {
+    private class DownloadImageTask extends AsyncTask<Point, Void, Bitmap> {
 
-            @Override
-            protected Bitmap doInBackground(Point... points) {
+        @Override
+        protected Bitmap doInBackground(Point... points) {
 
-                String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
+            String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
 
-                pathToImage = pathToImage + "point_" + points[0].getId() + ".PNG";
+            pathToImage = pathToImage + "point_" + points[0].getId() + ".PNG";
 
-                Bitmap loadedImage = null;
+            Bitmap loadedImage = null;
 
-                try {
+            try {
 
-                    InputStream in = new java.net.URL(pathToImage).openStream();
+                InputStream in = new java.net.URL(pathToImage).openStream();
 
-                    loadedImage = BitmapFactory.decodeStream(in);
+                loadedImage = BitmapFactory.decodeStream(in);
 
-                } catch (Exception e) {
+            } catch (Exception e) {
 
-                    Log.e("Error", e.getMessage());
+                Log.e("Error", e.getMessage());
 
-                    e.printStackTrace();
-
-                }
-
-                return loadedImage;
-            }
-
-            protected void onPostExecute(Bitmap result) {
-
-                ImageView image = findViewById(R.id.mainImg);
-
-                image.setImageBitmap(result);
+                e.printStackTrace();
 
             }
+
+            return loadedImage;
         }
+
+        protected void onPostExecute(Bitmap result) {
+
+            ImageView image = findViewById(R.id.mainImg);
+
+            image.setImageBitmap(result);
+
+        }
+    }
 
 
 }

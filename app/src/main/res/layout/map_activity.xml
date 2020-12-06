@@ -61,23 +61,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-        <!--
+
         <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/user_location"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/custom_user_location"
+            app:layout_constraintBottom_toTopOf="@+id/zoom_in"
             app:layout_constraintEnd_toEndOf="parent"
-
-
-            app:srcCompat="@drawable/ic_backspace_36dp"
+            app:srcCompat="@drawable/user_location_black_24dp"
             tools:ignore="MissingConstraints" />
-            -->
 
         <ImageButton
             android:id="@+id/zoom_in"
             android:layout_width="24dp"
             android:layout_height="36dp"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="2dp"
             android:background="@drawable/custom_btn_zoom_in"
             app:layout_constraintBottom_toTopOf="@+id/guideline_zoom_mid"
@@ -87,7 +87,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="24dp"
             android:layout_height="2dp"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/black_line"
             android:clickable="false"
             app:layout_constraintBottom_toTopOf="@+id/zoom_out"
@@ -97,7 +97,7 @@
             android:id="@+id/zoom_out"
             android:layout_width="24dp"
             android:layout_height="36dp"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/custom_btn_zoom_out"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline_zoom_mid"
