@@ -5,9 +5,9 @@
     android:id="@+id/custom_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
     app:behavior_hideable="false"
     app:behavior_peekHeight="38dp"
-    android:background="@color/white"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
 
@@ -15,7 +15,6 @@
         android:id="@+id/header_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/teal_200"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,19 +25,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:background="@drawable/shape_bottom_sheet"
             app:srcCompat="@drawable/horizontal_rule_gray_36dp" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/mainImg"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header_layout"
-        app:srcCompat="@drawable/love_urfu"
-        tools:ignore="DuplicateIds" />
+        app:layout_constraintTop_toBottomOf="@+id/header_layout">
+
+        <ImageView
+            android:layout_margin="15dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/mainImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+    </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
