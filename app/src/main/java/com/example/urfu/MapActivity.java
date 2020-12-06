@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -25,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -34,7 +36,10 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -64,6 +69,31 @@ public class MapActivity extends AppCompatActivity {
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
+    //MotionEvent. - содержит набор разновидностей событий. Проверка события через event.getAction()
+    /*@Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Это отлов события нажатия, в данном случае - "палец ввех"
+        if(event.getAction() == MotionEvent.ACTION_UP) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+
+            assert map != null;
+
+            // Класс Projection позволяет конвертировать координаты экрана в координаты мира
+            Projection projection = map.getProjection();
+
+            double latitudeFromTappedScreenX = projection.fromPixels(x, y).getLatitude();
+            double longitudeFromTappedScreenY = projection.fromPixels(x, y).getLongitude();
+
+            Log.e("World coords", latitudeFromTappedScreenX + ", " + longitudeFromTappedScreenY);
+
+            GeoPoint focusingPoint = new GeoPoint(latitudeFromTappedScreenX, longitudeFromTappedScreenY);
+
+            map.getController().setCenter(focusingPoint);
+        }
+
+        return true;
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +155,12 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
+        //region Map On Click
+
+        //map.onTouchEvent(MotionEvent.ACTION_BUTTON_PRESS)
+
+        //endregion
+
 
         //GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
         GeoPoint startPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
@@ -149,6 +185,7 @@ public class MapActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
                         Log.e("HUI", "tapped");
+                        map.getController().setCenter(item.getPoint());
                         return true;
                     }
 
@@ -157,7 +194,10 @@ public class MapActivity extends AppCompatActivity {
                         Log.e("HUI2", "long tapped");
                         return true;
                     }
+
                 }, ctx);
+
+
 
         mOverlay.setFocus(selectedPoint.getOverlayItem());
         //mOverlay.setFocus(items.get(0));
