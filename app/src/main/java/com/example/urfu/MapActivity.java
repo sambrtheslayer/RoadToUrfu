@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.Manifest;
 import android.content.Context;
@@ -19,6 +20,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import org.osmdroid.api.IMapController;
@@ -52,9 +55,11 @@ public class MapActivity extends AppCompatActivity {
     private Location currentLocation;
     private Point selectedPoint;
 
-    private Button btn_zoom_in;
-    private Button btn_zoom_out;
+    private ImageButton btn_zoom_in;
+    private ImageButton btn_zoom_out;
+
     private final long ANIMATION_ZOOM_DELAY = 500L;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +130,7 @@ public class MapActivity extends AppCompatActivity {
 
         //region Marks
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d,59.909221d))); // Lat/Lon decimal degrees
+        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d, 59.909221d))); // Lat/Lon decimal degrees
         items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
         //the overlay
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
@@ -142,6 +147,7 @@ public class MapActivity extends AppCompatActivity {
                         Log.e("HUI", "tapped");
                         return true;
                     }
+
                     @Override
                     public boolean onItemLongPress(final int index, final OverlayItem item) {
                         Log.e("HUI2", "long tapped");
@@ -212,9 +218,7 @@ public class MapActivity extends AppCompatActivity {
             map.getOverlays().add(roadOverlay);
 
             map.invalidate();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             Log.e("ex", e.getMessage());
         }
 
@@ -237,86 +241,86 @@ public class MapActivity extends AppCompatActivity {
         image.setImageBitmap(point.getDescriptionImage());*/
 
         //Log.e("image", point.getDescriptionImage().toString());
-
-
     }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        new DownloadImageTask().execute(selectedPoint);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
-        map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
-        locationOverlay.enableMyLocation();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().save(this, prefs);
-        locationOverlay.disableMyLocation();
-        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
-    }
-
-    private void checkUserLocationPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{
-                                android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_CODE_ASK_PERMISSIONS);
-                return;
-            }
-        }
-    }
-
-    private class DownloadImageTask extends AsyncTask<Point, Void, Bitmap> {
 
         @Override
-        protected Bitmap doInBackground(Point... points) {
+        protected void onStart () {
+            super.onStart();
 
-            String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
+            new DownloadImageTask().execute(selectedPoint);
+        }
 
-            pathToImage = pathToImage + "point_" + points[0].getId() + ".PNG";
+        @Override
+        public void onResume () {
+            super.onResume();
+            //this will refresh the osmdroid configuration on resuming.
+            //if you make changes to the configuration, use
+            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+            map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
+            locationOverlay.enableMyLocation();
+        }
 
-            Bitmap loadedImage = null;
+        @Override
+        public void onPause () {
+            super.onPause();
+            //this will refresh the osmdroid configuration on resuming.
+            //if you make changes to the configuration, use
+            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            //Configuration.getInstance().save(this, prefs);
+            locationOverlay.disableMyLocation();
+            map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        }
 
-            try {
+        private void checkUserLocationPermission () {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{
+                                    android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_CODE_ASK_PERMISSIONS);
+                    return;
+                }
+            }
+        }
 
-                InputStream in = new java.net.URL(pathToImage).openStream();
+        private class DownloadImageTask extends AsyncTask<Point, Void, Bitmap> {
 
-                loadedImage = BitmapFactory.decodeStream(in);
+            @Override
+            protected Bitmap doInBackground(Point... points) {
 
-            } catch (Exception e) {
+                String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
 
-                Log.e("Error", e.getMessage());
+                pathToImage = pathToImage + "point_" + points[0].getId() + ".PNG";
 
-                e.printStackTrace();
+                Bitmap loadedImage = null;
 
+                try {
+
+                    InputStream in = new java.net.URL(pathToImage).openStream();
+
+                    loadedImage = BitmapFactory.decodeStream(in);
+
+                } catch (Exception e) {
+
+                    Log.e("Error", e.getMessage());
+
+                    e.printStackTrace();
+
+                }
+
+                return loadedImage;
             }
 
-            return loadedImage;
+            protected void onPostExecute(Bitmap result) {
+
+                ImageView image = findViewById(R.id.mainImg);
+
+                image.setImageBitmap(result);
+
+            }
         }
 
-        protected void onPostExecute(Bitmap result){
 
-            ImageView image = findViewById(R.id.mainImg);
-
-            image.setImageBitmap(result);
-
-        }
-    }
 }
+

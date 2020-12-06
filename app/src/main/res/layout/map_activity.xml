@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
+    <!--==========Top bar layout==========-->
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="36dp"
@@ -16,7 +16,7 @@
         android:contentDescription="TODO"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_settings_36dp" />
+        app:srcCompat="@drawable/settings_gray_36dp" />
 
     <Button
         android:id="@+id/btn2"
@@ -28,7 +28,7 @@
         android:text="@string/attractions"
         android:textAllCaps="false"
         android:textColor="#696767"
-        app:layout_constraintStart_toEndOf="@+id/guideline_mid"
+        app:layout_constraintStart_toEndOf="@+id/guideline_vertical_mid"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -40,11 +40,13 @@
         android:backgroundTint="#3E73FC"
         android:text="@string/campus"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_mid"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_mid"
         app:layout_constraintTop_toTopOf="parent" />
+    <!--==========//Top bar layout==========-->
 
-
+    <!--==========Map layout==========-->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_bottom"
@@ -52,50 +54,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/guideline_horizontal_top">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/gline_zoom_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/zoom_out"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
-            android:layout_marginEnd="3dp"
-            android:background="@drawable/custom_btn_zoom_out"
-            android:text="@string/ZoomOut"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/gline_zoom_top" />
-
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/zoom_in"
-            android:layout_width="40dp"
-            android:layout_height="46dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/custom_btn_zoom_in"
-            android:text="@string/ZoomIn"
-            android:textSize="20sp"
-            app:iconTint="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/gline_zoom_top"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
+        <!--
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
 
-        </org.osmdroid.views.MapView>
+
+            app:srcCompat="@drawable/ic_backspace_36dp"
+            tools:ignore="MissingConstraints" />
+            -->
+
+        <ImageButton
+            android:id="@+id/zoom_in"
+            android:layout_width="24dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/custom_btn_zoom_in"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_zoom_mid"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/zoom_in_black_24dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="24dp"
+            android:layout_height="2dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/black_line"
+            android:clickable="false"
+            app:layout_constraintBottom_toTopOf="@+id/zoom_out"
+            app:layout_constraintEnd_toEndOf="@+id/map" />
+
+        <ImageButton
+            android:id="@+id/zoom_out"
+            android:layout_width="24dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/custom_btn_zoom_out"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline_zoom_mid"
+            app:srcCompat="@drawable/minus_black_24dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_zoom_mid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--==========//Map layout==========-->
 
+    <!--==========Bottom sheet==========-->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -103,33 +121,25 @@
         <include layout="@layout/bottom_sheet" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <!--==========//Bottom sheet==========-->
 
-
-    <!-- <ImageView
-       android:id="@+id/imageView"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       app:srcCompat="@drawable/ic_launcher_background"
-       tools:layout_editor_absoluteX="16dp"
-       tools:layout_editor_absoluteY="40dp" /> -->
-
-
+    <!--==========Guidelines==========-->
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_left"
+        android:id="@+id/guideline_vertical_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.1" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_right"
+        android:id="@+id/guideline_vertical_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.9" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_mid"
+        android:id="@+id/guideline_vertical_mid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -148,5 +158,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="1" />
+    <!--==========//Guidelines==========-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
