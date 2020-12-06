@@ -7,20 +7,15 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <!--
-
-    TODO: Add Refresh button;
-
-    -->
-
+    <!--==========Top bar layout==========-->
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="#FFFFFF"
         android:contentDescription="TODO"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn2"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/settings_gray_36dp" />
@@ -49,8 +44,10 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline_mid"
         app:layout_constraintTop_toTopOf="parent" />
+    <!--==========//Top bar layout==========-->
 
 
+    <!--==========//Search and List layout==========-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -96,7 +93,9 @@
         </ListView>
 
     </LinearLayout>
+    <!--==========//Search and List layout==========-->
 
+    <!--==========Guidelines==========-->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_left"
         android:layout_width="wrap_content"
@@ -117,6 +116,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+    <!--==========//Guidelines==========-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
