@@ -178,7 +178,7 @@ public class MapActivity extends AppCompatActivity {
 
         Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
         items.add(selectedPoint.getOverlayItem());
-        items.get(2).setMarker(getDrawable(R.drawable.wine_bottle));
+        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
 
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
