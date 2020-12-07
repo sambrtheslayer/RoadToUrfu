@@ -231,22 +231,23 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void setupAdapterAndListview(String[] points)
     {
-        disableProgressBar();
-
-        searchView = findViewById(R.id.searchView);
-
-        listView = findViewById(R.id.myList);
-
-        adapter = new ArrayAdapter<>(this,
-                R.layout.array_adapter_custom_layout, points);
-
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-
-            new MapActivityHandler(position).run();
-
+        try {
             disableProgressBar();
+
+            searchView = findViewById(R.id.searchView);
+
+            listView = findViewById(R.id.myList);
+
+            adapter = new ArrayAdapter<>(this,
+                    R.layout.array_adapter_custom_layout, points);
+
+            listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener((parent, view, position, id) -> {
+
+                new MapActivityHandler(position).run();
+
+                disableProgressBar();
 
             /*Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
 
@@ -261,7 +262,9 @@ public class CategoryActivity extends AppCompatActivity {
             intent.putExtra("point", hashMapPoints.get(position));
 
             startActivity(intent);*/
-        });
+            });
+        }
+        catch(Exception e) {}
     }
     private void disableProgressBar()
     {
