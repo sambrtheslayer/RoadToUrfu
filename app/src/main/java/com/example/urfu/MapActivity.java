@@ -163,6 +163,8 @@ public class MapActivity extends AppCompatActivity {
 
 
         //GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
+
+        // Создаётся точка, основанная на предыдущем выборе в экране CategoryActivity.
         GeoPoint startPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
 
         mapController.setCenter(startPoint);
