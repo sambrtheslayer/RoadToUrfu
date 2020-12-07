@@ -2,6 +2,7 @@ package com.example.urfu;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;

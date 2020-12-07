@@ -26,6 +26,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
@@ -46,11 +49,21 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -65,6 +78,10 @@ public class MapActivity extends AppCompatActivity {
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
+
+    HashMap<Integer, Point> hashMapPoints = new HashMap<>();
+    ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+    Context ctx;
 
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
@@ -100,6 +117,7 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         checkUserLocationPermission();
+        ctx = getApplicationContext();
 
         selectedPoint = getIntent().getParcelableExtra("point");
 
@@ -112,7 +130,6 @@ public class MapActivity extends AppCompatActivity {
         Configuration.getInstance().setOsmdroidTileCache(new File(Configuration.getInstance().getOsmdroidBasePath().getAbsolutePath(), "tile"));
         //endregion
 
-        Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.map_activity);
@@ -171,41 +188,7 @@ public class MapActivity extends AppCompatActivity {
         //endregion
 
         //region Marks
-        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d, 59.909221d))); // Lat/Lon decimal degrees
-        items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
-        //the overlay
-        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
-        items.get(1).setMarker(getDrawable(R.drawable.place_holder));
-
-        Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
-        items.add(selectedPoint.getOverlayItem());
-        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
-
-        ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
-                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                    @Override
-                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        Log.e("HUI", "tapped");
-                        //map.getController().setCenter(item.getPoint());
-                        map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
-
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        Log.e("HUI2", "long tapped");
-                        return true;
-                    }
-
-                }, ctx);
-
-
-
-        mOverlay.setFocus(selectedPoint.getOverlayItem());
-        //mOverlay.setFocus(items.get(0));
-        map.getOverlays().add(mOverlay);
+        getPointsFromHost();
         //endregion
 
         //region User Location
@@ -374,6 +357,171 @@ public class MapActivity extends AppCompatActivity {
             image.setImageBitmap(result);
 
         }
+    }
+
+    private void getPointsFromHost()
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
+
+        // Конечный ресурс, где идёт обработка логина и пароля
+        String url = baseHostApiUrl + "/data/get_all_points.php";
+
+        FormBody formBody = new FormBody.Builder()
+                .build();
+
+        Request request = new Request.Builder()
+                .post(formBody)
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            // Обработка полученного ответа от сервера.
+            @Override
+            public void onResponse(Call call, Response response) throws IOException
+            {
+                if(response.isSuccessful())
+                {
+                    assert response.body() != null;
+
+                    final String myResponse = response.body().string();
+
+                    try
+                    {
+                        // Объявляется экземпляр класса JSONObject, где аргумент -
+                        // это полученная строка от сервера.
+                        Log.e("Response", myResponse);
+
+                        JSONArray jsonArray = new JSONArray(myResponse);
+
+                        // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
+                        // Формируется Categories из Json
+                        MapActivity.this.runOnUiThread(() -> buildPointsByJson(jsonArray));
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+    }
+    private void buildPointsByJson(JSONArray jsonArray)
+    {
+        /*
+            point_id
+            point_name
+            point_alt_name
+            point_latitude
+            point_longitude
+            point_image
+            point_description
+            point_alt_description
+        */
+        for(int i = 0; i < jsonArray.length(); i++)
+        {
+            JSONObject object = null;
+            try
+            {
+                object = jsonArray.getJSONObject(i);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            try
+            {
+                // Помещение точек в список.
+                assert object != null;
+
+                int category_id = object.getInt("point_id");//getIdFromString(object);
+
+                String name = object.getString("point_name");
+
+                String alt_name = object.getString("point_alt_name");
+
+                double latitude = object.getDouble("point_latitude");
+
+                double longitude = object.getDouble("point_longitude");
+
+                String image = object.getString("point_image");
+
+                String description = object.getString("point_description");
+
+                String alt_description = object.getString("point_alt_description");
+
+                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        String[] local_points = new String[hashMapPoints.size()];
+
+        for(int i = 0; i < hashMapPoints.size(); i++)
+        {
+            String name = Objects.requireNonNull(hashMapPoints.get(i)).getName();
+
+            String alt_name = Objects.requireNonNull(hashMapPoints.get(i)).getAltName();
+
+            String full_name = alt_name + " " +  "\n" + " " + name;
+
+            local_points[i] = full_name;
+        }
+
+        Log.e("Adding points", "Here");
+
+        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d, 59.909221d))); // Lat/Lon decimal degrees
+        items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
+        //the overlay
+        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
+        items.get(1).setMarker(getDrawable(R.drawable.place_holder));
+
+
+        //TODO: Здесь нужно убрать дубль, потому что selectedPoint есть также и в ответе от сервера
+        Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
+        items.add(selectedPoint.getOverlayItem());
+        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+
+        assert hashMapPoints != null;
+        for(int i = 0; i < hashMapPoints.size(); i++)
+        {
+            items.add(hashMapPoints.get(i).getOverlayItem());
+            items.get(3 + i).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+        }
+        ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        Log.e("HUI", "tapped");
+                        //map.getController().setCenter(item.getPoint());
+                        map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        Log.e("HUI2", "long tapped");
+                        return true;
+                    }
+
+                }, ctx);
+
+
+
+        mOverlay.setFocus(selectedPoint.getOverlayItem());
+        //mOverlay.setFocus(items.get(0));
+        map.getOverlays().add(mOverlay);
     }
 
 
