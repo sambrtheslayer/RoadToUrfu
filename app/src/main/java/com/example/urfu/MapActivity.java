@@ -70,7 +70,7 @@ public class MapActivity extends AppCompatActivity {
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
     //MotionEvent. - содержит набор разновидностей событий. Проверка события через event.getAction()
-    /*@Override
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         // Это отлов события нажатия, в данном случае - "палец ввех"
         if(event.getAction() == MotionEvent.ACTION_UP) {
@@ -87,13 +87,13 @@ public class MapActivity extends AppCompatActivity {
 
             Log.e("World coords", latitudeFromTappedScreenX + ", " + longitudeFromTappedScreenY);
 
-            GeoPoint focusingPoint = new GeoPoint(latitudeFromTappedScreenX, longitudeFromTappedScreenY);
+            //GeoPoint focusingPoint = new GeoPoint(latitudeFromTappedScreenX, longitudeFromTappedScreenY);
 
-            map.getController().setCenter(focusingPoint);
+            //map.getController().setCenter(focusingPoint);
         }
 
         return true;
-    }*/
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
