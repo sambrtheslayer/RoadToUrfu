@@ -496,7 +496,7 @@ public class MapActivity extends AppCompatActivity {
         for(int i = 0; i < hashMapPoints.size(); i++)
         {
             items.add(hashMapPoints.get(i).getOverlayItem());
-            items.get(3 + i).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+            items.get(3 + i).setMarker(getDrawable(R.drawable.ic_lens_black_36dp));
         }
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -505,7 +505,7 @@ public class MapActivity extends AppCompatActivity {
                         Log.e("HUI", "tapped");
                         //map.getController().setCenter(item.getPoint());
                         map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
-
+                        item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                         return true;
                     }
 
