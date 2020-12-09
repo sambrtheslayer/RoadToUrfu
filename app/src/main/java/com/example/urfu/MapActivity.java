@@ -74,6 +74,7 @@ public class MapActivity extends AppCompatActivity {
     // private MyLocationListener listener;
     private Location currentLocation;
     private Point selectedPoint;
+    private OverlayItem selectedOverlayItem;
 
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
@@ -479,25 +480,31 @@ public class MapActivity extends AppCompatActivity {
         }
 
         Log.e("Adding points", "Here");
-
+/*
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d, 59.909221d))); // Lat/Lon decimal degrees
         items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
         //the overlay
         items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
         items.get(1).setMarker(getDrawable(R.drawable.place_holder));
-
+*/
 
         //TODO: Здесь нужно убрать дубль, потому что selectedPoint есть также и в ответе от сервера
-        Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
-        items.add(selectedPoint.getOverlayItem());
-        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+        /*Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
+        items.add(selectedPoint.getOverlayItem(selectedPoint.getId()));
+        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));*/
 
         assert hashMapPoints != null;
         for(int i = 0; i < hashMapPoints.size(); i++)
         {
-            items.add(hashMapPoints.get(i).getOverlayItem());
-            items.get(3 + i).setMarker(getDrawable(R.drawable.ic_lens_black_36dp));
+            items.add(hashMapPoints.get(i).getOverlayItem(hashMapPoints.get(i).getId()));
+            Log.e("Hashmap Points", items.get(i).getUid());
+            items.get(i).setMarker(getDrawable(R.drawable.ic_lens_black));
         }
+
+        initializeTapSettings();
+    }
+    private void initializeTapSettings()
+    {
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
@@ -505,7 +512,49 @@ public class MapActivity extends AppCompatActivity {
                         Log.e("HUI", "tapped");
                         //map.getController().setCenter(item.getPoint());
                         map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
-                        item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+
+                        //region TODO: debug zone
+                        int currentId = selectedPoint.getId();
+                        int tappingId = Integer.valueOf(item.getUid());
+
+                        Log.e("Current ID", String.valueOf(currentId));
+                        Log.e("Tapping ID", String.valueOf(tappingId));
+
+                        // Если нажата отличная от первоначальной точки точка, то ставим новый значок на изначальную - чёрный кружок,
+                        // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
+                        if(currentId != tappingId)
+                        {
+                            item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+                            changeSelectedOverlayItem(currentId);
+
+                            selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
+
+                            findAndSetupNewSelectedPoint(tappingId);
+                            // Первоначальная точка.
+                            /*Log.e("Current marker uid", items.get(selectedPoint.getId()).getUid() + " ");
+                            Log.e("Current marker id", String.valueOf(selectedPoint.getId()) + " ");
+                            items.get(items.indexOf(selectedOverlayItem)).setMarker(getDrawable(R.drawable.ic_lens_black));
+                            //selectedPoint.getOverlayItem().setMarker(getDrawable(R.drawable.ic_lens_black));
+
+                            Log.e("Selected point now", selectedPoint.getName());
+                            Log.e("Tapped item id", item.getUid());
+
+                            // Устанавливаем новой точке маркер.
+                            item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+
+                            // Теперь выбранная точка - это та, на которую нажали.
+                            selectedPoint = hashMapPoints.get(Integer.valueOf(item.getUid()));
+                            selectedOverlayItem = item;
+                            Log.e("Selected point after", selectedPoint.getName());*/
+                        }
+
+                        /*Log.e("Selected point now", selectedPoint.getName());
+                        Log.e("Tapped item id", item.getUid());
+                        selectedPoint = hashMapPoints.get(Integer.valueOf(item.getUid()));
+                        Log.e("Selected point after", selectedPoint.getName());*/
+                        //endregion----------------
+
+                        //item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                         return true;
                     }
 
@@ -517,11 +566,51 @@ public class MapActivity extends AppCompatActivity {
 
                 }, ctx);
 
-
+        initializePointOnFirstStart();
 
         mOverlay.setFocus(selectedPoint.getOverlayItem());
         //mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
+    }
+
+    private void changeSelectedOverlayItem(int id)
+    {
+        for(int i = 0; i < items.size(); i++)
+        {
+            if(Integer.valueOf(items.get(i).getUid()) == id)
+            {
+                selectedOverlayItem = items.get(i);
+            }
+        }
+    }
+
+    private void findAndSetupNewSelectedPoint(int id)
+    {
+        for(int i = 0; i < hashMapPoints.size(); i++)
+        {
+            if(hashMapPoints.get(i).getId() == id)
+                selectedPoint = hashMapPoints.get(i);
+        }
+    }
+
+    private void initializePointOnFirstStart()
+    {
+        setupMarkerForFirstOverlayItem(selectedPoint.getId());
+
+        Log.e("Selected OverlayItem", selectedOverlayItem.getUid());
+        Log.e("Selected Point", String.valueOf(selectedPoint.getId()));
+    }
+
+    private void setupMarkerForFirstOverlayItem(int id)
+    {
+        for(int i = 0; i < items.size(); i++)
+        {
+            if(Integer.valueOf(items.get(i).getUid()) == id)
+            {
+                selectedOverlayItem = items.get(i);
+                selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+            }
+        }
     }
 
 

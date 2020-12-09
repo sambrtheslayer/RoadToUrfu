@@ -110,6 +110,11 @@ public class Point implements Parcelable {
 
     }
 
+    public OverlayItem getOverlayItem(int id)
+    {
+        return new OverlayItem(String.valueOf(this.mId), this.mName, this.mDescription, new GeoPoint(this.mLatitude, this.mLongitude));
+    }
+
     public OverlayItem getOverlayItem()
     {
         return new OverlayItem(this.mAltName, this.mName, new GeoPoint(this.mLatitude, this.mLongitude));
