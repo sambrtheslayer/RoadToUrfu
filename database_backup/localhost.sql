@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Дек 08 2020 г., 10:14
+-- Время создания: Дек 09 2020 г., 07:37
 -- Версия сервера: 10.3.16-MariaDB
 -- Версия PHP: 7.3.23
 
@@ -199,6 +199,26 @@ INSERT INTO `point` (`id`, `latitude`, `longitude`, `name`, `description`, `cate
 (44, 56.841568, 60.658004, 'Общежитие №16', ' ', 2, ' ', 'ул. Малышева, 127А', '+ 7 (343) 375-47-50', ' '),
 (45, 56.840124, 60.660779, 'Медико-санитарная часть', 'Часы работы: пн-пт 8:00 -18:00', 3, ' ', 'ул. Комсомольская, 59', '+ 7 (343) 375-94-77', 'Расписание работы врачей:\nhttps://med.urfu.ru/ru/attendance/schedule/');
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `point_photoes`
+--
+
+CREATE TABLE `point_photoes` (
+  `id` int(11) NOT NULL,
+  `point_id` int(11) NOT NULL,
+  `photo` text COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Дамп данных таблицы `point_photoes`
+--
+
+INSERT INTO `point_photoes` (`id`, `point_id`, `photo`) VALUES
+(1, 0, 'point_2.PNG'),
+(2, 0, 'point_3.PNG');
+
 --
 -- Индексы сохранённых таблиц
 --
@@ -228,6 +248,12 @@ ALTER TABLE `point`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Индексы таблицы `point_photoes`
+--
+ALTER TABLE `point_photoes`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -242,6 +268,12 @@ ALTER TABLE `category`
 --
 ALTER TABLE `point`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+
+--
+-- AUTO_INCREMENT для таблицы `point_photoes`
+--
+ALTER TABLE `point_photoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
