@@ -24,6 +24,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import org.json.JSONArray;
@@ -54,6 +55,8 @@ import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Objects;
@@ -79,6 +82,9 @@ public class MapActivity extends AppCompatActivity {
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
+
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private ConstraintLayout mCustomBottomSheet;
 
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
@@ -176,6 +182,11 @@ public class MapActivity extends AppCompatActivity {
         //region Map On Click
 
         //map.onTouchEvent(MotionEvent.ACTION_BUTTON_PRESS)
+
+        mCustomBottomSheet = findViewById(R.id.custom_bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(mCustomBottomSheet);
+
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         //endregion
 
@@ -530,6 +541,8 @@ public class MapActivity extends AppCompatActivity {
                             selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
 
                             findAndSetupNewSelectedPoint(tappingId);
+
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                             // Первоначальная точка.
                             /*Log.e("Current marker uid", items.get(selectedPoint.getId()).getUid() + " ");
                             Log.e("Current marker id", String.valueOf(selectedPoint.getId()) + " ");
