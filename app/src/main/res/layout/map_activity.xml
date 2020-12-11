@@ -63,6 +63,30 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
+            android:id="@+id/clearRoute"
+            android:layout_width="36dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="98dp"
+            android:background="@drawable/custom_user_location"
+            app:layout_constraintBottom_toTopOf="@+id/zoom_in"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_clear_24px"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:id="@+id/buildRoute"
+            android:layout_width="36dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="58dp"
+            android:background="@drawable/custom_user_location"
+            app:layout_constraintBottom_toTopOf="@+id/zoom_in"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/place_holder"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
             android:id="@+id/user_location"
             android:layout_width="36dp"
             android:layout_height="40dp"
