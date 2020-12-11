@@ -229,28 +229,6 @@ public class MapActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 locationOverlay.needToBuildRoute = true;
-                /*RoadManager roadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
-                roadManager.addRequestOption("vehicle=foot");
-
-                GeoPoint currentLocation = locationOverlay.getMyLocation();
-
-                assert selectedPoint != null;
-
-                ArrayList<GeoPoint> currentRoute = new ArrayList<>();
-
-                GeoPoint destinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
-
-                currentRoute.add(currentLocation);
-                currentRoute.add(destinationPoint);
-
-                Road road = roadManager.getRoad(currentRoute);
-
-                roadOverlayLine = GraphHopperRoadManager.buildRoadOverlay(road);
-                roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
-
-                map.getOverlays().add(roadOverlayLine);
-
-                map.invalidate();*/
             }
 
         });
