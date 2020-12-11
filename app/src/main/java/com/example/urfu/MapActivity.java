@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import org.json.JSONArray;
@@ -57,6 +58,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -98,6 +101,8 @@ public class MapActivity extends AppCompatActivity {
     private ArrayList<Bitmap> loadedImages = new ArrayList<>();
     Context ctx;
 
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private ConstraintLayout mCustomBottomSheet;
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
@@ -186,6 +191,11 @@ public class MapActivity extends AppCompatActivity {
                 map.getController().zoomOut(ANIMATION_ZOOM_DELAY);
             }
         });
+
+        mCustomBottomSheet = findViewById(R.id.custom_bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(mCustomBottomSheet);
+
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         //region Map On Click
 
@@ -631,6 +641,8 @@ public class MapActivity extends AppCompatActivity {
                             findAndSetupNewSelectedPoint(tappingId);
 
                             loadPhotoesFromHostById(selectedPoint.getId());
+
+                            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
                             // Первоначальная точка.
                             /*Log.e("Current marker uid", items.get(selectedPoint.getId()).getUid() + " ");
