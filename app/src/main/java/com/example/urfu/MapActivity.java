@@ -781,6 +781,7 @@ public class MapActivity extends AppCompatActivity {
 
                 roadOverlayLine = GraphHopperRoadManager.buildRoadOverlay(mRoad);
                 roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
+                roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
 
                 map.getOverlays().add(roadOverlayLine);
 
