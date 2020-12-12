@@ -11,13 +11,13 @@ public class MapPoint {
     private OverlayItem mOverlayItem;
     private int mId;
 
-    public void setIcon(Drawable icon){
-        if(mOverlayItem != null) {
+    public void setIcon(Drawable icon) {
+        if (mOverlayItem != null) {
             mOverlayItem.setMarker(icon);
         }
     }
 
-    public void setId(int id){
+    public void setId(int id) {
         mId = id;
     }
 }

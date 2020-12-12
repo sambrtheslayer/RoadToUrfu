@@ -56,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             });
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             Log.e("Search error", e.getMessage());
         }
     }
@@ -69,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             getCategoriesFromHost();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e("Error getting", e.getMessage());
         }
     }
@@ -89,8 +86,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("Main Activ. Pause", "Method has paused");
     }
 
-    public void getCategoriesFromHost()
-    {
+    public void getCategoriesFromHost() {
         OkHttpClient client = new OkHttpClient();
 
         final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
@@ -115,16 +111,13 @@ public class MainActivity extends AppCompatActivity {
 
             // Обработка полученного ответа от сервера.
             @Override
-            public void onResponse(Call call, Response response) throws IOException
-            {
-                if(response.isSuccessful())
-                {
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
                     assert response.body() != null;
 
                     final String myResponse = response.body().string();
 
-                    try
-                    {
+                    try {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
                         // это полученная строка от сервера.
                         JSONArray jsonArray = new JSONArray(myResponse);
@@ -134,9 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("json", String.valueOf(jsonArray));
 
                         MainActivity.this.runOnUiThread(() -> buildCategoriesByJson(jsonArray));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
@@ -145,23 +136,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void buildCategoriesByJson(JSONArray jsonArray)
-    {
+    private void buildCategoriesByJson(JSONArray jsonArray) {
         HashMap<Integer, Category> categories = new HashMap<>();
 
-        for(int i = 0; i < jsonArray.length(); i++)
-        {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
-            try
-            {
+            try {
                 object = jsonArray.getJSONObject(i);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 // Помещение точек в список.
                 assert object != null;
 
@@ -173,22 +158,19 @@ public class MainActivity extends AppCompatActivity {
 
                 categories.put(category_id, new Category(category_id, name, alt_name));
 
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         String[] local_Category_Campus = new String[categories.size()];
 
-        for(int i = 0; i < categories.size(); i++)
-        {
+        for (int i = 0; i < categories.size(); i++) {
             String name = Objects.requireNonNull(categories.get(i)).getName();
 
             String alt_name = Objects.requireNonNull(categories.get(i)).getAltName();
 
-            String full_name = alt_name + " " +  "\n" + " " + name;
+            String full_name = alt_name + " " + "\n" + " " + name;
 
             local_Category_Campus[i] = full_name;
         }
@@ -196,8 +178,7 @@ public class MainActivity extends AppCompatActivity {
         setupAdapterAndListview(local_Category_Campus);
     }
 
-    private void setupAdapterAndListview(String[] categories)
-    {
+    private void setupAdapterAndListview(String[] categories) {
         disableProgressBar();
 
         searchView = findViewById(R.id.searchView);
@@ -219,8 +200,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void disableProgressBar()
-    {
+    private void disableProgressBar() {
         ProgressBar progress = findViewById(R.id.progressbar);
         progress.setVisibility(ProgressBar.GONE);
     }

@@ -23,31 +23,25 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class Database
-{
+public class Database {
     private MapPoint mCustomPoint;
     private Context mContext;
     private HashMap<Integer, Category> categories = new HashMap<>();
 
-    public Database(Context context)
-    {
+    public Database(Context context) {
         mContext = context;
     }
 
-    public HashMap<Integer, Category> getCategories()
-    {
+    public HashMap<Integer, Category> getCategories() {
         return (categories == null) ? new HashMap<>() : categories;
     }
 
-    private GeoPoint getGeoPoint(String responseFromServer)
-    {
+    private GeoPoint getGeoPoint(String responseFromServer) {
         GeoPoint geoPoint = new GeoPoint(0d, 0d);
-        try
-        {
+        try {
             JSONObject formedJsonFromResponse = new JSONObject(responseFromServer);
 
-            try
-            {
+            try {
                 int id = (int) formedJsonFromResponse.get("id");
                 double latitude = (double) formedJsonFromResponse.get("lat");
                 double longitude = (double) formedJsonFromResponse.get("lon");
@@ -55,69 +49,56 @@ public class Database
 
                 geoPoint = formGeoPoint(latitude, longitude);
 
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("GeoPoint forming error", e.getMessage());
             }
 
 
-        }
-        catch (JSONException e)
-        {
+        } catch (JSONException e) {
             Log.e("JSON error", e.getMessage());
         }
 
         return geoPoint;
     }
 
-    private GeoPoint formGeoPoint(double latitude, double longitude)
-    {
+    private GeoPoint formGeoPoint(double latitude, double longitude) {
         return new GeoPoint(latitude, longitude);
     }
 
-    private void setId(int id)
-    {
-        if(mCustomPoint != null) {
+    private void setId(int id) {
+        if (mCustomPoint != null) {
             mCustomPoint.setId(id);
         }
     }
 
-    private Drawable getIconFromString(String sourceString)
-    {
+    private Drawable getIconFromString(String sourceString) {
         Drawable drawable = ContextCompat.getDrawable(mContext, R.drawable.wine_bottle);
-        switch (sourceString)
-        {
-            case "wine_bottle": drawable = ContextCompat.getDrawable(mContext, R.drawable.wine_bottle); break;
+        switch (sourceString) {
+            case "wine_bottle":
+                drawable = ContextCompat.getDrawable(mContext, R.drawable.wine_bottle);
+                break;
         }
 
         return drawable;
     }
 
-    private void buildCategoriesByJson(JSONArray jsonArray)
-    {
+    private void buildCategoriesByJson(JSONArray jsonArray) {
         Log.e("somename", String.valueOf(jsonArray));
-        for(int i = 0; i < jsonArray.length(); i++)
-        {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
-            try
-            {
+            try {
                 object = jsonArray.getJSONObject(i);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 // Помещение точек в список.
                 int category_id = getIdFromString(object);
                 String name = object.getString("category_name");
 
-                categories.put(category_id - 1, new Category(category_id, name, "While nothing here"));;
-            }
-            catch (JSONException e)
-            {
+                categories.put(category_id - 1, new Category(category_id, name, "While nothing here"));
+                ;
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -127,8 +108,7 @@ public class Database
         return Integer.valueOf(object.getString("id"));
     }
 
-    public void getCategoriesFromHost()
-    {
+    public void getCategoriesFromHost() {
         OkHttpClient client = new OkHttpClient();
 
         // Конечный ресурс, где идёт обработка логина и пароля
@@ -149,22 +129,17 @@ public class Database
 
             // Обработка полученного ответа от сервера.
             @Override
-            public void onResponse(Call call, Response response) throws IOException
-            {
-                if(response.isSuccessful())
-                {
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
                     final String myResponse = response.body().string();
-                    try
-                    {
+                    try {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
                         // это полученная строка от сервера.
                         JSONArray jsonArray = new JSONArray(myResponse);
 
                         // Формируется Categories из Json
                         buildCategoriesByJson(jsonArray);
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 

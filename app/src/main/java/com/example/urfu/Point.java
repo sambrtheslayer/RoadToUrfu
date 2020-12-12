@@ -37,26 +37,25 @@ public class Point implements Parcelable {
         return mAltName;
     }
 
-    public double getLatitude(){
-        return  mLatitude;
+    public double getLatitude() {
+        return mLatitude;
     }
 
-    public double getLongitude(){
-        return  mLongitude;
+    public double getLongitude() {
+        return mLongitude;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return mDescription;
     }
 
-    public String getAltDescription(){
+    public String getAltDescription() {
         return mAltDescription;
     }
 
-    public Bitmap getDescriptionImage(){
+    public Bitmap getDescriptionImage() {
         return mDescriptionImage;
     }
-
 
 
     public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription) {
@@ -110,13 +109,11 @@ public class Point implements Parcelable {
 
     }
 
-    public OverlayItem getOverlayItem(int id)
-    {
+    public OverlayItem getOverlayItem(int id) {
         return new OverlayItem(String.valueOf(this.mId), this.mName, this.mDescription, new GeoPoint(this.mLatitude, this.mLongitude));
     }
 
-    public OverlayItem getOverlayItem()
-    {
+    public OverlayItem getOverlayItem() {
         return new OverlayItem(this.mAltName, this.mName, new GeoPoint(this.mLatitude, this.mLongitude));
     }
 }

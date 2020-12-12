@@ -83,7 +83,7 @@ public class CategoryActivity extends AppCompatActivity {
         super.onResume();
         Log.e("Category Activ. Resume", "Method has resumed");
 
-        if(listView != null) {
+        if (listView != null) {
 
             disableProgressBar();
 
@@ -98,8 +98,7 @@ public class CategoryActivity extends AppCompatActivity {
         Log.e("Category Activ. Pause", "Method has paused");
     }
 
-    public void getPointsFromHost()
-    {
+    public void getPointsFromHost() {
         OkHttpClient client = new OkHttpClient();
 
         final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
@@ -124,16 +123,13 @@ public class CategoryActivity extends AppCompatActivity {
 
             // Обработка полученного ответа от сервера.
             @Override
-            public void onResponse(Call call, Response response) throws IOException
-            {
-                if(response.isSuccessful())
-                {
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
                     assert response.body() != null;
 
                     final String myResponse = response.body().string();
 
-                    try
-                    {
+                    try {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
                         // это полученная строка от сервера.
                         Log.e("Response", myResponse);
@@ -143,9 +139,7 @@ public class CategoryActivity extends AppCompatActivity {
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Categories из Json
                         CategoryActivity.this.runOnUiThread(() -> buildPointsByJson(jsonArray));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
@@ -154,8 +148,7 @@ public class CategoryActivity extends AppCompatActivity {
         });
     }
 
-    private void buildPointsByJson(JSONArray jsonArray)
-    {
+    private void buildPointsByJson(JSONArray jsonArray) {
         /*
             point_id
             point_name
@@ -168,20 +161,14 @@ public class CategoryActivity extends AppCompatActivity {
         */
 
 
-
-        for(int i = 0; i < jsonArray.length(); i++)
-        {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
-            try
-            {
+            try {
                 object = jsonArray.getJSONObject(i);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 // Помещение точек в список.
                 assert object != null;
 
@@ -202,22 +189,19 @@ public class CategoryActivity extends AppCompatActivity {
                 String alt_description = object.getString("point_alt_description");
 
                 hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         String[] local_points = new String[hashMapPoints.size()];
 
-        for(int i = 0; i < hashMapPoints.size(); i++)
-        {
+        for (int i = 0; i < hashMapPoints.size(); i++) {
             String name = Objects.requireNonNull(hashMapPoints.get(i)).getName();
 
             String alt_name = Objects.requireNonNull(hashMapPoints.get(i)).getAltName();
 
-            String full_name = alt_name + " " +  "\n" + " " + name;
+            String full_name = alt_name + " " + "\n" + " " + name;
 
             local_points[i] = full_name;
         }
@@ -229,8 +213,7 @@ public class CategoryActivity extends AppCompatActivity {
         return Integer.parseInt(object.getString("point_id"));
     }
 
-    private void setupAdapterAndListview(String[] points)
-    {
+    private void setupAdapterAndListview(String[] points) {
         try {
             disableProgressBar();
 
@@ -263,27 +246,24 @@ public class CategoryActivity extends AppCompatActivity {
 
             startActivity(intent);*/
             });
+        } catch (Exception e) {
         }
-        catch(Exception e) {}
     }
-    private void disableProgressBar()
-    {
+
+    private void disableProgressBar() {
         ProgressBar progress = findViewById(R.id.progressbar);
         progress.setVisibility(ProgressBar.GONE);
     }
 
-    private void enableProgressBar()
-    {
+    private void enableProgressBar() {
         ProgressBar progress = findViewById(R.id.progressbar);
         progress.setVisibility(ProgressBar.VISIBLE);
     }
 
-    class MapActivityHandler implements Runnable
-    {
+    class MapActivityHandler implements Runnable {
         private final int position;
 
-        public MapActivityHandler(int position)
-        {
+        public MapActivityHandler(int position) {
             this.position = position;
         }
 
