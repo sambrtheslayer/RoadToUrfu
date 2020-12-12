@@ -86,6 +86,7 @@ public class MapActivity extends AppCompatActivity {
     private Point selectedPoint;
     private OverlayItem selectedOverlayItem;
     private Polyline roadOverlayLine;
+    private Location lastFixLocation;
 
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
@@ -239,6 +240,15 @@ public class MapActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 locationOverlay.needToBuildRoute = true;
+                try {
+                    if(lastFixLocation != null)
+                        locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+                }
+                catch(Exception e)
+                {
+                    Log.e("Last fix location", e.getMessage());
+                }
+
             }
 
         });
@@ -259,6 +269,7 @@ public class MapActivity extends AppCompatActivity {
         locationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
                 Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+                //lastFixLocation = locationOverlay.getLastFix();
             }
         });
 
@@ -745,6 +756,8 @@ public class MapActivity extends AppCompatActivity {
         private GeoPoint mDestinationPoint;
         private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
         private Road mRoad;
+        private double distanceFromCurrentPosToDestPoint;
+        private final double deltaDistance = 0.1;
 
         public boolean needToBuildRoute;
 
@@ -764,11 +777,55 @@ public class MapActivity extends AppCompatActivity {
         public void onLocationChanged(Location location, IMyLocationProvider source) {
 
             Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
+            if(lastFixLocation == null)
+                lastFixLocation = location;
 
-            //region Building route
-            if(this.needToBuildRoute) {
+            try {
+                if (roadOverlayLine != null) {
+                    checkUserIsInDestPoint(location);
+                }
 
-                if(mCurrentRoute != null)
+                if (this.needToBuildRoute) {
+                    buildRouteFromCurrentLocToDestPoint(location);
+                }
+
+                lastFixLocation = location;
+            }
+            catch(Exception e)
+            {
+                Log.e("onLocationChanged exc", e.getMessage());
+            }
+        }
+
+        private void checkUserIsInDestPoint(Location location)
+        {
+            try {
+                distanceFromCurrentPosToDestPoint = calculateDistance(selectedPoint, location);
+
+                Log.e("Distance", String.valueOf(distanceFromCurrentPosToDestPoint));
+
+                if (distanceFromCurrentPosToDestPoint < deltaDistance) {
+
+                    this.needToBuildRoute = false;
+
+                    if (mCurrentRoute != null) {
+                        mCurrentRoute.clear();
+                        map.getOverlays().remove(roadOverlayLine);
+                        map.invalidate();
+                    }
+
+                }
+            }
+            catch(Exception e)
+            {
+                Log.e("Check user exception", e.getMessage());
+            }
+        }
+
+        public void buildRouteFromCurrentLocToDestPoint(Location location)
+        {
+            try {
+                if (mCurrentRoute != null)
                     mCurrentRoute.clear();
 
                 if (selectedPoint != null)
@@ -789,11 +846,29 @@ public class MapActivity extends AppCompatActivity {
 
                 Log.e("Route", "Route has been rebuilt");
             }
-            //endregion
+            catch(Exception e)
+            {
+                Log.e("Build route exception", e.getMessage());
+            }
         }
 
-        //TODO: добавить очищение маршрута, как только достигли точки + needToBuildRoute = false сделать
-        //private void stopBuildingRoute();
+        private double calculateDistance(Point destinationPoint, Location currentLocation)
+        {
+            try {
+                double x1 = destinationPoint.getLatitude();
+                double y1 = destinationPoint.getLongitude();
+
+                double x2 = currentLocation.getLatitude();
+                double y2 = currentLocation.getLongitude();
+
+                return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+            }
+            catch(Exception e)
+            {
+                Log.e("Calc route exception", e.getMessage());
+            }
+            return 0;
+        }
     }
 }
 
