@@ -83,10 +83,12 @@ public class MapActivity extends AppCompatActivity {
     //что позволяет переписывать логику работы геолокации
     private MyLocationListener locationOverlay;
 
+    private final int MAX_ROUTES = 1;
     private Point selectedPoint;
     private OverlayItem selectedOverlayItem;
     private Polyline roadOverlayLine;
     private Location lastFixLocation;
+    private ArrayList<Polyline> allOverlayLines = new ArrayList<>();
 
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
@@ -239,16 +241,33 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                locationOverlay.needToBuildRoute = true;
-                try {
-                    if(lastFixLocation != null)
-                        locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
-                }
-                catch(Exception e)
-                {
-                    Log.e("Last fix location", e.getMessage());
-                }
+                // Вообще так-то можно несколько маршрутов забацать, пока поставил ограничение)
+                if(allOverlayLines.size() < MAX_ROUTES) {
 
+                    locationOverlay.needToBuildRoute = true;
+                    try {
+                        if (lastFixLocation != null)
+                            locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+                    } catch (Exception e) {
+                        Log.e("Last fix location", e.getMessage());
+                    }
+                }
+                else
+                {
+                    locationOverlay.needToBuildRoute = true;
+                    try {
+                        if (lastFixLocation != null) {
+                            for(Polyline route : allOverlayLines)
+                            {
+                                map.getOverlays().remove(route);
+                            }
+                            locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+                            map.invalidate();
+                        }
+                    } catch (Exception e) {
+                        Log.e("Last fix location", e.getMessage());
+                    }
+                }
             }
 
         });
@@ -259,7 +278,13 @@ public class MapActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(roadOverlayLine != null) {
                     locationOverlay.needToBuildRoute = false;
-                    map.getOverlays().remove(roadOverlayLine);
+
+                    for(Polyline route : allOverlayLines)
+                    {
+                        map.getOverlays().remove(route);
+                    }
+                    //map.getOverlays().remove(roadOverlayLine);
+                    //roadOverlayLine = null;
                     map.invalidate();
                 }
             }
@@ -841,6 +866,7 @@ public class MapActivity extends AppCompatActivity {
                 roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
 
                 map.getOverlays().add(roadOverlayLine);
+                allOverlayLines.add(roadOverlayLine);
 
                 map.invalidate();
 
