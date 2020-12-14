@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.Manifest;
 import android.content.Context;
@@ -97,6 +100,8 @@ public class MapActivity extends AppCompatActivity {
     private BottomSheetBehavior mBottomSheetBehavior;
     private ConstraintLayout mCustomBottomSheet;
 
+    private GridView imageGridView;
+
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
     //MotionEvent. - содержит набор разновидностей событий. Проверка события через event.getAction()
@@ -146,6 +151,9 @@ public class MapActivity extends AppCompatActivity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.map_activity);
+
+        //TODO: здесь указать gridView;
+        //imageGridView = findViewById();
 
         // Инициализация объекта MapView.
         map = (MapView) findViewById(R.id.map);
@@ -404,8 +412,6 @@ public class MapActivity extends AppCompatActivity {
                     InputStream in = new java.net.URL(pathToImage).openStream();
 
                     loadedImage = BitmapFactory.decodeStream(in);
-
-                    loadedImages.add(loadedImage);
                 }
                 catch (JSONException | MalformedURLException e)
                 {
@@ -417,30 +423,11 @@ public class MapActivity extends AppCompatActivity {
             return null;
         }
 
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(ArrayList<ImageView> images) {
 
             Log.e("onPostExecute", String.valueOf(loadedImages.size()));
 
-            for(int i = 0; i < loadedImages.size(); i++)
-            {
-                ImageView view = findViewById(R.id.mainImg);
-                switch(i)
-                {
-                    case 0: view = findViewById(R.id.mainImg); break;
-                    case 1: view = findViewById(R.id.mainImg2); break;
-                    case 2: view = findViewById(R.id.mainImg3); break;
-                }
-                view.setImageBitmap(loadedImages.get(i));
-/*
-                ImageView image = findViewById(R.id.mainImg);
-                ImageView image2 = findViewById(R.id.mainImg2);
-                ImageView image3 = findViewById(R.id.mainImg3);
-
-                image.setImageBitmap(loadedImages.get(0));
-                image2.setImageBitmap(loadedImages.get(1));
-                image3.setImageBitmap(loadedImages.get(2));
-                 */
-            }
+            imageGridView.setAdapter(new ImageAdapter(images));
             Log.e("Итого", loadedImages.toString());
             //image.setImageBitmap(result);
 
