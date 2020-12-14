@@ -90,6 +90,7 @@ public class MapActivity extends AppCompatActivity {
     private Location lastFixLocation;
     private ArrayList<Polyline> allOverlayLines = new ArrayList<>();
 
+    //TODO: переименовать переменные
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
@@ -722,8 +723,16 @@ public class MapActivity extends AppCompatActivity {
                 assert loadedImages != null;
                 //TODO: тут добавить подгрузку Bitmap'ов из списка
                 Log.e("Photoes", String.valueOf(loadedImages.size()));
-                //ImageView image = findViewById(R.id.mainImg);
-                //image.setImageBitmap(result);
+                /*
+                ImageView image = findViewById(R.id.mainImg);
+                ImageView image2 = findViewById(R.id.mainImg2);
+                ImageView image3 = findViewById(R.id.mainImg3);
+
+                image.setImageBitmap(loadedImages.get(0));
+                image2.setImageBitmap(loadedImages.get(1));
+                image3.setImageBitmap(loadedImages.get(2));
+                 */
+
             }
         }
     }

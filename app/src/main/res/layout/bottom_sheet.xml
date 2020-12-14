@@ -41,9 +41,36 @@
             android:id="@+id/mainImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="15dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
+        <ImageView
+            android:id="@+id/mainImg2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/mainImg"
+            app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
+        <ImageView
+            android:id="@+id/mainImg3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/mainImg2"
+            app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
+
 
     </RelativeLayout>
 
