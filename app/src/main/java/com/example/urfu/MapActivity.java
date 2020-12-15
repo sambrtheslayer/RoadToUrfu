@@ -1,11 +1,14 @@
 package com.example.urfu;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,7 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -46,6 +50,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -109,7 +114,7 @@ public class MapActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // Это отлов события нажатия, в данном случае - "палец ввех"
-        if(event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
             int x = (int) event.getX();
             int y = (int) event.getY();
 
@@ -154,6 +159,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.map_activity);
 
         initializeImageViewForPhotoes();
+        setOnClickListenerForImages();
 
         //TODO: здесь указать gridView;
         //imageGridView = findViewById();
@@ -243,7 +249,7 @@ public class MapActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 // Вообще так-то можно несколько маршрутов забацать, пока поставил ограничение)
-                if(allOverlayLines.size() < MAX_ROUTES) {
+                if (allOverlayLines.size() < MAX_ROUTES) {
 
                     locationOverlay.needToBuildRoute = true;
                     try {
@@ -252,14 +258,11 @@ public class MapActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         Log.e("Last fix location", e.getMessage());
                     }
-                }
-                else
-                {
+                } else {
                     locationOverlay.needToBuildRoute = true;
                     try {
                         if (lastFixLocation != null) {
-                            for(Polyline route : allOverlayLines)
-                            {
+                            for (Polyline route : allOverlayLines) {
                                 map.getOverlays().remove(route);
                             }
                             locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
@@ -277,11 +280,10 @@ public class MapActivity extends AppCompatActivity {
         clearRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(roadOverlayLine != null) {
+                if (roadOverlayLine != null) {
                     locationOverlay.needToBuildRoute = false;
 
-                    for(Polyline route : allOverlayLines)
-                    {
+                    for (Polyline route : allOverlayLines) {
                         map.getOverlays().remove(route);
                     }
                     //map.getOverlays().remove(roadOverlayLine);
@@ -330,8 +332,8 @@ public class MapActivity extends AppCompatActivity {
 
         //Log.e("image", point.getDescriptionImage().toString());
     }
-    private void initializeImageViewForPhotoes()
-    {
+
+    private void initializeImageViewForPhotoes() {
         images.add(findViewById(R.id.mainImg));
         images.add(findViewById(R.id.mainImg2));
         images.add(findViewById(R.id.mainImg3));
@@ -339,12 +341,58 @@ public class MapActivity extends AppCompatActivity {
         setGoneLoadedImagesFromMemory();
     }
 
-    private void setGoneLoadedImagesFromMemory()
-    {
+    private void setGoneLoadedImagesFromMemory() {
         images.get(0).setVisibility(View.INVISIBLE);
         images.get(1).setVisibility(View.INVISIBLE);
         images.get(2).setVisibility(View.INVISIBLE);
     }
+
+    private void setOnClickListenerForImages() {
+        images.get(0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFullScreenImageToast(images.get(0).getId());
+            }
+        });
+        images.get(1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        images.get(2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
+    private void showFullScreenImageToast(int imageId) {
+        Toast toast = new Toast(getApplicationContext());
+        ImageView view = new ImageView(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        view.setImageResource(imageId);
+        toast.setView(view);
+        toast.show();
+    }
+
+    /*
+    private void StartFullScreenActivity(int imgid) {
+        Intent intent = new Intent(getApplicationContext(), FullScreenPhotoActivity.class);
+        Log.e("id", String.valueOf(imgid));
+        Log.e("true id", String.valueOf(R.id.mainImg));
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imgid);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        intent.putExtra("image",  byteArray);
+        startActivity(intent);
+    }
+
+     */
+
 
     @Override
     protected void onStart() {
@@ -374,20 +422,16 @@ public class MapActivity extends AppCompatActivity {
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    private void checkUserLocationPermission()
-    {
-        if (Build.VERSION.SDK_INT >= 23)
-        {
+    private void checkUserLocationPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED)
-            {
+                    PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                                 android.Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_CODE_ASK_PERMISSIONS);
                 return;
 
-            }
-            else{
+            } else {
                 Log.e("Permission: ", "Granted");
             }
 
@@ -408,8 +452,7 @@ public class MapActivity extends AppCompatActivity {
             String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
 
             JSONObject object = null;
-            try
-            {
+            try {
                 loadedImage = null;
                 // Помещение точек в список.
 
@@ -420,8 +463,7 @@ public class MapActivity extends AppCompatActivity {
                 InputStream in = new java.net.URL(pathToImage).openStream();
 
                 loadedImage = BitmapFactory.decodeStream(in);
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -451,8 +493,7 @@ public class MapActivity extends AppCompatActivity {
          */
     }
 
-    private void loadPhotoesFromHostById(int id)
-    {
+    private void loadPhotoesFromHostById(int id) {
         OkHttpClient client = new OkHttpClient();
 
         final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
@@ -477,16 +518,13 @@ public class MapActivity extends AppCompatActivity {
 
             // Обработка полученного ответа от сервера.
             @Override
-            public void onResponse(Call call, Response response) throws IOException
-            {
-                if(response.isSuccessful())
-                {
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
                     assert response.body() != null;
 
                     final String myResponse = response.body().string();
 
-                    try
-                    {
+                    try {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
                         // это полученная строка от сервера.
                         Log.e("Response", myResponse);
@@ -497,9 +535,7 @@ public class MapActivity extends AppCompatActivity {
                         // Формируется Photo из Json
                         //new DownloadImageTask().execute(jsonArray);
                         MapActivity.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
@@ -508,35 +544,27 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
-    private void buildPhotoesByJson(JSONArray jsonArray)
-    {
+    private void buildPhotoesByJson(JSONArray jsonArray) {
         /*
             photoes
         */
         //new DownloadImageTask().execute(jsonArray);
 
-        for(int i = 0; i < jsonArray.length(); i++)
-        {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
-            try
-            {
+            try {
                 object = jsonArray.getJSONObject(i);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 // Помещение точек в список.
                 assert object != null;
 
                 String photoesUrl = object.getString("photoes");
                 //new DownloadImageTask().execute(selectedPoint);
                 new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -544,8 +572,7 @@ public class MapActivity extends AppCompatActivity {
 
     }
 
-    private void getPointsFromHost()
-    {
+    private void getPointsFromHost() {
         OkHttpClient client = new OkHttpClient();
 
         final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
@@ -569,16 +596,13 @@ public class MapActivity extends AppCompatActivity {
 
             // Обработка полученного ответа от сервера.
             @Override
-            public void onResponse(Call call, Response response) throws IOException
-            {
-                if(response.isSuccessful())
-                {
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
                     assert response.body() != null;
 
                     final String myResponse = response.body().string();
 
-                    try
-                    {
+                    try {
                         // Объявляется экземпляр класса JSONObject, где аргумент -
                         // это полученная строка от сервера.
                         Log.e("Response", myResponse);
@@ -588,9 +612,7 @@ public class MapActivity extends AppCompatActivity {
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Categories из Json
                         MapActivity.this.runOnUiThread(() -> buildPointsByJson(jsonArray));
-                    }
-                    catch (JSONException e)
-                    {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
@@ -598,8 +620,8 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-    private void buildPointsByJson(JSONArray jsonArray)
-    {
+
+    private void buildPointsByJson(JSONArray jsonArray) {
         /*
             point_id
             point_name
@@ -610,19 +632,14 @@ public class MapActivity extends AppCompatActivity {
             point_description
             point_alt_description
         */
-        for(int i = 0; i < jsonArray.length(); i++)
-        {
+        for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
-            try
-            {
+            try {
                 object = jsonArray.getJSONObject(i);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            try
-            {
+            try {
                 // Помещение точек в список.
                 assert object != null;
 
@@ -643,22 +660,19 @@ public class MapActivity extends AppCompatActivity {
                 String alt_description = object.getString("point_alt_description");
 
                 hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         String[] local_points = new String[hashMapPoints.size()];
 
-        for(int i = 0; i < hashMapPoints.size(); i++)
-        {
+        for (int i = 0; i < hashMapPoints.size(); i++) {
             String name = Objects.requireNonNull(hashMapPoints.get(i)).getName();
 
             String alt_name = Objects.requireNonNull(hashMapPoints.get(i)).getAltName();
 
-            String full_name = alt_name + " " +  "\n" + " " + name;
+            String full_name = alt_name + " " + "\n" + " " + name;
 
             local_points[i] = full_name;
         }
@@ -678,8 +692,7 @@ public class MapActivity extends AppCompatActivity {
         items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));*/
 
         assert hashMapPoints != null;
-        for(int i = 0; i < hashMapPoints.size(); i++)
-        {
+        for (int i = 0; i < hashMapPoints.size(); i++) {
             items.add(hashMapPoints.get(i).getOverlayItem(hashMapPoints.get(i).getId()));
             Log.e("Hashmap Points", items.get(i).getUid());
             items.get(i).setMarker(getDrawable(R.drawable.ic_lens_black));
@@ -689,8 +702,8 @@ public class MapActivity extends AppCompatActivity {
 
         initializeTapSettings();
     }
-    private void initializeTapSettings()
-    {
+
+    private void initializeTapSettings() {
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
@@ -708,8 +721,7 @@ public class MapActivity extends AppCompatActivity {
 
                         // Если нажата отличная от первоначальной точки точка, то ставим новый значок на изначальную - чёрный кружок,
                         // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
-                        if(currentId != tappingId)
-                        {
+                        if (currentId != tappingId) {
                             setGoneLoadedImagesFromMemory();
 
                             item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
@@ -768,12 +780,9 @@ public class MapActivity extends AppCompatActivity {
         map.getOverlays().add(mOverlay);
     }
 
-    private void changeSelectedOverlayItem(int id)
-    {
-        for(int i = 0; i < items.size(); i++)
-        {
-            if(Integer.valueOf(items.get(i).getUid()) == id)
-            {
+    private void changeSelectedOverlayItem(int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (Integer.valueOf(items.get(i).getUid()) == id) {
                 selectedOverlayItem = items.get(i);
                 assert loadedImages != null;
                 //TODO: тут добавить подгрузку Bitmap'ов из списка
@@ -784,17 +793,14 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    private void findAndSetupNewSelectedPoint(int id)
-    {
-        for(int i = 0; i < hashMapPoints.size(); i++)
-        {
-            if(hashMapPoints.get(i).getId() == id)
+    private void findAndSetupNewSelectedPoint(int id) {
+        for (int i = 0; i < hashMapPoints.size(); i++) {
+            if (hashMapPoints.get(i).getId() == id)
                 selectedPoint = hashMapPoints.get(i);
         }
     }
 
-    private void initializePointOnFirstStart()
-    {
+    private void initializePointOnFirstStart() {
         loadPhotoesFromHostById(selectedPoint.getId());
         setupMarkerForFirstOverlayItem(selectedPoint.getId());
 
@@ -802,18 +808,15 @@ public class MapActivity extends AppCompatActivity {
         Log.e("Selected Point", String.valueOf(selectedPoint.getId()));
     }
 
-    private void setupMarkerForFirstOverlayItem(int id)
-    {
-        for(int i = 0; i < items.size(); i++)
-        {
-            if(Integer.valueOf(items.get(i).getUid()) == id)
-            {
+    private void setupMarkerForFirstOverlayItem(int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (Integer.valueOf(items.get(i).getUid()) == id) {
                 selectedOverlayItem = items.get(i);
                 selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
 
                 assert loadedImages != null;
                 //TODO: тут добавить подгрузку Bitmap'ов из списка
-               // Log.e("Photoes", String.valueOf(loadedImages.size()));
+                // Log.e("Photoes", String.valueOf(loadedImages.size()));
                 /*
                 ImageView image = findViewById(R.id.mainImg);
                 ImageView image2 = findViewById(R.id.mainImg2);
@@ -828,8 +831,7 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    public class MyLocationListener extends MyLocationNewOverlay
-    {
+    public class MyLocationListener extends MyLocationNewOverlay {
         private RoadManager mRoadManager;
         private GeoPoint mDestinationPoint;
         private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
@@ -845,7 +847,7 @@ public class MapActivity extends AppCompatActivity {
             mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
             mRoadManager.addRequestOption("vehicle=foot");
 
-            if(selectedPoint != null)
+            if (selectedPoint != null)
                 mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
         }
 
@@ -854,8 +856,8 @@ public class MapActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(Location location, IMyLocationProvider source) {
 
-            Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
-            if(lastFixLocation == null)
+            // Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
+            if (lastFixLocation == null)
                 lastFixLocation = location;
 
             try {
@@ -868,15 +870,12 @@ public class MapActivity extends AppCompatActivity {
                 }
 
                 lastFixLocation = location;
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("onLocationChanged exc", e.getMessage());
             }
         }
 
-        private void checkUserIsInDestPoint(Location location)
-        {
+        private void checkUserIsInDestPoint(Location location) {
             try {
                 distanceFromCurrentPosToDestPoint = calculateDistance(selectedPoint, location);
 
@@ -893,15 +892,12 @@ public class MapActivity extends AppCompatActivity {
                     }
 
                 }
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("Check user exception", e.getMessage());
             }
         }
 
-        public void buildRouteFromCurrentLocToDestPoint(Location location)
-        {
+        public void buildRouteFromCurrentLocToDestPoint(Location location) {
             try {
                 if (mCurrentRoute != null)
                     mCurrentRoute.clear();
@@ -918,8 +914,7 @@ public class MapActivity extends AppCompatActivity {
                 roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
                 roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
 
-                for(Polyline route : allOverlayLines)
-                {
+                for (Polyline route : allOverlayLines) {
                     map.getOverlays().remove(route);
                 }
                 allOverlayLines.clear();
@@ -930,15 +925,12 @@ public class MapActivity extends AppCompatActivity {
                 map.invalidate();
 
                 Log.e("Route", "Route has been rebuilt");
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("Build route exception", e.getMessage());
             }
         }
 
-        private double calculateDistance(Point destinationPoint, Location currentLocation)
-        {
+        private double calculateDistance(Point destinationPoint, Location currentLocation) {
             try {
                 double x1 = destinationPoint.getLatitude();
                 double y1 = destinationPoint.getLongitude();
@@ -947,9 +939,7 @@ public class MapActivity extends AppCompatActivity {
                 double y2 = currentLocation.getLongitude();
 
                 return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("Calc route exception", e.getMessage());
             }
             return 0;
