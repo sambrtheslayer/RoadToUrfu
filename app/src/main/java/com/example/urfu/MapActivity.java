@@ -1,5 +1,6 @@
 package com.example.urfu;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -103,7 +104,8 @@ public class MapActivity extends AppCompatActivity {
     private ImageButton clearRouteButton;
 
 
-    private ImageView fullScreenImage;
+    Dialog myDialog;
+    // private ImageView fullScreenImage;
 
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
@@ -322,24 +324,7 @@ public class MapActivity extends AppCompatActivity {
 
         //endregion
 
-        //Point point = (Point) getIntent().getParcelableExtra("point");
-
-
-        /*
-        Point point = getIntent().getParcelableExtra("point");
-
-        Log.e("name", point.getName());
-        Log.e("id точки в базе", String.valueOf(point.getId()));
-        Log.e("Altname", point.getAltName()); */
-
-        // Загрузка изображения у точки
-        // new DownloadImageTask().execute(point);
-
-        /*ImageView image = findViewById(R.id.imageView);
-        image.setImageBitmap(point.getDescriptionImage());*/
-
-        //Log.e("image", point.getDescriptionImage().toString());
-
+        myDialog = new Dialog(this);
     }
 
     private void initializeImageViewForPhotoes() {
@@ -360,7 +345,7 @@ public class MapActivity extends AppCompatActivity {
         images.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onButtonShowPopupWindowClick(view, 0);
+                ShowPopup();
             }
         });
         images.get(1).setOnClickListener(new View.OnClickListener() {
@@ -377,30 +362,42 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
+
+    public void ShowPopup() {
+        ImageView fullScreenImage;
+
+        myDialog.setContentView(R.layout.popup_window);
+
+        fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
+        fullScreenImage.setImageDrawable(images.get(1).getDrawable());
+
+        myDialog.show();
+    }
+
+
+    /*
     public void onButtonShowPopupWindowClick(View view, int id) {
 
         fullScreenImage = findViewById(R.id.full_screen_image);
         Log.e("full", String.valueOf(fullScreenImage));
         fullScreenImage.setImageDrawable(images.get(id).getDrawable());
 
-        // inflate the layout of the popup window
+
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_window, null);
 
-        // create the popup window
+
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
+        boolean focusable = true;
 
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
 
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-        // dismiss the popup window when touched
+
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -408,7 +405,7 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
+    } */
 
 
     /*
