@@ -101,6 +101,7 @@ public class MapActivity extends AppCompatActivity {
     private ConstraintLayout mCustomBottomSheet;
 
     private GridView imageGridView;
+    private ArrayList<ImageView> images = new ArrayList<>();
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
@@ -151,6 +152,8 @@ public class MapActivity extends AppCompatActivity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.map_activity);
+
+        initializeImageViewForPhotoes();
 
         //TODO: здесь указать gridView;
         //imageGridView = findViewById();
@@ -327,6 +330,21 @@ public class MapActivity extends AppCompatActivity {
 
         //Log.e("image", point.getDescriptionImage().toString());
     }
+    private void initializeImageViewForPhotoes()
+    {
+        images.add(findViewById(R.id.mainImg));
+        images.add(findViewById(R.id.mainImg2));
+        images.add(findViewById(R.id.mainImg3));
+
+        setGoneLoadedImagesFromMemory();
+    }
+
+    private void setGoneLoadedImagesFromMemory()
+    {
+        images.get(0).setVisibility(View.INVISIBLE);
+        images.get(1).setVisibility(View.INVISIBLE);
+        images.get(2).setVisibility(View.INVISIBLE);
+    }
 
     @Override
     protected void onStart() {
@@ -376,62 +394,61 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<JSONArray, Void, Void> {
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        private String progress = "";
 
         @Override
-        protected Void doInBackground(JSONArray... urls) {
+        protected Bitmap doInBackground(String... urls) {
             /*
             photoes
         */
-            for(int i = 0; i < urls[0].length(); i++)
+            progress = urls[1];
+            Bitmap loadedImage = null;
+            String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
+
+            JSONObject object = null;
+            try
             {
-                String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
+                loadedImage = null;
+                // Помещение точек в список.
 
-                JSONObject object = null;
-                try
-                {
-                    object = urls[0].getJSONObject(i);
-                }
-                catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-                try
-                {
-                    Bitmap loadedImage = null;
-                    // Помещение точек в список.
-                    assert object != null;
+                Log.e("In doinbg", pathToImage);
 
-                    Log.e("In doinbg", pathToImage);
+                pathToImage = pathToImage + urls[0];
 
-                    String photoesUrl = object.getString("photoes");
-                    //new DownloadImageTask().execute(photoesUrl);
+                InputStream in = new java.net.URL(pathToImage).openStream();
 
-                    pathToImage = pathToImage + photoesUrl;
-
-                    InputStream in = new java.net.URL(pathToImage).openStream();
-
-                    loadedImage = BitmapFactory.decodeStream(in);
-                }
-                catch (JSONException | MalformedURLException e)
-                {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                loadedImage = BitmapFactory.decodeStream(in);
             }
-            return null;
+            catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return loadedImage;
         }
 
-        protected void onPostExecute(ArrayList<ImageView> images) {
+        @Override
+        protected void onPostExecute(Bitmap image) {
 
-            Log.e("onPostExecute", String.valueOf(loadedImages.size()));
-
-            imageGridView.setAdapter(new ImageAdapter(images));
-            Log.e("Итого", loadedImages.toString());
+            Log.e("Counter", progress);
+            images.get(Integer.valueOf(progress)).setImageBitmap(image);
+            images.get(Integer.valueOf(progress)).setVisibility(View.VISIBLE);
+            //Log.e("Итого", loadedImages.toString());
             //image.setImageBitmap(result);
 
         }
+        /*@Override
+        protected void onProgressUpdate(Bitmap... values) {
+            super.onProgressUpdate(values);
+            Log.e("Counter", String.valueOf(progress))
+            images.get(progress).setImageBitmap(values[0]);
+            progress++;
+            //mInfoTextView.setText("Этаж: " + values[0]);
+        }
+
+         */
     }
 
     private void loadPhotoesFromHostById(int id)
@@ -478,8 +495,8 @@ public class MapActivity extends AppCompatActivity {
 
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Photo из Json
-                        new DownloadImageTask().execute(jsonArray);
-                        //MapActivity.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
+                        //new DownloadImageTask().execute(jsonArray);
+                        MapActivity.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
                     }
                     catch (JSONException e)
                     {
@@ -498,7 +515,7 @@ public class MapActivity extends AppCompatActivity {
         */
         //new DownloadImageTask().execute(jsonArray);
 
-        /*for(int i = 0; i < jsonArray.length(); i++)
+        for(int i = 0; i < jsonArray.length(); i++)
         {
             JSONObject object = null;
             try
@@ -516,7 +533,7 @@ public class MapActivity extends AppCompatActivity {
 
                 String photoesUrl = object.getString("photoes");
                 //new DownloadImageTask().execute(selectedPoint);
-                new DownloadImageTask().execute(photoesUrl);
+                new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
             }
             catch (JSONException e)
             {
@@ -524,7 +541,7 @@ public class MapActivity extends AppCompatActivity {
             }
         }
 
-         */
+
     }
 
     private void getPointsFromHost()
@@ -693,12 +710,16 @@ public class MapActivity extends AppCompatActivity {
                         // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
                         if(currentId != tappingId)
                         {
+                            setGoneLoadedImagesFromMemory();
+
                             item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                             changeSelectedOverlayItem(currentId);
 
                             selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
 
                             findAndSetupNewSelectedPoint(tappingId);
+
+                            initializeImageViewForPhotoes();
 
                             loadPhotoesFromHostById(selectedPoint.getId());
 
@@ -756,7 +777,7 @@ public class MapActivity extends AppCompatActivity {
                 selectedOverlayItem = items.get(i);
                 assert loadedImages != null;
                 //TODO: тут добавить подгрузку Bitmap'ов из списка
-                Log.e("Photoes", String.valueOf(loadedImages.size()));
+                //Log.e("Photoes", String.valueOf(loadedImages.size()));
                 //ImageView image = findViewById(R.id.mainImg);
                 //image.setImageBitmap(result);
             }
@@ -792,7 +813,7 @@ public class MapActivity extends AppCompatActivity {
 
                 assert loadedImages != null;
                 //TODO: тут добавить подгрузку Bitmap'ов из списка
-                Log.e("Photoes", String.valueOf(loadedImages.size()));
+               // Log.e("Photoes", String.valueOf(loadedImages.size()));
                 /*
                 ImageView image = findViewById(R.id.mainImg);
                 ImageView image2 = findViewById(R.id.mainImg2);
