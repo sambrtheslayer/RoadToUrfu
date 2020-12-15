@@ -10,7 +10,6 @@
     app:behavior_peekHeight="38dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-
     <LinearLayout
         android:id="@+id/header_layout"
         android:layout_width="0dp"
@@ -30,12 +29,14 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/RelativeSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_layout">
+
 
         <ImageView
             android:id="@+id/mainImg"
@@ -71,6 +72,25 @@
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
 
+        <!--
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:background="@color/white"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <ImageView
+                android:id="@+id/customImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="139dp"
+                android:layout_marginEnd="144dp"
+                tools:srcCompat="@drawable/love_urfu" />
+        </RelativeLayout> -->
     </RelativeLayout>
 
 

@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,9 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -96,6 +101,9 @@ public class MapActivity extends AppCompatActivity {
     private ImageButton buildRouteButton;
     //TODO: просто убрать кнопку и вызывать функцию потом
     private ImageButton clearRouteButton;
+
+
+    private ImageView fullScreenImage;
 
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
@@ -331,6 +339,7 @@ public class MapActivity extends AppCompatActivity {
         image.setImageBitmap(point.getDescriptionImage());*/
 
         //Log.e("image", point.getDescriptionImage().toString());
+
     }
 
     private void initializeImageViewForPhotoes() {
@@ -351,7 +360,7 @@ public class MapActivity extends AppCompatActivity {
         images.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFullScreenImageToast(images.get(0).getId());
+                onButtonShowPopupWindowClick(view, 0);
             }
         });
         images.get(1).setOnClickListener(new View.OnClickListener() {
@@ -368,15 +377,39 @@ public class MapActivity extends AppCompatActivity {
         });
     }
 
-    private void showFullScreenImageToast(int imageId) {
-        Toast toast = new Toast(getApplicationContext());
-        ImageView view = new ImageView(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        view.setImageResource(imageId);
-        toast.setView(view);
-        toast.show();
+    public void onButtonShowPopupWindowClick(View view, int id) {
+
+        fullScreenImage = findViewById(R.id.full_screen_image);
+        Log.e("full", String.valueOf(fullScreenImage));
+        fullScreenImage.setImageDrawable(images.get(id).getDrawable());
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
     }
+
 
     /*
     private void StartFullScreenActivity(int imgid) {
@@ -390,7 +423,6 @@ public class MapActivity extends AppCompatActivity {
         intent.putExtra("image",  byteArray);
         startActivity(intent);
     }
-
      */
 
 
