@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -63,6 +64,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -117,6 +119,7 @@ public class MapActivity extends AppCompatActivity {
 
     private GridView imageGridView;
     private ArrayList<ImageView> images = new ArrayList<>();
+    private ArrayList<ProgressBar> progressBars = new ArrayList<>();
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
@@ -169,6 +172,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.map_activity);
 
         initializeImageViewForPhotoes();
+        initializeProgressBars();
 
         setOnClickListenerForImages();
 
@@ -328,6 +332,12 @@ public class MapActivity extends AppCompatActivity {
         myDialog = new Dialog(this);
     }
 
+    private void initializeProgressBars() {
+        progressBars.add(findViewById(R.id.progressImg1));
+        progressBars.add(findViewById(R.id.progressImg2));
+        progressBars.add(findViewById(R.id.progressImg3));
+    }
+
     private void initializeImageViewForPhotoes() {
         images.add(findViewById(R.id.mainImg));
         images.add(findViewById(R.id.mainImg2));
@@ -337,13 +347,12 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void setGoneLoadedImagesFromMemory() {
-        images.get(0).setVisibility(View.INVISIBLE);
-        images.get(1).setVisibility(View.INVISIBLE);
-        images.get(2).setVisibility(View.INVISIBLE);
+        for (int i = 0; i < 3; i++) {
+            images.get(i).setVisibility(View.INVISIBLE);
+        }
     }
 
-    private void setNullObjectsInImages()
-    {
+    private void setNullObjectsInImages() {
         int size = images.size();
         images = new ArrayList<>(size);
 
@@ -360,26 +369,27 @@ public class MapActivity extends AppCompatActivity {
         images.get(1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ShowPopup(1);
             }
         });
         images.get(2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ShowPopup(2);
             }
         });
     }
 
 
     public void ShowPopup(int id) {
-        if(images.get(id) != null) {
+        if (images.get(id) != null) {
             ImageView fullScreenImage;
 
             myDialog.setContentView(R.layout.popup_window);
 
             fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
             fullScreenImage.setImageDrawable(images.get(id).getDrawable());
+
 
             myDialog.show();
         }
@@ -576,6 +586,7 @@ public class MapActivity extends AppCompatActivity {
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Photo из Json
                         //new DownloadImageTask().execute(jsonArray);
+                        //initializeProgressBars();
                         MapActivity.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -605,7 +616,12 @@ public class MapActivity extends AppCompatActivity {
 
                 String photoesUrl = object.getString("photoes");
                 //new DownloadImageTask().execute(selectedPoint);
-                new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
+                //new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
+                //progressBars.get(i).setVisibility(View.VISIBLE);
+                Picasso.get().load("https://roadtourfu.000webhostapp.com/image/" + photoesUrl).into(images.get(i));
+                //progressBars.get(i).setVisibility(View.INVISIBLE);
+                images.get(i).setVisibility(View.VISIBLE);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

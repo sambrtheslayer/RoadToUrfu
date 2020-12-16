@@ -37,6 +37,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_layout">
 
+        <ProgressBar
+            android:id="@+id/progressImg1"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="65dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="15dp" />
+
+        <ProgressBar
+            android:id="@+id/progressImg2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="105dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/progressImg1" />
+
+        <ProgressBar
+            android:id="@+id/progressImg3"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="105dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/progressImg2" />
 
         <ImageView
             android:id="@+id/mainImg"
@@ -78,25 +110,9 @@
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
 
-        <!--
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
-            android:background="@color/white"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-            <ImageView
-                android:id="@+id/customImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="139dp"
-                android:layout_marginEnd="144dp"
-                tools:srcCompat="@drawable/love_urfu" />
-        </RelativeLayout> -->
+
+
+
     </RelativeLayout>
 
 
