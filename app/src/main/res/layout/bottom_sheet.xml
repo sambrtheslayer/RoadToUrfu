@@ -56,9 +56,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="105dp"
             android:layout_marginTop="50dp"
-            android:layout_marginEnd="105dp"
             android:layout_marginBottom="15dp"
-            android:layout_toStartOf="@+id/progressImg3"
             android:layout_toEndOf="@+id/progressImg1" />
 
         <ProgressBar
@@ -67,10 +65,10 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
+            android:layout_marginStart="105dp"
             android:layout_marginTop="50dp"
-            android:layout_marginEnd="60dp"
-            android:layout_marginBottom="15dp" />
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/progressImg2" />
 
         <ImageView
             android:id="@+id/mainImg"
@@ -84,7 +82,6 @@
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
-
         <ImageView
             android:id="@+id/mainImg2"
             android:layout_width="100dp"
@@ -92,29 +89,23 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="30dp"
             android:layout_marginBottom="15dp"
-            android:layout_toStartOf="@+id/mainImg3"
             android:layout_toEndOf="@+id/mainImg"
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
-
         <ImageView
             android:id="@+id/mainImg3"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="17dp"
-            android:layout_marginEnd="26dp"
             android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/mainImg2"
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
-
-
-
 
     </RelativeLayout>
 
