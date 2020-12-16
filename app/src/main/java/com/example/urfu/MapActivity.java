@@ -169,6 +169,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.map_activity);
 
         initializeImageViewForPhotoes();
+
         setOnClickListenerForImages();
 
         //TODO: здесь указать gridView;
@@ -341,11 +342,19 @@ public class MapActivity extends AppCompatActivity {
         images.get(2).setVisibility(View.INVISIBLE);
     }
 
+    private void setNullObjectsInImages()
+    {
+        int size = images.size();
+        images = new ArrayList<>(size);
+
+        initializeImageViewForPhotoes();
+    }
+
     private void setOnClickListenerForImages() {
         images.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShowPopup();
+                ShowPopup(0);
             }
         });
         images.get(1).setOnClickListener(new View.OnClickListener() {
@@ -363,15 +372,17 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
-    public void ShowPopup() {
-        ImageView fullScreenImage;
+    public void ShowPopup(int id) {
+        if(images.get(id) != null) {
+            ImageView fullScreenImage;
 
-        myDialog.setContentView(R.layout.popup_window);
+            myDialog.setContentView(R.layout.popup_window);
 
-        fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
-        fullScreenImage.setImageDrawable(images.get(1).getDrawable());
+            fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
+            fullScreenImage.setImageDrawable(images.get(id).getDrawable());
 
-        myDialog.show();
+            myDialog.show();
+        }
     }
 
 
@@ -382,22 +393,24 @@ public class MapActivity extends AppCompatActivity {
         Log.e("full", String.valueOf(fullScreenImage));
         fullScreenImage.setImageDrawable(images.get(id).getDrawable());
 
-
+        // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_window, null);
 
-
+        // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
 
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
 
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-
+        // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -405,7 +418,7 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
-    } */
+    }
 
 
     /*
@@ -751,7 +764,8 @@ public class MapActivity extends AppCompatActivity {
                         // Если нажата отличная от первоначальной точки точка, то ставим новый значок на изначальную - чёрный кружок,
                         // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
                         if (currentId != tappingId) {
-                            setGoneLoadedImagesFromMemory();
+                            setNullObjectsInImages();
+                            //setGoneLoadedImagesFromMemory();
 
                             item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                             changeSelectedOverlayItem(currentId);
@@ -866,7 +880,7 @@ public class MapActivity extends AppCompatActivity {
         private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
         private Road mRoad;
         private double distanceFromCurrentPosToDestPoint;
-        private final double deltaDistance = 0.1;
+        private final double deltaDistance = 0.000001;
 
         public boolean needToBuildRoute;
 

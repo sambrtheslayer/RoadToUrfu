@@ -47,6 +47,8 @@
             android:layout_marginStart="26dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
         <ImageView
@@ -58,6 +60,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="15dp"
             android:layout_toEndOf="@+id/mainImg"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
         <ImageView
@@ -69,6 +73,8 @@
             android:layout_marginTop="17dp"
             android:layout_marginBottom="15dp"
             android:layout_toEndOf="@+id/mainImg2"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
 
