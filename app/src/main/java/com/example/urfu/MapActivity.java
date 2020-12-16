@@ -502,7 +502,7 @@ public class MapActivity extends AppCompatActivity {
         */
             progress = urls[1];
             Bitmap loadedImage = null;
-            String pathToImage = "https://roadtourfu.000webhostapp.com/image/";
+            String pathToImage = "http://roadtourfu.ai-info.ru/image/";
 
             JSONObject object = null;
             try {
@@ -553,7 +553,7 @@ public class MapActivity extends AppCompatActivity {
                 .readTimeout(60, TimeUnit.SECONDS)
                 .build();
 
-        final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
+        final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
 
         // Конечный ресурс, где идёт обработка логина и пароля
         String url = baseHostApiUrl + "/data/get_photoes.php";
@@ -623,7 +623,9 @@ public class MapActivity extends AppCompatActivity {
                 //new DownloadImageTask().execute(selectedPoint);
                 //new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
                 //progressBars.get(i).setVisibility(View.VISIBLE);
-                Picasso.get().load("https://roadtourfu.000webhostapp.com/image/" + photoesUrl).into(images.get(i));
+                Log.e("Full path", "http://roadtourfu.ai-info.ru/image/" + photoesUrl);
+                PicassoTrustAll.getInstance(getApplicationContext()).load("http://roadtourfu.ai-info.ru/image/" + photoesUrl).into(images.get(i));
+
                 //progressBars.get(i).setVisibility(View.INVISIBLE);
                 images.get(i).setVisibility(View.VISIBLE);
 
@@ -642,7 +644,7 @@ public class MapActivity extends AppCompatActivity {
                 .readTimeout(60, TimeUnit.SECONDS)
                 .build();
 
-        final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
+        final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
 
         // Конечный ресурс, где идёт обработка логина и пароля
         String url = baseHostApiUrl + "/data/get_all_points.php";

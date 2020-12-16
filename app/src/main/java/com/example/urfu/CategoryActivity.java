@@ -106,7 +106,7 @@ public class CategoryActivity extends AppCompatActivity {
                 .readTimeout(60, TimeUnit.SECONDS)
                 .build();
 
-        final String baseHostApiUrl = "https://roadtourfu.000webhostapp.com/api";
+        final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
 
         // Конечный ресурс, где идёт обработка логина и пароля
         String url = baseHostApiUrl + "/data/get_points.php";

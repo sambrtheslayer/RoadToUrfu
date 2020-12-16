@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Дек 09 2020 г., 07:37
+-- Время создания: Дек 16 2020 г., 17:27
 -- Версия сервера: 10.3.16-MariaDB
 -- Версия PHP: 7.3.23
 
@@ -19,10 +19,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `id15425196_world`
+-- База данных: `c21535_roadtourfu_ai_info_ru`
 --
-CREATE DATABASE IF NOT EXISTS `id15425196_world` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `id15425196_world`;
+CREATE DATABASE IF NOT EXISTS `c21535_roadtourfu_ai_info_ru` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `c21535_roadtourfu_ai_info_ru`;
 
 -- --------------------------------------------------------
 
@@ -127,7 +127,8 @@ INSERT INTO `data_chinese` (`id`, `name`, `description`) VALUES
 (42, 'Общ №14 на китайском', 'Описание на китайском'),
 (43, 'Общ №15 на китайском', 'Описание на китайском'),
 (44, 'Общ №16 на китайском', 'Описание на китайском'),
-(45, 'МСЧ на китайском', 'Описание на китайском');
+(45, 'МСЧ на китайском', 'Описание на китайском'),
+(46, '', '');
 
 -- --------------------------------------------------------
 
@@ -197,7 +198,8 @@ INSERT INTO `point` (`id`, `latitude`, `longitude`, `name`, `description`, `cate
 (42, 56.839316, 60.655892, 'Общежитие №14', ' ', 2, ' ', 'ул. Коминтерна, 1А', '+ 7 (343) 375-45-36', ' '),
 (43, 56.836746, 60.65794, 'Общежитие №15', ' ', 2, ' ', 'ул. Коминтерна, 11', '+ 7 (343) 375-47-19', ' '),
 (44, 56.841568, 60.658004, 'Общежитие №16', ' ', 2, ' ', 'ул. Малышева, 127А', '+ 7 (343) 375-47-50', ' '),
-(45, 56.840124, 60.660779, 'Медико-санитарная часть', 'Часы работы: пн-пт 8:00 -18:00', 3, ' ', 'ул. Комсомольская, 59', '+ 7 (343) 375-94-77', 'Расписание работы врачей:\nhttps://med.urfu.ru/ru/attendance/schedule/');
+(45, 56.840124, 60.660779, 'Медико-санитарная часть', 'Часы работы: пн-пт 8:00 -18:00', 3, ' ', 'ул. Комсомольская, 59', '+ 7 (343) 375-94-77', 'Расписание работы врачей:\nhttps://med.urfu.ru/ru/attendance/schedule/'),
+(46, 56.794102, 59.919844, 'TEST POINT', '', 0, '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -216,8 +218,12 @@ CREATE TABLE `point_photoes` (
 --
 
 INSERT INTO `point_photoes` (`id`, `point_id`, `photo`) VALUES
-(1, 0, 'point_2.PNG'),
-(2, 0, 'point_3.PNG');
+(1, 0, 'GUK/GUK_1.png'),
+(2, 0, 'GUK/GUK_2.png'),
+(3, 0, 'GUK/GUK_3.png'),
+(4, 1, 'IRIT_RTF/RTF_1.png'),
+(5, 1, 'IRIT_RTF/RTF_2.png'),
+(6, 1, 'IRIT_RTF/RTF_3.png');
 
 --
 -- Индексы сохранённых таблиц
@@ -267,13 +273,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT для таблицы `point`
 --
 ALTER TABLE `point`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT для таблицы `point_photoes`
 --
 ALTER TABLE `point_photoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
