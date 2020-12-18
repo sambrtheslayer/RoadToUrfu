@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -28,11 +30,13 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -40,6 +44,7 @@ import androidx.core.app.ActivityCompat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -53,6 +58,8 @@ import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -78,7 +85,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements LocationListener {
 
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private MapView map = null;
@@ -88,6 +95,7 @@ public class MapActivity extends AppCompatActivity {
     //Братюня ниже респектабельный, он помогает делать геолокацию, а также строить маршруты. Также он наследуется от MyLocationNewOverlay,
     //что позволяет переписывать логику работы геолокации
     private MyLocationListener locationOverlay;
+    private CompassOverlay mCompassOverlay;
 
     private final int MAX_ROUTES = 1;
     private Point selectedPoint;
@@ -113,6 +121,8 @@ public class MapActivity extends AppCompatActivity {
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
     private ArrayList<Bitmap> loadedImages = new ArrayList<>();
+    private ListView additionalInfoListView;
+    private ArrayAdapter<String> additionalInfoAdapter;
     Context ctx;
 
     private BottomSheetBehavior mBottomSheetBehavior;
@@ -158,6 +168,9 @@ public class MapActivity extends AppCompatActivity {
         ctx = getApplicationContext();
 
         selectedPoint = getIntent().getParcelableExtra("point");
+        Log.e("Check fields", selectedPoint.getAddress());
+        Log.e("Check fields", selectedPoint.getContacts());
+        Log.e("Check fields", selectedPoint.getSite());
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -174,6 +187,7 @@ public class MapActivity extends AppCompatActivity {
 
         initializeImageViewForPhotoes();
         initializeProgressBars();
+        initializeAdditionalInfo();
 
         setOnClickListenerForImages();
 
@@ -313,24 +327,47 @@ public class MapActivity extends AppCompatActivity {
         locationOverlay.runOnFirstFix(new Runnable() {
             public void run() {
                 Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
+                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
                 //lastFixLocation = locationOverlay.getLastFix();
             }
         });
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        mCompassOverlay = new CompassOverlay(ctx, new InternalCompassOrientationProvider(ctx),
+                map);
+        map.getOverlays().add(mCompassOverlay);
+        map.getOverlays().add(locationOverlay);
+        map.getOverlays().add(this.mCompassOverlay);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        // locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, (LocationListener) listener);
-        // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
 
         map.getOverlayManager().add(locationOverlay);
 
         //endregion
 
         myDialog = new Dialog(this);
+    }
+
+    private void initializeAdditionalInfo() {
+        additionalInfoListView = findViewById(R.id.additionalInfoListView);
+
+        ArrayList<String> additionalInfo = new ArrayList<>();
+
+        additionalInfo.add(selectedPoint.getAddress());
+        additionalInfo.add(selectedPoint.getContacts());
+        additionalInfo.add(selectedPoint.getSite());
+
+        additionalInfoAdapter = new ArrayAdapter<>(ctx, R.layout.array_adapter_custom_layout, additionalInfo);
+
+        additionalInfoListView.setAdapter(additionalInfoAdapter);
+        Log.e("listview", additionalInfoListView.toString());
+        Log.e("adapter", additionalInfoAdapter.toString());
     }
 
     private void initializeProgressBars() {
@@ -456,6 +493,28 @@ public class MapActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
+        }catch (Exception ex){}
+
+        try{
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
+        }catch (Exception ex){}
+
+        locationOverlay.enableFollowLocation();
+        locationOverlay.enableMyLocation();
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -471,6 +530,9 @@ public class MapActivity extends AppCompatActivity {
         //if you make changes to the configuration, use
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
+        locationOverlay.disableMyLocation();
+        mCompassOverlay.disableCompass();
+        locationOverlay.disableFollowLocation();
         locationOverlay.disableMyLocation();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
@@ -489,6 +551,12 @@ public class MapActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Log.e("LocationListener", location.toString());
+
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -647,7 +715,7 @@ public class MapActivity extends AppCompatActivity {
         final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
 
         // Конечный ресурс, где идёт обработка логина и пароля
-        String url = baseHostApiUrl + "/data/get_all_points.php";
+        String url = baseHostApiUrl + "/data/get_points.php";
 
         FormBody formBody = new FormBody.Builder()
                 .build();
@@ -728,7 +796,13 @@ public class MapActivity extends AppCompatActivity {
 
                 String alt_description = object.getString("point_alt_description");
 
-                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
+                String address = object.getString("point_address");
+
+                String contacts = object.getString("point_contacts");
+
+                String site = object.getString("point_site");
+
+                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description, address, contacts, site));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -805,33 +879,10 @@ public class MapActivity extends AppCompatActivity {
 
                             loadPhotoesFromHostById(selectedPoint.getId());
 
+                            initializeAdditionalInfo();
+
                             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-                            // Первоначальная точка.
-                            /*Log.e("Current marker uid", items.get(selectedPoint.getId()).getUid() + " ");
-                            Log.e("Current marker id", String.valueOf(selectedPoint.getId()) + " ");
-                            items.get(items.indexOf(selectedOverlayItem)).setMarker(getDrawable(R.drawable.ic_lens_black));
-                            //selectedPoint.getOverlayItem().setMarker(getDrawable(R.drawable.ic_lens_black));
-
-                            Log.e("Selected point now", selectedPoint.getName());
-                            Log.e("Tapped item id", item.getUid());
-
-                            // Устанавливаем новой точке маркер.
-                            item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
-
-                            // Теперь выбранная точка - это та, на которую нажали.
-                            selectedPoint = hashMapPoints.get(Integer.valueOf(item.getUid()));
-                            selectedOverlayItem = item;
-                            Log.e("Selected point after", selectedPoint.getName());*/
                         }
-
-                        /*Log.e("Selected point now", selectedPoint.getName());
-                        Log.e("Tapped item id", item.getUid());
-                        selectedPoint = hashMapPoints.get(Integer.valueOf(item.getUid()));
-                        Log.e("Selected point after", selectedPoint.getName());*/
-                        //endregion----------------
-
-                        //item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                         return true;
                     }
 
@@ -844,7 +895,6 @@ public class MapActivity extends AppCompatActivity {
                 }, ctx);
 
         initializePointOnFirstStart();
-
         mOverlay.setFocus(selectedPoint.getOverlayItem());
         //mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
@@ -928,8 +978,11 @@ public class MapActivity extends AppCompatActivity {
 
             // Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
 
-            if(!isMyLocationEnabled())
+            if(!isMyLocationEnabled()) {
+                setOptionsMenuEnabled(true);
+                mCompassOverlay.enableCompass();
                 enableFollowLocation();
+            }
 
             if (lastFixLocation == null)
                 lastFixLocation = location;

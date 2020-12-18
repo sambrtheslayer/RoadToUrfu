@@ -193,7 +193,13 @@ public class CategoryActivity extends AppCompatActivity {
 
                 String alt_description = object.getString("point_alt_description");
 
-                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description));
+                String address = object.getString("point_address");
+
+                String contacts = object.getString("point_contacts");
+
+                String site = object.getString("point_site");
+
+                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description, address, contacts, site));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

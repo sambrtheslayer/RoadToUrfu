@@ -107,6 +107,14 @@
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
 
+        <ListView
+            android:id="@+id/additionalInfoListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="115dp"
+            android:singleLine="false"
+            />
+
     </RelativeLayout>
 
 
