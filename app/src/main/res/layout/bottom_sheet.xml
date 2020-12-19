@@ -82,6 +82,7 @@
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
         <ImageView
             android:id="@+id/mainImg2"
             android:layout_width="100dp"
@@ -94,6 +95,7 @@
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
         <ImageView
             android:id="@+id/mainImg3"
             android:layout_width="100dp"
@@ -112,8 +114,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="115dp"
-            android:singleLine="false"
-            />
+            android:clickable="false"
+            android:listSelector="@android:color/transparent"
+            android:singleLine="false" />
 
     </RelativeLayout>
 
