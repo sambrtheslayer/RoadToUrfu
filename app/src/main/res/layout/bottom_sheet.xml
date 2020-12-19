@@ -37,6 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_layout">
 
+        <!--
         <ProgressBar
             android:id="@+id/progressImg1"
             style="?android:attr/progressBarStyle"
@@ -108,16 +109,27 @@
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+            -->
+
+        <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/imageGridView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnWidth="90dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" />
 
         <ListView
             android:id="@+id/additionalInfoListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/mainImg2"
+            android:layout_below="@+id/imageGridView"
             android:clickable="false"
             android:listSelector="@android:color/transparent"
             android:singleLine="false" />
-
 
         <Button
             android:id="@+id/buildRoute"
@@ -127,6 +139,8 @@
             android:layout_centerInParent="true"
             android:backgroundTint="#3E73FC"
             android:text="@string/setRoute" />
+
+
         <!--
         <Button
             android:id="@+id/button2"

@@ -117,7 +117,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
 
     Dialog myDialog;
-    // private ImageView fullScreenImage;
+
 
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
@@ -190,7 +190,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         initializeProgressBars();
         initializeAdditionalInfo();
 
-        setOnClickListenerForImages();
+        //setOnClickListenerForImages();
 
         //TODO: здесь указать gridView;
         //imageGridView = findViewById();
@@ -237,6 +237,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         mBottomSheetBehavior = BottomSheetBehavior.from(mCustomBottomSheet);
 
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        imageGridView = findViewById(R.id.imageGridView);
 
         //region Map On Click
 
@@ -347,7 +349,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
 
         map.getOverlayManager().add(locationOverlay);
@@ -374,17 +376,21 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     }
 
     private void initializeProgressBars() {
-        progressBars.add(findViewById(R.id.progressImg1));
+        /*progressBars.add(findViewById(R.id.progressImg1));
         progressBars.add(findViewById(R.id.progressImg2));
         progressBars.add(findViewById(R.id.progressImg3));
+
+         */
     }
 
     private void initializeImageViewForPhotoes() {
-        images.add(findViewById(R.id.mainImg));
+       /* images.add(findViewById(R.id.mainImg));
         images.add(findViewById(R.id.mainImg2));
         images.add(findViewById(R.id.mainImg3));
 
-        setGoneLoadedImagesFromMemory();
+        */
+
+       // setGoneLoadedImagesFromMemory();
     }
 
     private void setGoneLoadedImagesFromMemory() {
@@ -400,6 +406,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         initializeImageViewForPhotoes();
     }
 
+    /*
     private void setOnClickListenerForImages() {
         images.get(0).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -420,6 +427,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
             }
         });
     }
+
+     */
 
 
     public void ShowPopup(int id) {
@@ -510,11 +519,13 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 return;
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
-        try{
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
-        }catch (Exception ex){}
+        try {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
+        } catch (Exception ex) {
+        }
 
         locationOverlay.enableFollowLocation();
         locationOverlay.enableMyLocation();
@@ -679,6 +690,11 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         */
         //new DownloadImageTask().execute(jsonArray);
 
+        String[] urlList = new String[jsonArray.length()];
+
+        Log.e("urlList", String.valueOf(urlList.length));
+
+        /*
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
             try {
@@ -704,6 +720,37 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 e.printStackTrace();
             }
         }
+
+         */
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject object = null;
+            try {
+                object = jsonArray.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                // Помещение точек в список.
+                assert object != null;
+
+                String photoesUrl = object.getString("photoes");
+                //new DownloadImageTask().execute(selectedPoint);
+                //new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
+                //progressBars.get(i).setVisibility(View.VISIBLE);
+                Log.e("Full path", "http://roadtourfu.ai-info.ru/image/" + photoesUrl);
+                urlList[i] = "http://roadtourfu.ai-info.ru/image/" + photoesUrl;
+                //PicassoTrustAll.getInstance(getApplicationContext()).load("http://roadtourfu.ai-info.ru/image/" + photoesUrl).into(images.get(i));
+
+                //progressBars.get(i).setVisibility(View.INVISIBLE);
+                //images.get(i).setVisibility(View.VISIBLE);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        imageGridView.setAdapter(new ImageAdapter(ctx, urlList));
 
 
     }
@@ -981,7 +1028,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
             // Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
 
-            if(!isMyLocationEnabled()) {
+            if (!isMyLocationEnabled()) {
                 setOptionsMenuEnabled(true);
                 mCompassOverlay.enableCompass();
                 enableFollowLocation();

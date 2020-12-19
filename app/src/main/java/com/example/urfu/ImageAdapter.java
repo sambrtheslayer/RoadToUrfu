@@ -14,19 +14,13 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    int imageTotal = 7;
-    public static String[] mThumbIds = {
-            "http://192.168.1.20/android/1.jpg",
-            "http://192.168.1.20/android/2.jpg",
-            "http://192.168.1.20/android/3.jpg",
-            "http://192.168.1.20/android/4.jpg",
-            "http://192.168.1.20/android/5.jpg",
-            "http://192.168.1.20/android/6.jpg",
-            "http://192.168.1.20/android/7.jpg",
-    };
+    int imageTotal = 3;
 
-    public ImageAdapter(Context c) {
+    public static String[] mThumbIds;
+
+    public ImageAdapter(Context c, String[] imagesUrl) {
         mContext = c;
+        mThumbIds = imagesUrl;
     }
 
     public int getCount() {
@@ -46,7 +40,7 @@ public class ImageAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(480, 480));
+            imageView.setLayoutParams(new GridView.LayoutParams(320, 320));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
         } else {
@@ -55,7 +49,7 @@ public class ImageAdapter extends BaseAdapter {
         String url = getItem(position);
         Picasso.with(mContext)
                 .load(url)
-                //.placeholder(R.drawable.loader)
+                .placeholder(R.drawable.love_urfu)
                 .fit()
                 .centerCrop().into(imageView);
         return imageView;
