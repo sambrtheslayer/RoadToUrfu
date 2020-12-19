@@ -113,11 +113,33 @@
             android:id="@+id/additionalInfoListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="115dp"
+            android:layout_below="@+id/mainImg2"
             android:clickable="false"
             android:listSelector="@android:color/transparent"
             android:singleLine="false" />
 
+
+        <Button
+            android:id="@+id/buildRoute"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/additionalInfoListView"
+            android:layout_centerInParent="true"
+            android:backgroundTint="#3E73FC"
+            android:text="@string/setRoute" />
+        <!--
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/additionalInfoListView"
+            android:layout_centerInParent="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:backgroundTint="#3E73FC"
+            android:text="@string/setRoute" /> -->
     </RelativeLayout>
 
 

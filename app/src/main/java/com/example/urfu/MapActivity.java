@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.Manifest;
@@ -110,7 +111,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private ImageButton user_location;
 
     //TODO: убрать кнопку и запихнуть её в шторку
-    private ImageButton buildRouteButton;
+    private Button buildRouteButton;
     //TODO: просто убрать кнопку и вызывать функцию потом
     private ImageButton clearRouteButton;
 
@@ -285,6 +286,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                     try {
                         if (lastFixLocation != null)
                             locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+
                     } catch (Exception e) {
                         Log.e("Last fix location", e.getMessage());
                     }
@@ -302,6 +304,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                         Log.e("Last fix location", e.getMessage());
                     }
                 }
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
 
         });
