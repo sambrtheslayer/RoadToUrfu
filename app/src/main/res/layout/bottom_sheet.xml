@@ -140,6 +140,14 @@
             android:backgroundTint="#3E73FC"
             android:text="@string/setRoute" />
 
+        <!--<TextView
+            android:id="@+id/debugTextView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="TextView" />
+            -->
+
 
         <!--
         <Button
