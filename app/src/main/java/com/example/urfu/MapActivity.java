@@ -113,7 +113,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
     private Road mRoad;
     private double distanceFromCurrentPosToDestPoint;
-    private final double deltaDistance = 0.000001;
+    private final double deltaDistance = 0.00005;
     private boolean needToBuildRoute;
     //endregion
 
