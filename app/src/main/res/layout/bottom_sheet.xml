@@ -67,7 +67,6 @@
             android:layout_centerInParent="true"
             android:backgroundTint="#3E73FC"
             android:text="@string/setRoute" />
-
     </RelativeLayout>
 
 

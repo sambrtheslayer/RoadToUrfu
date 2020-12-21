@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -95,7 +96,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
     //Братюня ниже респектабельный, он помогает делать геолокацию, а также строить маршруты. Также он наследуется от MyLocationNewOverlay,
     //что позволяет переписывать логику работы геолокации
-    private MyLocationListener locationOverlay;
+
+    private MyLocationNewOverlay mLocationOverlay;
     private CompassOverlay mCompassOverlay;
 
     private final int MAX_ROUTES = 1;
@@ -105,12 +107,22 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private Location lastFixLocation;
     private ArrayList<Polyline> allOverlayLines = new ArrayList<>();
 
+    //region Fields for routes
+    private RoadManager mRoadManager;
+    private GeoPoint mDestinationPoint;
+    private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
+    private Road mRoad;
+    private double distanceFromCurrentPosToDestPoint;
+    private final double deltaDistance = 0.00005;
+    private boolean needToBuildRoute;
+    //endregion
+
     //TODO: переименовать переменные
     private ImageButton btn_zoom_in;
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
 
-    //TODO: убрать кнопку и запихнуть её в шторку
+
     private Button buildRouteButton;
     //TODO: просто убрать кнопку и вызывать функцию потом
     private ImageButton clearRouteButton;
@@ -169,9 +181,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         ctx = getApplicationContext();
 
         selectedPoint = getIntent().getParcelableExtra("point");
-        Log.e("Check fields", selectedPoint.getAddress());
-        Log.e("Check fields", selectedPoint.getContacts());
-        Log.e("Check fields", selectedPoint.getSite());
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -186,14 +195,11 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         setContentView(R.layout.map_activity);
 
+        //region Initializing
         initializeImageViewForPhotoes();
         initializeProgressBars();
         initializeAdditionalInfo();
-
-        //setOnClickListenerForImages();
-
-        //TODO: здесь указать gridView;
-        //imageGridView = findViewById();
+        //endregion
 
         // Инициализация объекта MapView.
         map = (MapView) findViewById(R.id.map);
@@ -212,12 +218,13 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         // Отвечает за масштабирование и начальную точку.
         IMapController mapController = map.getController();
         mapController.setZoom(19.5);
+        //endregion
 
 
-        // Кастомные кнопки зума
+        //region Кастомные кнопки зума
         btn_zoom_in = findViewById(R.id.zoom_in);
         btn_zoom_out = findViewById(R.id.zoom_out);
-
+        //endregion
 
         btn_zoom_in.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,39 +247,42 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         imageGridView = findViewById(R.id.imageGridView);
 
-        //region Map On Click
-
-        //map.onTouchEvent(MotionEvent.ACTION_BUTTON_PRESS)
-
-        //endregion
-
-
-        //GeoPoint startPoint = new GeoPoint(56.800091d, 59.909221d);
-
         // Создаётся точка, основанная на предыдущем выборе в экране CategoryActivity.
         GeoPoint startPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
 
-        mapController.setCenter(startPoint);
-        //endregion
 
         //region Marks
-
         getPointsFromHost();
         //endregion
 
         //region User Location
 
-        GpsMyLocationProvider provider = new GpsMyLocationProvider(this);
-        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
-        //locationOverlay = new MyLocationNewOverlay(provider, map);
-        locationOverlay = new MyLocationListener(provider, map);
-        user_location = findViewById(R.id.user_location);
+        //provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
 
+        this.mCompassOverlay = new CompassOverlay(ctx, new InternalCompassOrientationProvider(ctx),
+                map);
+        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
+        this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
+        this.mRoadManager.addRequestOption("vehicle=foot");
+
+        if (selectedPoint != null)
+            mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
+
+        mLocationOverlay.enableMyLocation();
+        //mLocationOverlay.enableFollowLocation();
+
+        mLocationOverlay.setOptionsMenuEnabled(true);
+        mCompassOverlay.enableCompass();
+
+        user_location = findViewById(R.id.user_location);
         user_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //locationOverlay.disableFollowLocation();
-                locationOverlay.enableFollowLocation();
+                if (!mLocationOverlay.isFollowLocationEnabled()) {
+                    mLocationOverlay.enableFollowLocation();
+                } else {
+                    mLocationOverlay.disableFollowLocation();
+                }
             }
         });
 
@@ -284,22 +294,22 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 // Вообще так-то можно несколько маршрутов забацать, пока поставил ограничение)
                 if (allOverlayLines.size() < MAX_ROUTES) {
 
-                    locationOverlay.needToBuildRoute = true;
+                    needToBuildRoute = true;
                     try {
                         if (lastFixLocation != null)
-                            locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+                            buildRouteFromCurrentLocToDestPoint(lastFixLocation);
 
                     } catch (Exception e) {
                         Log.e("Last fix location", e.getMessage());
                     }
                 } else {
-                    locationOverlay.needToBuildRoute = true;
+                    needToBuildRoute = true;
                     try {
                         if (lastFixLocation != null) {
                             for (Polyline route : allOverlayLines) {
                                 map.getOverlays().remove(route);
                             }
-                            locationOverlay.buildRouteFromCurrentLocToDestPoint(lastFixLocation);
+                            buildRouteFromCurrentLocToDestPoint(lastFixLocation);
                             map.invalidate();
                         }
                     } catch (Exception e) {
@@ -307,44 +317,41 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                     }
                 }
                 mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                mLocationOverlay.enableMyLocation();
+                mLocationOverlay.enableFollowLocation();
             }
 
         });
+
+
 
         clearRouteButton = findViewById(R.id.clearRoute);
         clearRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (roadOverlayLine != null) {
-                    locationOverlay.needToBuildRoute = false;
+                    needToBuildRoute = false;
 
                     for (Polyline route : allOverlayLines) {
                         map.getOverlays().remove(route);
                     }
-                    //map.getOverlays().remove(roadOverlayLine);
-                    //roadOverlayLine = null;
+                    map.getOverlays().remove(roadOverlayLine);
+                    roadOverlayLine = null;
                     map.invalidate();
                 }
             }
         });
 
-        // Отвечает за первый старт локации (полезно ли?).
-        locationOverlay.runOnFirstFix(new Runnable() {
-            public void run() {
-                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
-                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
-                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
-                Log.e("MyTag", String.format("First location fix: %s", locationOverlay.getLastFix()));
-                //lastFixLocation = locationOverlay.getLastFix();
-            }
-        });
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mCompassOverlay = new CompassOverlay(ctx, new InternalCompassOrientationProvider(ctx),
                 map);
         map.getOverlays().add(mCompassOverlay);
-        map.getOverlays().add(locationOverlay);
+        map.getOverlays().add(this.mLocationOverlay);
         map.getOverlays().add(this.mCompassOverlay);
+
+        mapController.setCenter(startPoint);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -352,7 +359,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
 
-        map.getOverlayManager().add(locationOverlay);
+        map.getOverlayManager().add(mLocationOverlay);
 
         //endregion
 
@@ -390,7 +397,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         */
 
-       // setGoneLoadedImagesFromMemory();
+        // setGoneLoadedImagesFromMemory();
     }
 
     private void setGoneLoadedImagesFromMemory() {
@@ -496,10 +503,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
      */
 
 
+
     @Override
     protected void onStart() {
         super.onStart();
-        //new DownloadImageTask().execute(selectedPoint);
     }
 
     @Override
@@ -519,35 +526,29 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 return;
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
-        } catch (Exception ex) {
-        }
+        }catch (Exception ex){}
 
-        try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
-        } catch (Exception ex) {
-        }
+        try{
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
+        }catch (Exception ex){}
 
-        locationOverlay.enableFollowLocation();
-        locationOverlay.enableMyLocation();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        if(needToBuildRoute) {
+            mLocationOverlay.enableFollowLocation();
+            mLocationOverlay.enableMyLocation();
+        }
         map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
-        locationOverlay.enableMyLocation();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //this will refresh the osmdroid configuration on resuming.
-        //if you make changes to the configuration, use
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Configuration.getInstance().save(this, prefs);
-        locationOverlay.disableMyLocation();
+        try{
+            locationManager.removeUpdates(this);
+        }catch (Exception ex){}
+
         mCompassOverlay.disableCompass();
-        locationOverlay.disableFollowLocation();
-        locationOverlay.disableMyLocation();
+        mLocationOverlay.disableFollowLocation();
+        mLocationOverlay.disableMyLocation();
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
@@ -571,61 +572,107 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     public void onLocationChanged(@NonNull Location location) {
         Log.e("LocationListener", location.toString());
 
+        if (lastFixLocation == null)
+            lastFixLocation = location;
+
+        try {
+            if (roadOverlayLine != null) {
+                checkUserIsInDestPoint(location);
+            }
+
+            if (this.needToBuildRoute) {
+                buildRouteFromCurrentLocToDestPoint(location);
+            }
+
+            lastFixLocation = location;
+        } catch (Exception e) {
+            Log.e("onLocationChanged exc", e.getMessage());
+        }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    private void checkUserIsInDestPoint(Location location) {
+        try {
+            distanceFromCurrentPosToDestPoint = calculateDistance(selectedPoint, location);
 
-        private String progress = "";
+            Log.e("Distance", String.valueOf(distanceFromCurrentPosToDestPoint));
 
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            /*
-            photoes
-        */
-            progress = urls[1];
-            Bitmap loadedImage = null;
-            String pathToImage = "http://roadtourfu.ai-info.ru/image/";
+            if (distanceFromCurrentPosToDestPoint < deltaDistance) {
 
-            JSONObject object = null;
-            try {
-                loadedImage = null;
-                // Помещение точек в список.
+                this.needToBuildRoute = false;
 
-                Log.e("In doinbg", pathToImage);
+                if (mCurrentRoute != null) {
+                    mCurrentRoute.clear();
+                    map.getOverlays().remove(roadOverlayLine);
+                    map.invalidate();
+                }
 
-                pathToImage = pathToImage + urls[0];
-
-                InputStream in = new java.net.URL(pathToImage).openStream();
-
-                loadedImage = BitmapFactory.decodeStream(in);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-            return loadedImage;
+        } catch (Exception e) {
+            Log.e("Check user exception", e.getMessage());
         }
+    }
 
-        @Override
-        protected void onPostExecute(Bitmap image) {
+    public void buildRouteFromCurrentLocToDestPoint(Location location) {
+        try {
+            if (mCurrentRoute != null)
+                mCurrentRoute.clear();
 
-            Log.e("Counter", progress);
-            images.get(Integer.valueOf(progress)).setImageBitmap(image);
-            images.get(Integer.valueOf(progress)).setVisibility(View.VISIBLE);
-            //Log.e("Итого", loadedImages.toString());
-            //image.setImageBitmap(result);
+            if (selectedPoint != null)
+                this.mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
 
+            mCurrentRoute.add(new GeoPoint(location.getLatitude(), location.getLongitude()));
+            mCurrentRoute.add(mDestinationPoint);
+
+            mRoad = mRoadManager.getRoad(mCurrentRoute);
+
+            roadOverlayLine = GraphHopperRoadManager.buildRoadOverlay(mRoad);
+            roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
+            roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
+
+            for (Polyline route : allOverlayLines) {
+                map.getOverlays().remove(route);
+            }
+            allOverlayLines.clear();
+
+            map.getOverlays().add(roadOverlayLine);
+            allOverlayLines.add(roadOverlayLine);
+
+            map.invalidate();
+
+            Log.e("Route", "Route has been rebuilt");
+        } catch (Exception e) {
+            Log.e("Build route exception", e.getMessage());
         }
-        /*@Override
-        protected void onProgressUpdate(Bitmap... values) {
-            super.onProgressUpdate(values);
-            Log.e("Counter", String.valueOf(progress))
-            images.get(progress).setImageBitmap(values[0]);
-            progress++;
-            //mInfoTextView.setText("Этаж: " + values[0]);
-        }
+    }
 
-         */
+    private double calculateDistance(Point destinationPoint, Location currentLocation) {
+        try {
+            double x1 = destinationPoint.getLatitude();
+            double y1 = destinationPoint.getLongitude();
+
+            double x2 = currentLocation.getLatitude();
+            double y2 = currentLocation.getLongitude();
+
+            return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+        } catch (Exception e) {
+            Log.e("Calc route exception", e.getMessage());
+        }
+        return 0;
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     private void loadPhotoesFromHostById(int id) {
@@ -637,7 +684,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
 
-        // Конечный ресурс, где идёт обработка логина и пароля
+        // Конечный ресурс
         String url = baseHostApiUrl + "/data/get_photoes.php";
 
         FormBody formBody = new FormBody.Builder()
@@ -672,8 +719,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
                         // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
                         // Формируется Photo из Json
-                        //new DownloadImageTask().execute(jsonArray);
-                        //initializeProgressBars();
                         MapActivity.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -685,16 +730,11 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     }
 
     private void buildPhotoesByJson(JSONArray jsonArray) {
-        /*
-            photoes
-        */
-        //new DownloadImageTask().execute(jsonArray);
 
         String[] urlList = new String[jsonArray.length()];
 
         Log.e("urlList", String.valueOf(urlList.length));
 
-        /*
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject object = null;
             try {
@@ -707,43 +747,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 assert object != null;
 
                 String photoesUrl = object.getString("photoes");
-                //new DownloadImageTask().execute(selectedPoint);
-                //new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
-                //progressBars.get(i).setVisibility(View.VISIBLE);
-                Log.e("Full path", "http://roadtourfu.ai-info.ru/image/" + photoesUrl);
-                PicassoTrustAll.getInstance(getApplicationContext()).load("http://roadtourfu.ai-info.ru/image/" + photoesUrl).into(images.get(i));
-
-                //progressBars.get(i).setVisibility(View.INVISIBLE);
-                images.get(i).setVisibility(View.VISIBLE);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-         */
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject object = null;
-            try {
-                object = jsonArray.getJSONObject(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            try {
-                // Помещение точек в список.
-                assert object != null;
-
-                String photoesUrl = object.getString("photoes");
-                //new DownloadImageTask().execute(selectedPoint);
-                //new DownloadImageTask().execute(photoesUrl, String.valueOf(i));
-                //progressBars.get(i).setVisibility(View.VISIBLE);
                 Log.e("Full path", "http://roadtourfu.ai-info.ru/image/" + photoesUrl);
                 urlList[i] = "http://roadtourfu.ai-info.ru/image/" + photoesUrl;
-                //PicassoTrustAll.getInstance(getApplicationContext()).load("http://roadtourfu.ai-info.ru/image/" + photoesUrl).into(images.get(i));
-
-                //progressBars.get(i).setVisibility(View.INVISIBLE);
-                //images.get(i).setVisibility(View.VISIBLE);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -871,18 +876,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         }
 
         Log.e("Adding points", "Here");
-/*
-        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.800091d, 59.909221d))); // Lat/Lon decimal degrees
-        items.get(0).setMarker(getDrawable(R.drawable.wine_bottle));
-        //the overlay
-        items.add(new OverlayItem("Title", "Description", new GeoPoint(56.79511011, 59.9230577)));
-        items.get(1).setMarker(getDrawable(R.drawable.place_holder));
-*/
-
-        //TODO: Здесь нужно убрать дубль, потому что selectedPoint есть также и в ответе от сервера
-        /*Log.e("Getting overlay", selectedPoint.getOverlayItem().toString());
-        items.add(selectedPoint.getOverlayItem(selectedPoint.getId()));
-        items.get(2).setMarker(getDrawable(R.drawable.ic_place_black_36dp));*/
 
         assert hashMapPoints != null;
         for (int i = 0; i < hashMapPoints.size(); i++) {
@@ -901,11 +894,9 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        Log.e("HUI", "tapped");
-                        //map.getController().setCenter(item.getPoint());
+
                         map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
 
-                        //region TODO: debug zone
                         int currentId = selectedPoint.getId();
                         int tappingId = Integer.valueOf(item.getUid());
 
@@ -946,7 +937,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         initializePointOnFirstStart();
         mOverlay.setFocus(selectedPoint.getOverlayItem());
-        //mOverlay.setFocus(items.get(0));
         map.getOverlays().add(mOverlay);
     }
 
@@ -955,10 +945,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
             if (Integer.valueOf(items.get(i).getUid()) == id) {
                 selectedOverlayItem = items.get(i);
                 assert loadedImages != null;
-                //TODO: тут добавить подгрузку Bitmap'ов из списка
-                //Log.e("Photoes", String.valueOf(loadedImages.size()));
-                //ImageView image = findViewById(R.id.mainImg);
-                //image.setImageBitmap(result);
             }
         }
     }
@@ -985,141 +971,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
 
                 assert loadedImages != null;
-                //TODO: тут добавить подгрузку Bitmap'ов из списка
-                // Log.e("Photoes", String.valueOf(loadedImages.size()));
-                /*
-                ImageView image = findViewById(R.id.mainImg);
-                ImageView image2 = findViewById(R.id.mainImg2);
-                ImageView image3 = findViewById(R.id.mainImg3);
-
-                image.setImageBitmap(loadedImages.get(0));
-                image2.setImageBitmap(loadedImages.get(1));
-                image3.setImageBitmap(loadedImages.get(2));
-                 */
 
             }
-        }
-    }
-
-    public class MyLocationListener extends MyLocationNewOverlay {
-        private RoadManager mRoadManager;
-        private GeoPoint mDestinationPoint;
-        private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
-        private Road mRoad;
-        private double distanceFromCurrentPosToDestPoint;
-        private final double deltaDistance = 0.000001;
-
-        public boolean needToBuildRoute;
-
-        public MyLocationListener(IMyLocationProvider myLocationProvider, MapView mapView) {
-            super(myLocationProvider, mapView);
-
-            mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
-            mRoadManager.addRequestOption("vehicle=foot");
-
-            if (selectedPoint != null)
-                mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
-        }
-
-        // Отвечает за изменение локации.
-
-        @Override
-        public void onLocationChanged(Location location, IMyLocationProvider source) {
-
-            // Log.e("Location: ", location.getLatitude() + ", " + location.getLongitude());
-
-            if (!isMyLocationEnabled()) {
-                setOptionsMenuEnabled(true);
-                mCompassOverlay.enableCompass();
-                enableFollowLocation();
-            }
-
-            if (lastFixLocation == null)
-                lastFixLocation = location;
-
-            try {
-                if (roadOverlayLine != null) {
-                    checkUserIsInDestPoint(location);
-                }
-
-                if (this.needToBuildRoute) {
-                    buildRouteFromCurrentLocToDestPoint(location);
-                }
-
-                lastFixLocation = location;
-            } catch (Exception e) {
-                Log.e("onLocationChanged exc", e.getMessage());
-            }
-        }
-
-        private void checkUserIsInDestPoint(Location location) {
-            try {
-                distanceFromCurrentPosToDestPoint = calculateDistance(selectedPoint, location);
-
-                Log.e("Distance", String.valueOf(distanceFromCurrentPosToDestPoint));
-
-                if (distanceFromCurrentPosToDestPoint < deltaDistance) {
-
-                    this.needToBuildRoute = false;
-
-                    if (mCurrentRoute != null) {
-                        mCurrentRoute.clear();
-                        map.getOverlays().remove(roadOverlayLine);
-                        map.invalidate();
-                    }
-
-                }
-            } catch (Exception e) {
-                Log.e("Check user exception", e.getMessage());
-            }
-        }
-
-        public void buildRouteFromCurrentLocToDestPoint(Location location) {
-            try {
-                if (mCurrentRoute != null)
-                    mCurrentRoute.clear();
-
-                if (selectedPoint != null)
-                    this.mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
-
-                mCurrentRoute.add(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                mCurrentRoute.add(mDestinationPoint);
-
-                mRoad = mRoadManager.getRoad(mCurrentRoute);
-
-                roadOverlayLine = GraphHopperRoadManager.buildRoadOverlay(mRoad);
-                roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
-                roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
-
-                for (Polyline route : allOverlayLines) {
-                    map.getOverlays().remove(route);
-                }
-                allOverlayLines.clear();
-
-                map.getOverlays().add(roadOverlayLine);
-                allOverlayLines.add(roadOverlayLine);
-
-                map.invalidate();
-
-                Log.e("Route", "Route has been rebuilt");
-            } catch (Exception e) {
-                Log.e("Build route exception", e.getMessage());
-            }
-        }
-
-        private double calculateDistance(Point destinationPoint, Location currentLocation) {
-            try {
-                double x1 = destinationPoint.getLatitude();
-                double y1 = destinationPoint.getLongitude();
-
-                double x2 = currentLocation.getLatitude();
-                double y2 = currentLocation.getLongitude();
-
-                return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-            } catch (Exception e) {
-                Log.e("Calc route exception", e.getMessage());
-            }
-            return 0;
         }
     }
 }
