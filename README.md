@@ -1,2 +1,2 @@
 # RoadToUrfu
-App for Urfu
+Mobile app-navigator for international students on the UrFU
