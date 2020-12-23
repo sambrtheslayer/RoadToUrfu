@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -202,7 +203,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         //endregion
 
         // Инициализация объекта MapView.
-        map = (MapView) findViewById(R.id.map);
+        map = findViewById(R.id.map);
 
         //region Map Settings
         // Отключение дублирования карты гориз и верт.
@@ -324,7 +325,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         });
 
 
-
         clearRouteButton = findViewById(R.id.clearRoute);
         clearRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -341,7 +341,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 }
             }
         });
-
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -414,46 +413,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     }
 
     /*
-    private void setOnClickListenerForImages() {
-        images.get(0).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowPopup(0);
-            }
-        });
-        images.get(1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowPopup(1);
-            }
-        });
-        images.get(2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowPopup(2);
-            }
-        });
-    }
-
-     */
-
-
-    public void ShowPopup(int id) {
-        if (images.get(id) != null) {
-            ImageView fullScreenImage;
-
-            myDialog.setContentView(R.layout.popup_window);
-
-            fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
-            fullScreenImage.setImageDrawable(images.get(id).getDrawable());
-
-
-            myDialog.show();
-        }
-    }
-
-
-    /*
     public void onButtonShowPopupWindowClick(View view, int id) {
 
         fullScreenImage = findViewById(R.id.full_screen_image);
@@ -503,7 +462,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
      */
 
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -526,13 +484,15 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 return;
             }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
-        try{
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0l,0f,this);
-        }catch (Exception ex){}
+        try {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
+        } catch (Exception ex) {
+        }
 
-        if(needToBuildRoute) {
+        if (needToBuildRoute) {
             mLocationOverlay.enableFollowLocation();
             mLocationOverlay.enableMyLocation();
         }
@@ -542,9 +502,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     @Override
     public void onPause() {
         super.onPause();
-        try{
+        try {
             locationManager.removeUpdates(this);
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
         mCompassOverlay.disableCompass();
         mLocationOverlay.disableFollowLocation();
@@ -756,6 +717,35 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         }
 
         imageGridView.setAdapter(new ImageAdapter(ctx, urlList));
+
+        imageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    Log.e("Clicked", i + ", " + l);
+                    Log.e("View", imageGridView.getAdapter().getView(i, null, null).toString());
+                    View image = imageGridView.getAdapter().getView(i, null, null);
+
+                    ImageView fullScreenImage;
+
+                    myDialog.setContentView(R.layout.popup_window);
+
+
+                    fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
+                    Picasso.with(ctx)
+                            .load(imageGridView.getAdapter().getItem(i).toString())
+                            .placeholder(R.drawable.love_urfu)
+                            .fit()
+                            .centerCrop().into(fullScreenImage);
+                    //fullScreenImage.setImageDrawable(image.getBackground());
+
+                    myDialog.show();
+                }
+                catch(Exception e){
+                    Log.e("OnItemClick", e.getMessage());
+                }
+            }
+        });
 
 
     }
