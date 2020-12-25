@@ -740,9 +740,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                     fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
                     Picasso.with(ctx)
                             .load(imageGridView.getAdapter().getItem(i).toString())
-                            //.placeholder(R.drawable.progress_animation)
+                            .noFade()
                             //.fit()
                             //.centerCrop()
+                            .placeholder(R.drawable.progress_animation)
                             .into(fullScreenImage);
 
                     myDialog.show();

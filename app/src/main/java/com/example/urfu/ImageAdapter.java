@@ -50,8 +50,10 @@ public class ImageAdapter extends BaseAdapter {
         Picasso.with(mContext)
                 .load(url)
                 .placeholder(R.drawable.progress_animation)
-                .fit()
-                .centerCrop().into(imageView);
+                .noFade()
+                //.fit()
+                //.centerCrop()
+                .into(imageView);
         return imageView;
     }
 }
