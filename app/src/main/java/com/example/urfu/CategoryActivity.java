@@ -77,14 +77,10 @@ public class CategoryActivity extends AppCompatActivity {
             position = argument.getInt("pos");
         }
 
-        //listView.setAdapter(adapter);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(CategoryActivity.this, MainActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);*/
                 finish();
             }
         });
