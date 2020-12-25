@@ -199,8 +199,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         setContentView(R.layout.map_activity);
 
         //region Initializing
-        initializeImageViewForPhotoes();
-        initializeProgressBars();
         initializeAdditionalInfo();
         //endregion
 
@@ -251,7 +249,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 finish();
             }
         });
-
 
 
         mCustomBottomSheet = findViewById(R.id.custom_bottom_sheet);
@@ -387,7 +384,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         additionalInfo.add(selectedPoint.getContacts());
         additionalInfo.add(selectedPoint.getSite());
 
-        additionalInfoAdapter = new ArrayAdapter<>(ctx, R.layout.array_adapter_custom_layout, additionalInfo);
+        additionalInfoAdapter = new ArrayAdapter<>(ctx, R.layout.add_info_adapter_custom_layout, additionalInfo);
 
         additionalInfoListView.setAdapter(additionalInfoAdapter);
         Log.e("listview", additionalInfoListView.toString());
@@ -395,21 +392,11 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     }
 
     private void initializeProgressBars() {
-        /*progressBars.add(findViewById(R.id.progressImg1));
-        progressBars.add(findViewById(R.id.progressImg2));
-        progressBars.add(findViewById(R.id.progressImg3));
 
-         */
     }
 
     private void initializeImageViewForPhotoes() {
-       /* images.add(findViewById(R.id.mainImg));
-        images.add(findViewById(R.id.mainImg2));
-        images.add(findViewById(R.id.mainImg3));
 
-        */
-
-        // setGoneLoadedImagesFromMemory();
     }
 
     private void setGoneLoadedImagesFromMemory() {
@@ -694,12 +681,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
                     myDialog.setContentView(R.layout.popup_window);
 
-                    /*
-                    Display display = getWindowManager().getDefaultDisplay();
-                    int width = display.getWidth();  // deprecated
-                    int height = display.getHeight();  // deprecated
-                     */
-
                     fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
                     Picasso.with(ctx)
                             .load(imageGridView.getAdapter().getItem(i).toString())
@@ -864,7 +845,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                         // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
                         if (currentId != tappingId) {
                             setNullObjectsInImages();
-                            //setGoneLoadedImagesFromMemory();
 
                             item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
                             changeSelectedOverlayItem(currentId);
