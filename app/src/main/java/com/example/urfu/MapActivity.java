@@ -691,11 +691,14 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                             .into(fullScreenImage);
 
                     myDialog.show();
-                } catch (Exception e) {
+                }
+                catch(Exception e){
                     Log.e("OnItemClick", e.getMessage());
                 }
             }
         });
+
+
     }
 
     private void getPointsFromHost() {
