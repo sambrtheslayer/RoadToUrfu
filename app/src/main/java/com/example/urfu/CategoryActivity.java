@@ -51,6 +51,24 @@ public class CategoryActivity extends AppCompatActivity {
         setContentView(R.layout.category_activity);
 
         searchView = findViewById(R.id.searchView);
+
+        try {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    adapter.getFilter().filter(newText);
+                    return false;
+                }
+            });
+        } catch (Exception e) {
+            Log.e("Search error", e.getMessage());
+        }
+        
         //listView = findViewById(R.id.myList);
         btnBack = findViewById(R.id.ButtonBack);
         Bundle argument = getIntent().getExtras();
