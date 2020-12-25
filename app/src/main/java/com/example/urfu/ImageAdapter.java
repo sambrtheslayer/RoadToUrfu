@@ -49,7 +49,7 @@ public class ImageAdapter extends BaseAdapter {
         String url = getItem(position);
         Picasso.with(mContext)
                 .load(url)
-                .placeholder(R.drawable.love_urfu)
+                .placeholder(R.drawable.progress_animation)
                 .fit()
                 .centerCrop().into(imageView);
         return imageView;

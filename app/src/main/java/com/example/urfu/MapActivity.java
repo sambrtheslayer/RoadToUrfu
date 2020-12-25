@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -730,24 +731,26 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
                     myDialog.setContentView(R.layout.popup_window);
 
+                    /*
+                    Display display = getWindowManager().getDefaultDisplay();
+                    int width = display.getWidth();  // deprecated
+                    int height = display.getHeight();  // deprecated
+                     */
 
                     fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
                     Picasso.with(ctx)
                             .load(imageGridView.getAdapter().getItem(i).toString())
-                            .placeholder(R.drawable.love_urfu)
-                            .fit()
-                            .centerCrop().into(fullScreenImage);
-                    //fullScreenImage.setImageDrawable(image.getBackground());
+                            //.placeholder(R.drawable.progress_animation)
+                            //.fit()
+                            //.centerCrop()
+                            .into(fullScreenImage);
 
                     myDialog.show();
-                }
-                catch(Exception e){
+                } catch (Exception e) {
                     Log.e("OnItemClick", e.getMessage());
                 }
             }
         });
-
-
     }
 
     private void getPointsFromHost() {
@@ -919,7 +922,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
                     @Override
                     public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        Log.e("HUI2", "long tapped");
                         return true;
                     }
 
