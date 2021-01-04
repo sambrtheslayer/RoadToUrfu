@@ -89,6 +89,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import android.content.SharedPreferences;
+
 public class MapActivity extends AppCompatActivity implements LocationListener {
 
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
@@ -150,6 +152,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
+    SharedPreferences settings;
+
+    private Language CURRENT_LANGUAGE = Language.Chinese; // 0 - Chinese
+
     //MotionEvent. - содержит набор разновидностей событий. Проверка события через event.getAction()
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -182,6 +188,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
         checkUserLocationPermission();
         ctx = getApplicationContext();
+
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
 
         selectedPoint = getIntent().getParcelableExtra("point");
 
@@ -339,7 +347,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         clearRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                debugFunctionDELETE_AFTER_TESTS();
                 if (roadOverlayLine != null) {
+                    showRouteHasBeenClearedToast();
+
                     needToBuildRoute = false;
 
                     for (Polyline route : allOverlayLines) {
@@ -518,10 +529,44 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                     map.invalidate();
                 }
 
+                showUserInDestPointToast();
             }
         } catch (Exception e) {
             Log.e("Check user exception", e.getMessage());
         }
+    }
+
+    private void showUserInDestPointToast()
+    {
+        String alt_text_chinese = "你在那個地方";
+
+        Toast toast = Toast.makeText(ctx, "Вы прибыли на место\n你在那個地方", Toast.LENGTH_SHORT);
+
+        switch(CURRENT_LANGUAGE)
+        {
+            case Chinese: toast = Toast.makeText(ctx, "Вы прибыли на место\n" + alt_text_chinese, Toast.LENGTH_SHORT); break;
+        }
+
+        toast.show();
+    }
+
+    private void showRouteHasBeenClearedToast()
+    {
+        String alt_text_chinese = "路線已清除";
+
+        Toast toast = Toast.makeText(ctx, "Вы прибыли на место\n路線已清除", Toast.LENGTH_SHORT);
+
+        switch(CURRENT_LANGUAGE)
+        {
+            case Chinese: toast = Toast.makeText(ctx, "Вы прибыли на место\n" + alt_text_chinese, Toast.LENGTH_SHORT); break;
+        }
+
+        toast.show();
+    }
+
+    private void debugFunctionDELETE_AFTER_TESTS()
+    {
+        Log.e("Settings", settings.getString("Language", "N/A"));
     }
 
     public void buildRouteFromCurrentLocToDestPoint(Location location) {

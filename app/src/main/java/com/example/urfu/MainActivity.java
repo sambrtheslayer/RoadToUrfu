@@ -2,11 +2,17 @@ package com.example.urfu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.icu.util.ChineseCalendar;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -32,10 +38,16 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
+    SharedPreferences settings;
+    ImageButton settingsButton;
+
+    private Language currentLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initializeApplicationSettings();
 
         // Disabled landscape mode.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -43,6 +55,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         searchView = findViewById(R.id.searchView);
+
+        settingsButton = findViewById(R.id.imageButton);
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         try {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -60,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("Search error", e.getMessage());
         }
+
+
     }
 
     @Override
@@ -78,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e("Main Activ. Resume", "Method has resumed");
+        Log.e("Settings", settings.getString("Language", "N/A"));
     }
 
 
@@ -212,5 +238,28 @@ public class MainActivity extends AppCompatActivity {
 
     private int getIdFromString(JSONObject object) throws JSONException {
         return Integer.parseInt(object.getString("id"));
+    }
+
+    private void initializeApplicationSettings()
+    {
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+
+        if(!settings.contains("Language")){
+
+            SharedPreferences.Editor prefEditor = settings.edit();
+            prefEditor.putString("Language", "0");
+            prefEditor.apply();
+            currentLanguage = Language.Chinese;
+        }
+        else{
+            String readLanguageSetting = settings.getString("Language", "N/A");
+            switch(readLanguageSetting)
+            {
+                case "1": currentLanguage = Language.English; break;
+                default: currentLanguage = Language.Chinese; break;
+            }
+        }
+
+        Log.e("Settings", settings.getString("Language", "N/A"));
     }
 }
