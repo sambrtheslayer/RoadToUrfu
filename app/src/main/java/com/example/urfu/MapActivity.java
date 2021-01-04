@@ -1,5 +1,6 @@
 package com.example.urfu;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,7 @@ import android.preference.PreferenceManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -91,7 +94,7 @@ import okhttp3.Response;
 
 import android.content.SharedPreferences;
 
-public class MapActivity extends AppCompatActivity implements LocationListener {
+public class MapActivity extends AppCompatActivity implements LocationListener, PopupMenu.OnMenuItemClickListener  {
 
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private MapView map = null;
@@ -153,6 +156,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private final long ANIMATION_ZOOM_DELAY = 500L;
 
     SharedPreferences settings;
+    ImageButton settingsButton;
+    Button campusButton;
+    Button attractionsButton;
+
 
     private Language CURRENT_LANGUAGE = Language.Chinese; // 0 - Chinese
 
@@ -185,6 +192,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadSettings();
 
         checkUserLocationPermission();
         ctx = getApplicationContext();
@@ -205,6 +213,13 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.map_activity);
+
+        campusButton = findViewById(R.id.campus);
+        attractionsButton = findViewById(R.id.attractions);
+        settingsButton = findViewById(R.id.settingsButton);
+        buildRouteButton = findViewById(R.id.buildRoute);
+
+        CheckCurrentLanguage();
 
         //region Initializing
         initializeAdditionalInfo();
@@ -305,7 +320,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
             }
         });
 
-        buildRouteButton = findViewById(R.id.buildRoute);
+
         buildRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -386,6 +401,66 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         myDialog = new Dialog(this);
     }
 
+    private void CheckCurrentLanguage()
+    {
+        String currentLanguage = settings.getString("Language", "N/A");
+        if(currentLanguage.equals(Language.Chinese.getId()))
+        {
+            campusButton.setText(R.string.campus_ch);
+            buildRouteButton.setText(R.string.setRoute_ch);
+            attractionsButton.setText(R.string.attractions_ch);
+            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
+        }
+        else if(currentLanguage.equals(Language.English.getId()))
+        {
+            campusButton.setText(R.string.campus_eng);
+            campusButton.setTextSize(13);
+            buildRouteButton.setText(R.string.setRoute_eng);
+            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
+            attractionsButton.setText(R.string.attractions_eng);
+        }
+    }
+
+    public void showLanguageWindow(View v) {
+        PopupMenu languageMenu = new PopupMenu(this, v);
+
+        languageMenu.setOnMenuItemClickListener(this);
+        languageMenu.inflate(R.menu.language_menu);
+        languageMenu.show();
+    }
+
+    @SuppressLint({"ShowToast", "NonConstantResourceId"})
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.chinese_lang:
+                Toast.makeText(this, "选择中文", Toast.LENGTH_SHORT).show();
+                changeLanguage("0");
+                return true;
+
+            case R.id.english_lang:
+                Toast.makeText(this, "English language selected", Toast.LENGTH_SHORT).show();
+                changeLanguage("1");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void changeLanguage(String idLanguage) {
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", idLanguage);
+        prefEditor.apply();
+
+        CheckCurrentLanguage();
+    }
+
+    private void loadSettings() {
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+    }
+
     private void initializeAdditionalInfo() {
         additionalInfoListView = findViewById(R.id.additionalInfoListView);
 
@@ -402,14 +477,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         Log.e("adapter", additionalInfoAdapter.toString());
     }
 
-    private void initializeProgressBars() {
-
-    }
-
-    private void initializeImageViewForPhotoes() {
-
-    }
-
     private void setGoneLoadedImagesFromMemory() {
         for (int i = 0; i < 3; i++) {
             images.get(i).setVisibility(View.INVISIBLE);
@@ -419,8 +486,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private void setNullObjectsInImages() {
         int size = images.size();
         images = new ArrayList<>(size);
-
-        initializeImageViewForPhotoes();
     }
 
 
@@ -799,6 +864,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         });
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void buildPointsByJson(JSONArray jsonArray) {
         /*
             point_id
@@ -878,13 +944,14 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     private void initializeTapSettings() {
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @SuppressLint("UseCompatLoadingForDrawables")
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
 
                         map.getController().animateTo(item.getPoint(), 19.5, ANIMATION_ZOOM_DELAY);
 
                         int currentId = selectedPoint.getId();
-                        int tappingId = Integer.valueOf(item.getUid());
+                        int tappingId = Integer.parseInt(item.getUid());
 
                         Log.e("Current ID", String.valueOf(currentId));
                         Log.e("Tapping ID", String.valueOf(tappingId));
@@ -900,8 +967,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                             selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
 
                             findAndSetupNewSelectedPoint(tappingId);
-
-                            initializeImageViewForPhotoes();
 
                             loadPhotoesFromHostById(selectedPoint.getId());
 
@@ -926,7 +991,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
     private void changeSelectedOverlayItem(int id) {
         for (int i = 0; i < items.size(); i++) {
-            if (Integer.valueOf(items.get(i).getUid()) == id) {
+            if (Integer.parseInt(items.get(i).getUid()) == id) {
                 selectedOverlayItem = items.get(i);
                 assert loadedImages != null;
             }
@@ -948,9 +1013,10 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
         Log.e("Selected Point", String.valueOf(selectedPoint.getId()));
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void setupMarkerForFirstOverlayItem(int id) {
         for (int i = 0; i < items.size(); i++) {
-            if (Integer.valueOf(items.get(i).getUid()) == id) {
+            if (Integer.parseInt(items.get(i).getUid()) == id) {
                 selectedOverlayItem = items.get(i);
                 selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
 

@@ -2,18 +2,24 @@ package com.example.urfu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,25 +38,35 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
 
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
     ImageButton btnBack;
+    SharedPreferences settings;
     int position;
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
+    ImageButton settingsButton;
+    Button campusButton;
+    Button attractionsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        loadSettings();
         // Disable landscape mode
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.category_activity);
 
+        campusButton = findViewById(R.id.campus);
+        attractionsButton = findViewById(R.id.attractions);
+
         searchView = findViewById(R.id.searchView);
+        settingsButton = findViewById(R.id.settingsButton);
+
+        CheckCurrentLanguage();
 
         try {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -68,8 +84,7 @@ public class CategoryActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("Search error", e.getMessage());
         }
-        
-        //listView = findViewById(R.id.myList);
+
         btnBack = findViewById(R.id.ButtonBack);
         Bundle argument = getIntent().getExtras();
 
@@ -113,6 +128,24 @@ public class CategoryActivity extends AppCompatActivity {
         Log.e("Category Activ. Pause", "Method has paused");
     }
 
+    private void CheckCurrentLanguage()
+    {
+        String currentLanguage = settings.getString("Language", "N/A");
+        if(currentLanguage.equals(Language.Chinese.getId()))
+        {
+            campusButton.setText(R.string.campus_ch);
+            attractionsButton.setText(R.string.attractions_ch);
+            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
+        }
+        else if(currentLanguage.equals(Language.English.getId()))
+        {
+            campusButton.setText(R.string.campus_eng);
+            campusButton.setTextSize(13);
+            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
+            attractionsButton.setText(R.string.attractions_eng);
+        }
+    }
+
     public void getPointsFromHost() {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -124,9 +157,11 @@ public class CategoryActivity extends AppCompatActivity {
 
         // Конечный ресурс, где идёт обработка логина и пароля
         String url = baseHostApiUrl + "/data/get_points.php";
+        String readLanguageSetting = settings.getString("Language", "N/A");
 
         FormBody formBody = new FormBody.Builder()
                 .add("category", String.valueOf(position))
+                .add("lang", readLanguageSetting)
                 .build();
 
         Request request = new Request.Builder()
@@ -283,6 +318,49 @@ public class CategoryActivity extends AppCompatActivity {
     private void enableProgressBar() {
         ProgressBar progress = findViewById(R.id.progressbar);
         progress.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    public void showLanguageWindow(View v) {
+        PopupMenu languageMenu = new PopupMenu(this, v);
+
+        languageMenu.setOnMenuItemClickListener(this);
+        languageMenu.inflate(R.menu.language_menu);
+        languageMenu.show();
+    }
+
+    @SuppressLint({"ShowToast", "NonConstantResourceId"})
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.chinese_lang:
+                Toast.makeText(this, "选择中文", Toast.LENGTH_SHORT).show();
+                changeLanguage("0");
+                return true;
+
+            case R.id.english_lang:
+                Toast.makeText(this, "English language selected", Toast.LENGTH_SHORT).show();
+                changeLanguage("1");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void changeLanguage(String idLanguage) {
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", idLanguage);
+        prefEditor.apply();
+
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
+    private void loadSettings() {
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
     }
 
     class MapActivityHandler implements Runnable {

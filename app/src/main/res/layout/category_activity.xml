@@ -21,25 +21,26 @@
         app:srcCompat="@drawable/ic_backspace_gray_36dp" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/settingsButton"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="#FFFFFF"
         android:contentDescription="TODO"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn2"
+        app:layout_constraintStart_toEndOf="@+id/attractions"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/settings_gray_36dp" />
+        app:srcCompat="@drawable/settings_gray_36dp"
+        android:onClick="showLanguageWindow"/>
 
     <Button
-        android:id="@+id/btn2"
+        android:id="@+id/attractions"
         android:layout_width="135dp"
         android:layout_height="56dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:backgroundTint="#E0DFDF"
-        android:text="@string/attractions"
+        android:text="@string/attractions_ch"
         android:textAllCaps="false"
         android:textColor="#696767"
         app:layout_constraintStart_toEndOf="@+id/guideline_mid"
@@ -52,7 +53,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:backgroundTint="#3E73FC"
-        android:text="@string/campus"
+        android:text="@string/campus_ch"
         android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline_mid"
         app:layout_constraintTop_toTopOf="parent" />

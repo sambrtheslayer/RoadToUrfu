@@ -1,7 +1,9 @@
 package com.example.urfu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,13 +11,17 @@ import android.content.pm.ActivityInfo;
 import android.icu.util.ChineseCalendar;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,39 +39,33 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
     SharedPreferences settings;
     ImageButton settingsButton;
+    Button campusButton;
+    Button attractionsButton;
 
-    private Language currentLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initializeApplicationSettings();
+        loadSettings();
 
         // Disabled landscape mode.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         setContentView(R.layout.activity_main);
 
+        campusButton = findViewById(R.id.campus);
+        attractionsButton = findViewById(R.id.attractions);
+
         searchView = findViewById(R.id.searchView);
+        settingsButton = findViewById(R.id.settingsButton);
 
-        settingsButton = findViewById(R.id.imageButton);
-
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
 
         try {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Search error", e.getMessage());
         }
 
-
+        CheckCurrentLanguage();
     }
 
     @Override
@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e("Main Activ. Resume", "Method has resumed");
-        Log.e("Settings", settings.getString("Language", "N/A"));
     }
 
 
@@ -112,6 +111,25 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         Log.e("Main Activ. Pause", "Method has paused");
     }
+
+    private void CheckCurrentLanguage()
+    {
+        String currentLanguage = settings.getString("Language", "N/A");
+        if(currentLanguage.equals(Language.Chinese.getId()))
+        {
+            campusButton.setText(R.string.campus_ch);
+            attractionsButton.setText(R.string.attractions_ch);
+            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
+        }
+        else if(currentLanguage.equals(Language.English.getId()))
+        {
+            campusButton.setText(R.string.campus_eng);
+            campusButton.setTextSize(13);
+            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
+            attractionsButton.setText(R.string.attractions_eng);
+        }
+    }
+
 
     public void getCategoriesFromHost() {
         OkHttpClient client = new OkHttpClient().newBuilder()
@@ -125,8 +143,10 @@ public class MainActivity extends AppCompatActivity {
         // Конечный ресурс, где идёт обработка логина и пароля
         // TODO: вынести в константу основной путь
         String url = baseHostApiUrl + "/data/get_categories.php";
+        String readLanguageSetting = settings.getString("Language", "N/A");
 
         FormBody formBody = new FormBody.Builder()
+                .add("lang", readLanguageSetting)
                 .build();
 
         Request request = new Request.Builder()
@@ -240,26 +260,47 @@ public class MainActivity extends AppCompatActivity {
         return Integer.parseInt(object.getString("id"));
     }
 
-    private void initializeApplicationSettings()
-    {
-        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+    public void showLanguageWindow(View v) {
+        PopupMenu languageMenu = new PopupMenu(this, v);
 
-        if(!settings.contains("Language")){
-
-            SharedPreferences.Editor prefEditor = settings.edit();
-            prefEditor.putString("Language", "0");
-            prefEditor.apply();
-            currentLanguage = Language.Chinese;
-        }
-        else{
-            String readLanguageSetting = settings.getString("Language", "N/A");
-            switch(readLanguageSetting)
-            {
-                case "1": currentLanguage = Language.English; break;
-                default: currentLanguage = Language.Chinese; break;
-            }
-        }
-
-        Log.e("Settings", settings.getString("Language", "N/A"));
+        languageMenu.setOnMenuItemClickListener(this);
+        languageMenu.inflate(R.menu.language_menu);
+        languageMenu.show();
     }
+
+    @SuppressLint({"ShowToast", "NonConstantResourceId"})
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.chinese_lang:
+                Toast.makeText(this, "选择中文", Toast.LENGTH_SHORT).show();
+                changeLanguage("0");
+                return true;
+
+            case R.id.english_lang:
+                Toast.makeText(this, "English language selected", Toast.LENGTH_SHORT).show();
+                changeLanguage("1");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void changeLanguage(String idLanguage) {
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", idLanguage);
+        prefEditor.apply();
+
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
+    private void loadSettings() {
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+    }
+
 }

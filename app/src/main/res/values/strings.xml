@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">URFU</string>
-    <string name="campus">ﾂ环板篠ｮﾂ嘉ｯ Здания УрФУ</string>
-    <string name="attractions">地\nМеста</string>
-    <string name="setRoute">路线\nПостроить маршрут</string>
+    <string name="campus_ch">ﾂ环板篠ｮﾂ嘉ｯ Здания УрФУ</string>
+    <string name="campus_eng">UrFU Buildings Здания УрФУ</string>
+    <string name="attractions_ch">地\nМеста</string>
+    <string name="attractions_eng">Attractions\nМеста</string>
+    <string name="setRoute_ch">路线\nПостроить маршрут</string>
+    <string name="setRoute_eng">Set the route\nПостроить маршрут</string>
+    <string name="chinese">中文</string>
+    <string name="english">English</string>
 </resources>

@@ -70,7 +70,7 @@
             android:layout_below="@+id/additionalInfoListView"
             android:layout_centerInParent="true"
             android:backgroundTint="#3E73FC"
-            android:text="@string/setRoute" />
+            android:text="@string/setRoute_ch" />
 
     </RelativeLayout>
 
