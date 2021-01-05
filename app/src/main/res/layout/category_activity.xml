@@ -69,6 +69,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--
         <Button
             android:id="@+id/changeCategorySearch"
             android:layout_width="wrap_content"
@@ -81,6 +82,35 @@
             app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
             app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
             app:layout_constraintTop_toTopOf="parent" />
+         -->
+
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="65dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
+            app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/find_education_buildings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/queryHintEng" />
+
+            <RadioButton
+                android:id="@+id/find_education_audience"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/queryHintEng2" />
+
+        </RadioGroup>
 
         <SearchView
             android:id="@+id/searchView"
@@ -92,7 +122,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.347"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/changeCategorySearch">
+            app:layout_constraintTop_toBottomOf="@id/radio_group">
 
         </SearchView>
 
@@ -121,11 +151,11 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
             android:layout_gravity="center"
+            android:text="Search"
             app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
             app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.constraintlayout.widget.Guideline
