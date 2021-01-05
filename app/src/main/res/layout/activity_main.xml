@@ -63,7 +63,7 @@
             android:layout_height="41dp"
             android:layout_marginTop="75dp"
             android:iconifiedByDefault="false"
-            android:queryHint="Поиск"
+            android:queryHint="TODO: УБРАТЬ ЭТО ПОЛЕ"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.347"
             app:layout_constraintStart_toStartOf="parent"

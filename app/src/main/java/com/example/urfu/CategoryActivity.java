@@ -51,6 +51,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     Button campusButton;
     Button attractionsButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,13 +136,14 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         {
             campusButton.setText(R.string.campus_ch);
             attractionsButton.setText(R.string.attractions_ch);
+            searchView.setQueryHint("动漫是我的生活");
             Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
         }
         else if(currentLanguage.equals(Language.English.getId()))
         {
             campusButton.setText(R.string.campus_eng);
             campusButton.setTextSize(13);
-
+            searchView.setQueryHint("Find a campus building");
             attractionsButton.setText(R.string.attractions_eng);
             Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
         }
