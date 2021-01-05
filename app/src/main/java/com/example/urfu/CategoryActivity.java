@@ -55,6 +55,8 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     boolean isSearchAudience;
     RadioGroup radioGroup;
     RadioButton radioButton;
+    int currentRadioButtonId;
+    String currentLanguage;
 
 
     @Override
@@ -76,24 +78,29 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
         radioGroup = findViewById(R.id.radio_group);
 
-        switchCategory();
+        //switchCategory();
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 radioButton = radioGroup.findViewById(checkedId);
                 int index = radioGroup.indexOfChild(radioButton);
+                currentRadioButtonId = index;
+                Log.e("index", String.valueOf(index));
+                Log.e("id", String.valueOf(radioButton.getId()));
 
-                switch (index) {
+                switchCategory(index);
+
+                /*switch (index) {
                     case 0: // first button
                         Log.e("Radio button 1", "checked");
-                        switchCategory();
+                        switchCategory(index);
                         break;
                     case 1: // secondbutton
                         Log.e("Radio button 2", "checked");
                         switchCategory();
                         break;
-                }
+                }*/
             }
         });
 
@@ -133,32 +140,29 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
     }
 
+    private void switchCategory(int value) {
+        switch(value) {
+            // Первый radio-button (корпуса)
+            case 0:
+                listView.setVisibility(ListView.VISIBLE);
+                if (currentLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintCh));
+                } else if (currentLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEng));
+                }
+                break;
+            // Второй radio-button (аудитории)
+            case 1:
+                listView.setVisibility(ListView.GONE);
+                if (currentLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintCh2));
+                } else if (currentLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEng2));
+                }
+        }
+    }
+
     private void switchCategory() {
-        String idLanguage = settings.getString("Language", "N/A");
-        // Сейчас режим поиска по аудиториям
-        if (isSearchAudience) {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh2);
-                searchView.setQueryHint(getString(R.string.queryHintCh));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng2);
-                searchView.setQueryHint(getString(R.string.queryHintEng));
-            }
-        }
-        // Сейчас режим поиска по корпусам
-        else {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh);
-                searchView.setQueryHint(getString(R.string.queryHintCh2));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng);
-                searchView.setQueryHint(getString(R.string.queryHintEng2));
-            }
-        }
 
         if (isSearchAudience) {
             finish();
@@ -198,35 +202,11 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     @Override
     protected void onResume() {
         super.onResume();
-
         Log.e("Category Activ. Resume", "Method has resumed");
-        // changeLanguageNoMenu();
-
-        String idLanguage = settings.getString("Language", "N/A");
-        changeLanguageCampusButton(idLanguage);
-        changeLanguageAttractionsButton(idLanguage);
-
-        if (isSearchAudience) {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh);
-                searchView.setQueryHint(getString(R.string.queryHintCh2));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng);
-                searchView.setQueryHint(getString(R.string.queryHintEng2));
-            }
-        } else {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh2);
-                searchView.setQueryHint(getString(R.string.queryHintCh));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng2);
-                searchView.setQueryHint(getString(R.string.queryHintEng));
-            }
-        }
+        currentLanguage = settings.getString("Language", "N/A");
+        changeLanguageCampusButton(currentLanguage);
+        changeLanguageAttractionsButton(currentLanguage);
+        reloadLanguageForRadioButtons();
 
         if (listView != null) {
 
@@ -236,6 +216,20 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         }
     }
 
+    private void reloadLanguageForRadioButtons() {
+
+        if (currentLanguage.equals(Language.Chinese.getId())) {
+            RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
+            radioButton1.setText(R.string.queryHintCh);
+            RadioButton radioButton2 = findViewById(R.id.find_education_audience);
+            radioButton2.setText(R.string.queryHintCh2);
+        } else if (currentLanguage.equals(Language.English.getId())) {
+            RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
+            radioButton1.setText(R.string.queryHintEng);
+            RadioButton radioButton2 = findViewById(R.id.find_education_audience);
+            radioButton2.setText(R.string.queryHintEng2);
+        }
+    }
 
     @Override
     protected void onPause() {
@@ -475,40 +469,39 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         SharedPreferences.Editor prefEditor = settings.edit();
         prefEditor.putString("Language", idLanguage);
         prefEditor.apply();
+        currentLanguage = idLanguage;
 
         changeLanguageCampusButton(idLanguage);
         changeLanguageAttractionsButton(idLanguage);
 
-
-        if (isSearchAudience) {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh);
-                searchView.setQueryHint(getString(R.string.queryHintCh2));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по к" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng);
-                searchView.setQueryHint(getString(R.string.queryHintEng2));
-            }
-        } else {
-            if (idLanguage.equals(Language.Chinese.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на китайский
-                //changeCategorySearch.setText(R.string.queryHintCh2);
-                searchView.setQueryHint(getString(R.string.queryHintCh));
-            } else if (idLanguage.equals(Language.English.getId())) {
-                //TODO: изменить надпись в кнопке "Поиск по а" на анлийский
-                //changeCategorySearch.setText(R.string.queryHintEng2);
-                searchView.setQueryHint(getString(R.string.queryHintEng));
-            }
+        if (idLanguage.equals(Language.Chinese.getId())) {
+            RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
+            radioButton1.setText(R.string.queryHintCh);
+            RadioButton radioButton2 = findViewById(R.id.find_education_audience);
+            radioButton2.setText(R.string.queryHintCh2);
+        } else if (idLanguage.equals(Language.English.getId())) {
+            RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
+            radioButton1.setText(R.string.queryHintEng);
+            RadioButton radioButton2 = findViewById(R.id.find_education_audience);
+            radioButton2.setText(R.string.queryHintEng2);
         }
 
-
-        if (!isSearchAudience) {
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
+        switch(currentRadioButtonId) {
+            case 0:
+                if (idLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintCh));
+                } else if (idLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEng));
+                }
+            case 1:
+                if (idLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintCh2));
+                } else if (idLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEng2));
+                }
         }
+
+        getPointsFromHost();
 
     }
 
@@ -552,9 +545,12 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         }
     }
 
+
+
     private void loadSettings() {
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
         isSearchAudience = settings.getBoolean("StateButtonCategorySearch", false);
+        currentLanguage = settings.getString("Language", "N/A");
     }
 
     private void changeLanguageNoMenu() {
