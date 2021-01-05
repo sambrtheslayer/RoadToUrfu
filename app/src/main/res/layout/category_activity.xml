@@ -27,11 +27,11 @@
         android:layout_marginTop="16dp"
         android:backgroundTint="#FFFFFF"
         android:contentDescription="TODO"
+        android:onClick="showLanguageWindow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/attractions"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/settings_gray_36dp"
-        android:onClick="showLanguageWindow"/>
+        app:srcCompat="@drawable/settings_gray_36dp" />
 
     <Button
         android:id="@+id/attractions"
@@ -69,18 +69,30 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Button
+            android:id="@+id/changeCategorySearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="65dp"
+            android:backgroundTint="#3E73FC"
+            android:text="@string/queryHintCh2"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
+            app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <SearchView
             android:id="@+id/searchView"
             android:layout_width="365dp"
             android:layout_height="41dp"
-            android:layout_marginTop="75dp"
+            android:layout_marginTop="5dp"
             android:iconifiedByDefault="false"
             android:queryHint="@string/queryHintCh"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.347"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/changeCategorySearch">
 
         </SearchView>
 
@@ -99,12 +111,36 @@
         <ListView
             android:id="@+id/myList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@id/guideline_right"
             app:layout_constraintStart_toStartOf="@+id/guideline_left"
             app:layout_constraintTop_toBottomOf="@id/searchView">
 
         </ListView>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:layout_gravity="center"
+            app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
+            app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_left_lin_lay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_right_lin_lay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
 
     </LinearLayout>
     <!--==========//Search and List layout==========-->

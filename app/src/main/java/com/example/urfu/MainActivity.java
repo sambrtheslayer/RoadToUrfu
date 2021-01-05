@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Log.e("Search error", e.getMessage());
         }
 
-        CheckCurrentLanguage();
+        checkCurrentLanguage();
     }
 
     @Override
@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     protected void onResume() {
         super.onResume();
+        checkCurrentLanguage();
         Log.e("Main Activ. Resume", "Method has resumed");
     }
 
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         Log.e("Main Activ. Pause", "Method has paused");
     }
 
-    private void CheckCurrentLanguage()
+    private void checkCurrentLanguage()
     {
         String currentLanguage = settings.getString("Language", "N/A");
         if(currentLanguage.equals(Language.Chinese.getId()))
@@ -297,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         overridePendingTransition(0, 0);
         startActivity(getIntent());
         overridePendingTransition(0, 0);
+
     }
 
     private void loadSettings() {
