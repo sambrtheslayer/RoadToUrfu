@@ -8,4 +8,6 @@
     <string name="setRoute_eng">Set the route\nПостроить маршрут</string>
     <string name="chinese">中文</string>
     <string name="english">English</string>
+    <string name="queryHintEng">Find a campus building</string>
+    <string name="queryHintCh">动漫是我的生活</string>
 </resources>

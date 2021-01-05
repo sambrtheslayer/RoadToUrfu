@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         {
             campusButton.setText(R.string.campus_eng);
             campusButton.setTextSize(13);
-            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
             attractionsButton.setText(R.string.attractions_eng);
+            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
         }
     }
 
