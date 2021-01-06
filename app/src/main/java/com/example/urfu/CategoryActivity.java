@@ -45,6 +45,8 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
+    ArrayAdapter<String> auditoriumAdapter;
+    String[] classrooms = new String[] {"ГУК", "И", "М", "Э", "Т", "СП", "С", "ФТ", "Х", "МТ", "В"};
     ImageButton btnBack;
     SharedPreferences settings;
     int position;
@@ -55,7 +57,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     boolean isSearchAudience;
     RadioGroup radioGroup;
     RadioButton radioButton;
-    int currentRadioButtonId;
+    int currentRadioButtonId = 0;
     String currentLanguage;
 
 
@@ -144,59 +146,65 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         switch(value) {
             // Первый radio-button (корпуса)
             case 0:
-                listView.setVisibility(ListView.VISIBLE);
+                //listView.setVisibility(ListView.VISIBLE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintCh));
                 } else if (currentLanguage.equals(Language.English.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintEng));
                 }
+                getPointsFromHost();
                 break;
             // Второй radio-button (аудитории)
             case 1:
-                listView.setVisibility(ListView.GONE);
+                //listView.setVisibility(ListView.GONE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintCh2));
                 } else if (currentLanguage.equals(Language.English.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintEng2));
                 }
+                createAuditoriumAdapter();
                 break;
         }
     }
 
-    private void switchCategory() {
+    private void createAuditoriumAdapter() {
 
-        if (isSearchAudience) {
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
-        }
+        auditoriumAdapter = new ArrayAdapter<>(this,
+                R.layout.array_adapter_custom_layout, classrooms);
 
-        isSearchAudience = !isSearchAudience;
-        Log.e("state", String.valueOf(isSearchAudience));
-        if (isSearchAudience)
-            listView.setVisibility(ListView.GONE);
-        else
-            listView.setVisibility(ListView.VISIBLE);
-
-        SharedPreferences.Editor prefEditor = settings.edit();
-        prefEditor.putBoolean("StateButtonCategorySearch", isSearchAudience);
-        prefEditor.apply();
-
+        listView.setAdapter(auditoriumAdapter);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        getPointsFromHost();
+        try {
+
+            Log.e("In try catch", "Yes");
+            switch (currentRadioButtonId) {
+                // Первый radio-button (корпуса)
+                case 0:
+                    getPointsFromHost();
+                    break;
+                // Второй radio-button (аудитории)
+                case 1:
+                    createAuditoriumAdapter();
+                    break;
+            }
+
+        }
+        catch(Exception e) {
+            Log.e("Resume category error", e.getMessage());
+        }
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         SharedPreferences.Editor prefEditor = settings.edit();
-        prefEditor.putBoolean("StateButtonCategorySearch", false);
+        prefEditor.putInt("RadioButton", currentRadioButtonId);
         prefEditor.apply();
     }
 
@@ -209,15 +217,20 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         changeLanguageAttractionsButton(currentLanguage);
         reloadLanguageForRadioButtonsAndSearchView();
 
+        /*if(radioButton != null)
+            radioButton.setChecked(true);
+
+         */
+
+
         if (listView != null) {
 
             disableProgressBar();
 
             listView.setVisibility(ListView.VISIBLE);
         }
-
-
     }
+
 
     private void reloadLanguageForRadioButtonsAndSearchView() {
 
@@ -258,6 +271,11 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     @Override
     protected void onPause() {
         super.onPause();
+
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putInt("RadioButton", currentRadioButtonId);
+        prefEditor.apply();
+
         Log.e("Category Activ. Pause", "Method has paused");
     }
 
@@ -527,7 +545,24 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 break;
         }
 
-        getPointsFromHost();
+        try {
+
+            Log.e("In try catch", "Yes");
+            switch (currentRadioButtonId) {
+                // Первый radio-button (корпуса)
+                case 0:
+                    getPointsFromHost();
+                    break;
+                // Второй radio-button (аудитории)
+                case 1:
+                    createAuditoriumAdapter();
+                    break;
+            }
+
+        }
+        catch(Exception e) {
+            Log.e("Resume category error", e.getMessage());
+        }
 
     }
 
