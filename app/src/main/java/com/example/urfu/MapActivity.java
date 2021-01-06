@@ -897,7 +897,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
                 double longitude = object.getDouble("point_longitude");
 
-                String image = object.getString("point_image");
+                String classroom = object.getString("point_classroom");
 
                 String description = object.getString("point_description");
 
@@ -909,7 +909,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
                 String site = object.getString("point_site");
 
-                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, /*image,*/ description, alt_description, address, contacts, site));
+                hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, classroom, description, alt_description, address, contacts, site));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -23,6 +23,7 @@ public class Point implements Parcelable {
     private final double mLongitude;
     private final String mDescription;
     private final String mAltDescription;
+    private final String mClassroom;
     private String mAddress;
     private String mContacts;
     private String mSite;
@@ -48,6 +49,10 @@ public class Point implements Parcelable {
         return mLongitude;
     }
 
+    public String getClassroom(){
+        return mClassroom;
+    }
+
     public String getDescription() {
         return mDescription;
     }
@@ -67,24 +72,14 @@ public class Point implements Parcelable {
     }
 
 
-    //TODO: delete next time
-    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription) {
-        this.mId = mId;
-        this.mName = mName;
-        this.mAltName = mAltName;
-        this.mLatitude = mLatitude;
-        this.mLongitude = mLongitude;
-        this.mDescription = mDescription;
-        this.mAltDescription = mAltDescription;
-    }
-
-    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mDescription, String mAltDescription,
+    public Point(int mId, String mName, String mAltName, double mLatitude, double mLongitude, String mClassroom, String mDescription, String mAltDescription,
                  String mAddress, String mContacts, String mSite) {
         this.mId = mId;
         this.mName = mName;
         this.mAltName = mAltName;
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
+        this.mClassroom = mClassroom;
         this.mDescription = mDescription;
         this.mAltDescription = mAltDescription;
         this.mAddress = mAddress;
@@ -98,6 +93,7 @@ public class Point implements Parcelable {
         mAltName = in.readString();
         mLatitude = in.readDouble();
         mLongitude = in.readDouble();
+        mClassroom = in.readString();
         mDescription = in.readString();
         mAltDescription = in.readString();
         mAddress= in.readString();
@@ -131,6 +127,7 @@ public class Point implements Parcelable {
         dest.writeString(mAltName);
         dest.writeDouble(mLatitude);
         dest.writeDouble(mLongitude);
+        dest.writeString(mClassroom);
         dest.writeString(mDescription);
         dest.writeString(mAltDescription);
         dest.writeString(mAddress);

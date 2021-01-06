@@ -12,4 +12,5 @@
     <string name="queryHintEng2">Find a learning auditorium</string>
     <string name="queryHintCh">Поиск учебного корпуса</string>
     <string name="queryHintCh2">Поиск аудитории</string>
+    <string name="info_about_class_room">TODO: Его тоже нужно будет переключать\nSome text with info about class room</string>
 </resources>
