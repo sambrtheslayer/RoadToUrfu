@@ -47,8 +47,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     ListView listView;
     SearchView searchView;
     ArrayAdapter<String> adapter;
-    ArrayAdapter<String> auditoriumAdapter;
-    String[] classrooms = new String[]{"ГУК", "И", "М", "Э", "Т", "СП", "С", "ФТ", "Х", "МТ", "В"};
     ImageButton btnBack;
     SharedPreferences settings;
     int position;
@@ -218,21 +216,10 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 } else if (currentLanguage.equals(Language.English.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintEng2));
                 }
-                createAuditoriumAdapter();
                 break;
         }
     }
 
-    private void createAuditoriumAdapter() {
-
-
-        auditoriumAdapter = new ArrayAdapter<>(this,
-                R.layout.array_adapter_custom_layout, classrooms);
-
-        listView.setAdapter(auditoriumAdapter);
-
-
-    }
 
     @Override
     protected void onStart() {
@@ -590,7 +577,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                     break;
                 // Второй radio-button (аудитории)
                 case 1:
-                    createAuditoriumAdapter();
                     break;
             }
 
