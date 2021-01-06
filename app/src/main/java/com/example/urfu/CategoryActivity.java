@@ -160,14 +160,40 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myOwnCheck(searchQuery);
+                String typedClassroom = getCodeFromClassroom(searchQuery);
+                for (int i = 0; i < hashMapPoints.size(); i++){
+                    Point point = hashMapPoints.get(i);
+                    if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())){
+                        new MapActivityHandler(i).run();
+                    }
+                }
+
             }
         });
 
     }
 
-    private void myOwnCheck(String newText){
-        Toast.makeText(this, newText, Toast.LENGTH_SHORT).show();
+    private String getCodeFromClassroom(String classroom) {
+        int startIndex = 0;
+        for (int i = 0; i < classroom.length(); i++) {
+            Log.e("Index= ", String.valueOf(i));
+
+            if (tryParseInt(String.valueOf(classroom.charAt(i)))) {
+                startIndex = i;
+                break;
+            }
+
+        }
+        return startIndex > 0 ? classroom.substring(0, startIndex) : "";
+    }
+
+    boolean tryParseInt(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void switchCategory(int value) {
