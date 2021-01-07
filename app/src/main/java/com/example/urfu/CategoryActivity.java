@@ -1,6 +1,7 @@
 package com.example.urfu;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -61,6 +63,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     int currentRadioButtonId = 0;
     String currentLanguage;
     String searchQuery = "";
+    TextView classroomHint;
 
 
     @Override
@@ -88,18 +91,18 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         settingsButton = findViewById(R.id.settingsButton);
 
         radioGroup = findViewById(R.id.radio_group);
+        classroomHint = findViewById(R.id.classRoomHint);
 
-        /*
+
         if (position != 0){
             radioGroup.setVisibility(View.GONE);
-            ViewGroup.MarginLayoutParams marginParams = new ViewGroup.MarginLayoutParams(searchView.getLayoutParams());
-            marginParams.setMargins(0, 155, 0, 0);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(marginParams);
-            searchView.setLayoutParams(layoutParams);
+            searchButton.setVisibility(View.GONE);
+            classroomHint.setVisibility(View.GONE);
+            LinearLayout.LayoutParams parameter = (LinearLayout.LayoutParams) searchView.getLayoutParams();
+            parameter.setMargins(parameter.leftMargin, 175, parameter.rightMargin, parameter.bottomMargin);
+            searchView.setLayoutParams(parameter);
         }
-        */
 
-        //switchCategory();
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -111,17 +114,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 Log.e("id", String.valueOf(radioButton.getId()));
 
                 switchCategory(index);
-
-                /*switch (index) {
-                    case 0: // first button
-                        Log.e("Radio button 1", "checked");
-                        switchCategory(index);
-                        break;
-                    case 1: // secondbutton
-                        Log.e("Radio button 2", "checked");
-                        switchCategory();
-                        break;
-                }*/
             }
         });
 
@@ -159,9 +151,9 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             @Override
             public void onClick(View v) {
                 String typedClassroom = getCodeFromClassroom(searchQuery);
-                for (int i = 0; i < hashMapPoints.size(); i++){
+                for (int i = 0; i < hashMapPoints.size(); i++) {
                     Point point = hashMapPoints.get(i);
-                    if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())){
+                    if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())) {
                         new MapActivityHandler(i).run();
                         break;
                     }
@@ -201,6 +193,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             case 0:
                 listView.setVisibility(ListView.VISIBLE);
                 searchButton.setVisibility(View.GONE);
+                classroomHint.setVisibility(View.GONE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintCh));
                 } else if (currentLanguage.equals(Language.English.getId())) {
@@ -212,6 +205,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             case 1:
                 listView.setVisibility(ListView.GONE);
                 searchButton.setVisibility(View.VISIBLE);
+                classroomHint.setVisibility(View.VISIBLE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
                     searchView.setQueryHint(getString(R.string.queryHintCh2));
                 } else if (currentLanguage.equals(Language.English.getId())) {
@@ -262,12 +256,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         changeLanguageCampusButton(currentLanguage);
         changeLanguageAttractionsButton(currentLanguage);
         reloadLanguageForRadioButtonsAndSearchView();
-
-        /*if(radioButton != null)
-            radioButton.setChecked(true);
-
-         */
-
 
         if (listView != null) {
 
@@ -474,19 +462,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
                 disableProgressBar();
 
-            /*Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
-
-            Log.e("position", String.valueOf(position));
-
-            Log.e("hashMapPoints", String.valueOf(hashMapPoints.size()));
-
-            Log.e("hashMapPoints getname", hashMapPoints.get(position).getName());
-
-            Log.e("hash getaltname", hashMapPoints.get(position).getAltName());
-
-            intent.putExtra("point", hashMapPoints.get(position));
-
-            startActivity(intent);*/
             });
         } catch (Exception e) {
         }
