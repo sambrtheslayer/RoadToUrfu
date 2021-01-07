@@ -109,6 +109,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
     private final int MAX_ROUTES = 1;
     private Point selectedPoint;
+    private Route selectedRoute;
     private OverlayItem selectedOverlayItem;
     private Polyline roadOverlayLine;
     private Location lastFixLocation;
@@ -200,6 +201,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
 
         selectedPoint = getIntent().getParcelableExtra("point");
+        selectedRoute = getIntent().getParcelableExtra("route");
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -282,7 +284,9 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         imageGridView = findViewById(R.id.imageGridView);
 
         // Создаётся точка, основанная на предыдущем выборе в экране CategoryActivity.
+
         GeoPoint startPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
+
 
 
         //region Marks

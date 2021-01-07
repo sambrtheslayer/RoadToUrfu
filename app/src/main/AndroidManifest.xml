@@ -36,6 +36,10 @@
 
         </activity>
 
+        <activity android:name=".RouteActivity">
+
+        </activity>
+
     </application>
 
 </manifest>

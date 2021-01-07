@@ -91,6 +91,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     protected void onStart() {
         super.onStart();
 
+        //---------------
+        Intent intent = new Intent(MainActivity.this, RouteActivity.class);
+
+        startActivity(intent);
+        //---------------
+
         try {
             getCategoriesFromHost();
         } catch (Exception e) {
