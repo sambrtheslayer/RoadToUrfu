@@ -1,16 +1,31 @@
 <resources>
     <string name="app_name">URFU</string>
+
     <string name="campus_ch">ﾂ环板篠ｮﾂ嘉ｯ Здания УрФУ</string>
     <string name="campus_eng">UrFU Buildings Здания УрФУ</string>
+
     <string name="attractions_ch">地\nМеста</string>
     <string name="attractions_eng">Attractions\nМеста</string>
+
     <string name="setRoute_ch">路线\nПостроить маршрут</string>
     <string name="setRoute_eng">Set the route\nПостроить маршрут</string>
+
     <string name="chinese">中文</string>
     <string name="english">English</string>
-    <string name="queryHintEng">Find a campus building</string>
-    <string name="queryHintEng2">Find a learning auditorium</string>
-    <string name="queryHintCh">Поиск учебного корпуса</string>
-    <string name="queryHintCh2">Поиск аудитории</string>
+
+    <string name="queryHintEngCampus">Find a campus building</string>
+    <string name="queryHintEng2Campus">Find a learning auditorium</string>
+    <string name="queryHintChCampus">Поиск учебного корпуса</string>
+    <string name="queryHintCh2Campus">Поиск аудитории</string>
+
+    <string name="queryHintEngSportComplex">Find a sports complex</string>
+    <string name="queryHintChSportComplex">Поиск спортивного комплекса</string>
+
+    <string name="queryHintEngDorm">Find a dorm</string>
+    <string name="queryHintChDorm">Поиск общежития</string>
+
+
+
+
     <string name="info_about_class_room">TODO: Его тоже нужно будет переключать\nSome text with info about class room</string>
 </resources>

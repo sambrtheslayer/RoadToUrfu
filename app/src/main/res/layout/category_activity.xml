@@ -87,7 +87,7 @@
                 android:layout_weight="1"
                 android:buttonTint="#3E73FC"
                 android:checked="true"
-                android:text="@string/queryHintEng" />
+                android:text="@string/queryHintEngCampus" />
 
             <RadioButton
                 android:id="@+id/find_education_audience"
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:buttonTint="#3E73FC"
-                android:text="@string/queryHintEng2" />
+                android:text="@string/queryHintEng2Campus" />
 
         </RadioGroup>
 
@@ -105,7 +105,7 @@
             android:layout_height="41dp"
             android:layout_marginTop="5dp"
             android:iconifiedByDefault="false"
-            android:queryHint="@string/queryHintCh"
+            android:queryHint="@string/queryHintChCampus"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.347"
             app:layout_constraintStart_toStartOf="parent">

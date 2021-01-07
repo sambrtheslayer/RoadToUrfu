@@ -94,15 +94,16 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         classroomHint = findViewById(R.id.classRoomHint);
 
 
-        if (position != 0){
+        if (position != 0) {
             radioGroup.setVisibility(View.GONE);
             searchButton.setVisibility(View.GONE);
             classroomHint.setVisibility(View.GONE);
             LinearLayout.LayoutParams parameter = (LinearLayout.LayoutParams) searchView.getLayoutParams();
             parameter.setMargins(parameter.leftMargin, 175, parameter.rightMargin, parameter.bottomMargin);
             searchView.setLayoutParams(parameter);
-        }
 
+            changeLanguageSportAndDormCategory(position);
+        }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -117,7 +118,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             }
         });
 
-        // changeLanguageNoMenu();
 
         try {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -129,7 +129,6 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     adapter.getFilter().filter(newText);
-                    // auditoriumAdapter.getFilter().filter(newText);
                     searchQuery = newText;
                     return false;
                 }
@@ -195,9 +194,9 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 searchButton.setVisibility(View.GONE);
                 classroomHint.setVisibility(View.GONE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh));
+                    searchView.setQueryHint(getString(R.string.queryHintChCampus));
                 } else if (currentLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng));
+                    searchView.setQueryHint(getString(R.string.queryHintEngCampus));
                 }
                 getPointsFromHost();
                 break;
@@ -207,9 +206,9 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 searchButton.setVisibility(View.VISIBLE);
                 classroomHint.setVisibility(View.VISIBLE);
                 if (currentLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh2));
+                    searchView.setQueryHint(getString(R.string.queryHintCh2Campus));
                 } else if (currentLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng2));
+                    searchView.setQueryHint(getString(R.string.queryHintEng2Campus));
                 }
                 break;
         }
@@ -274,35 +273,38 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
         Log.e("current radio b", String.valueOf(currentRadioButtonId));
         if (currentLanguage.equals(Language.Chinese.getId())) {
             RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
-            radioButton1.setText(R.string.queryHintCh);
+            radioButton1.setText(R.string.queryHintChCampus);
             RadioButton radioButton2 = findViewById(R.id.find_education_audience);
-            radioButton2.setText(R.string.queryHintCh2);
+            radioButton2.setText(R.string.queryHintCh2Campus);
 
         } else if (currentLanguage.equals(Language.English.getId())) {
             RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
-            radioButton1.setText(R.string.queryHintEng);
+            radioButton1.setText(R.string.queryHintEngCampus);
             RadioButton radioButton2 = findViewById(R.id.find_education_audience);
-            radioButton2.setText(R.string.queryHintEng2);
+            radioButton2.setText(R.string.queryHintEng2Campus);
 
         }
 
-        switch (currentRadioButtonId) {
-            default:
-                if (currentLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh));
-                } else if (currentLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng));
-                }
-                break;
-            case 1:
-                if (currentLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh2));
-                } else if (currentLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng2));
-                }
-                break;
+        if (position == 0) {
+            switch (currentRadioButtonId) {
+                default:
+                    if (currentLanguage.equals(Language.Chinese.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintChCampus));
+                    } else if (currentLanguage.equals(Language.English.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintEngCampus));
+                    }
+                    break;
+                case 1:
+                    if (currentLanguage.equals(Language.Chinese.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintCh2Campus));
+                    } else if (currentLanguage.equals(Language.English.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintEng2Campus));
+                    }
+                    break;
+            }
+        } else {
+            changeLanguageSportAndDormCategory(position);
         }
-
     }
 
     @Override
@@ -516,31 +518,35 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
         if (idLanguage.equals(Language.Chinese.getId())) {
             RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
-            radioButton1.setText(R.string.queryHintCh);
+            radioButton1.setText(R.string.queryHintChCampus);
             RadioButton radioButton2 = findViewById(R.id.find_education_audience);
-            radioButton2.setText(R.string.queryHintCh2);
+            radioButton2.setText(R.string.queryHintCh2Campus);
         } else if (idLanguage.equals(Language.English.getId())) {
             RadioButton radioButton1 = findViewById(R.id.find_education_buildings);
-            radioButton1.setText(R.string.queryHintEng);
+            radioButton1.setText(R.string.queryHintEngCampus);
             RadioButton radioButton2 = findViewById(R.id.find_education_audience);
-            radioButton2.setText(R.string.queryHintEng2);
+            radioButton2.setText(R.string.queryHintEng2Campus);
         }
 
-        switch (currentRadioButtonId) {
-            default:
-                if (idLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh));
-                } else if (idLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng));
-                }
-                break;
-            case 1:
-                if (idLanguage.equals(Language.Chinese.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintCh2));
-                } else if (idLanguage.equals(Language.English.getId())) {
-                    searchView.setQueryHint(getString(R.string.queryHintEng2));
-                }
-                break;
+        if (position == 0) {
+            switch (currentRadioButtonId) {
+                default:
+                    if (idLanguage.equals(Language.Chinese.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintChCampus));
+                    } else if (idLanguage.equals(Language.English.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintEngCampus));
+                    }
+                    break;
+                case 1:
+                    if (idLanguage.equals(Language.Chinese.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintCh2Campus));
+                    } else if (idLanguage.equals(Language.English.getId())) {
+                        searchView.setQueryHint(getString(R.string.queryHintEng2Campus));
+                    }
+                    break;
+            }
+        } else {
+            changeLanguageSportAndDormCategory(position);
         }
 
         try {
@@ -560,6 +566,25 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             Log.e("Resume category error", e.getMessage());
         }
 
+    }
+
+    private void changeLanguageSportAndDormCategory(int pos) {
+        switch (pos) {
+            case 1:
+                if (currentLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintChSportComplex));
+                } else if (currentLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEngSportComplex));
+                }
+                break;
+            case 2:
+                if (currentLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintChDorm));
+                } else if (currentLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEngDorm));
+                }
+                break;
+        }
     }
 
     private void changeLanguageCampusButton(String idLanguage) {
