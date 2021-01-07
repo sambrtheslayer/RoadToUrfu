@@ -163,6 +163,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                     Point point = hashMapPoints.get(i);
                     if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())){
                         new MapActivityHandler(i).run();
+                        break;
                     }
                 }
 
