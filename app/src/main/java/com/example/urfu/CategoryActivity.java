@@ -103,7 +103,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             parameter.setMargins(parameter.leftMargin, 175, parameter.rightMargin, parameter.bottomMargin);
             searchView.setLayoutParams(parameter);
 
-            changeLanguageSportAndDormCategory(position);
+            changeLanguageAnotherCategory(position);
         }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -320,7 +320,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                     break;
             }
         } else {
-            changeLanguageSportAndDormCategory(position);
+            changeLanguageAnotherCategory(position);
         }
     }
 
@@ -568,7 +568,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                     break;
             }
         } else {
-            changeLanguageSportAndDormCategory(position);
+            changeLanguageAnotherCategory(position);
         }
 
         try {
@@ -590,7 +590,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
     }
 
-    private void changeLanguageSportAndDormCategory(int pos) {
+    private void changeLanguageAnotherCategory(int pos) {
         switch (pos) {
             case 1:
                 if (currentLanguage.equals(Language.Chinese.getId())) {
@@ -606,6 +606,14 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                     searchView.setQueryHint(getString(R.string.queryHintEngDorm));
                 }
                 break;
+            case 3:
+                if (currentLanguage.equals(Language.Chinese.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintChMedical));
+                } else if (currentLanguage.equals(Language.English.getId())) {
+                    searchView.setQueryHint(getString(R.string.queryHintEngMedical));
+                }
+                break;
+
         }
     }
 

@@ -24,6 +24,9 @@
     <string name="queryHintEngDorm">Find a dorm</string>
     <string name="queryHintChDorm">Поиск общежития</string>
 
+    <string name="queryHintEngMedical">Find a medical facility</string>
+    <string name="queryHintChMedical">搜索医疗机构</string>
+
     <string name="ToastEmptyStringEng">Empty search query\nПустой поисковый запрос</string>
     <string name="ToastEmptyStringCh">空搜索查询\nПустой поисковый запрос</string>
 
