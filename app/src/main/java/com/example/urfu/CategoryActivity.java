@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +65,7 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
     String currentLanguage;
     String searchQuery = "";
     TextView classroomHint;
-
+    ArrayList<String> lettersOfCampus = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,31 +151,47 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
             @Override
             public void onClick(View v) {
                 String typedClassroom = getCodeFromClassroom(searchQuery);
-                for (int i = 0; i < hashMapPoints.size(); i++) {
-                    Point point = hashMapPoints.get(i);
-                    if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())) {
-                        new MapActivityHandler(i).run();
-                        break;
+                Log.e("currentLanguage", currentLanguage);
+
+                if (lettersOfCampus.contains(typedClassroom.toLowerCase())) {
+                    for (int i = 0; i < hashMapPoints.size(); i++) {
+                        Point point = hashMapPoints.get(i);
+                        if (point.getClassroom().toLowerCase().equals(typedClassroom.toLowerCase())) {
+                            new MapActivityHandler(i).run();
+                            break;
+                        }
+                    }
+                } else if (typedClassroom.isEmpty()) {
+                    switch (Integer.parseInt(currentLanguage)) {
+                        case 0:
+                            Toast.makeText(CategoryActivity.this, R.string.ToastEmptyStringCh, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 1:
+                            Toast.makeText(CategoryActivity.this, R.string.ToastEmptyStringEng, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    switch (Integer.parseInt(currentLanguage)) {
+                        case 0:
+                            Toast.makeText(CategoryActivity.this, R.string.ToastNotFoundStringCh, Toast.LENGTH_SHORT).show();
+                            break;
+                        case 1:
+                            Toast.makeText(CategoryActivity.this, R.string.ToastNotFoundStringEng, Toast.LENGTH_SHORT).show();
                     }
                 }
-
             }
         });
-
     }
 
     private String getCodeFromClassroom(String classroom) {
         int startIndex = 0;
         for (int i = 0; i < classroom.length(); i++) {
             Log.e("Index= ", String.valueOf(i));
-
             if (tryParseInt(String.valueOf(classroom.charAt(i)))) {
                 startIndex = i;
                 break;
             }
-
         }
-        return startIndex > 0 ? classroom.substring(0, startIndex) : "";
+        return startIndex > 0 ? classroom.substring(0, startIndex) : classroom;
     }
 
     boolean tryParseInt(String value) {
@@ -421,10 +438,15 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 String site = object.getString("point_site");
 
                 hashMapPoints.put(i, new Point(category_id, name, alt_name, latitude, longitude, classroom, description, alt_description, address, contacts, site));
+                if (classroom != null & !classroom.isEmpty()) {
+                    lettersOfCampus.add(classroom);
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        Log.e("array list", String.valueOf(lettersOfCampus));
 
         String[] local_points = new String[hashMapPoints.size()];
 
