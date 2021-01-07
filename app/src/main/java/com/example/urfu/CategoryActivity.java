@@ -591,8 +591,10 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
 
         if (idLanguage.equals(Language.Chinese.getId())) {
             campusButton.setText(R.string.campus_ch);
+            campusButton.setTextSize(14);
         } else if (idLanguage.equals(Language.English.getId())) {
             campusButton.setText(R.string.campus_eng);
+            campusButton.setTextSize(13);
         }
     }
 

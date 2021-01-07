@@ -219,7 +219,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         settingsButton = findViewById(R.id.settingsButton);
         buildRouteButton = findViewById(R.id.buildRoute);
 
-        CheckCurrentLanguage();
+        checkCurrentLanguage();
 
         //region Initializing
         initializeAdditionalInfo();
@@ -401,22 +401,21 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         myDialog = new Dialog(this);
     }
 
-    private void CheckCurrentLanguage()
+    private void checkCurrentLanguage()
     {
         String currentLanguage = settings.getString("Language", "N/A");
         if(currentLanguage.equals(Language.Chinese.getId()))
         {
             campusButton.setText(R.string.campus_ch);
+            campusButton.setTextSize(14);
             buildRouteButton.setText(R.string.setRoute_ch);
             attractionsButton.setText(R.string.attractions_ch);
-            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
         }
         else if(currentLanguage.equals(Language.English.getId()))
         {
             campusButton.setText(R.string.campus_eng);
             campusButton.setTextSize(13);
             buildRouteButton.setText(R.string.setRoute_eng);
-            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
             attractionsButton.setText(R.string.attractions_eng);
         }
     }
@@ -454,7 +453,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         prefEditor.putString("Language", idLanguage);
         prefEditor.apply();
 
-        CheckCurrentLanguage();
+        checkCurrentLanguage();
     }
 
     private void loadSettings() {
