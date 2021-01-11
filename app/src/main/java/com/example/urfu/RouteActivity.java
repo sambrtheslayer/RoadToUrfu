@@ -55,6 +55,12 @@ public class RouteActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        //TODO: delete below after tests
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", "0");
+        prefEditor.apply();
+        //-----------------------------
+
         getRoutesFromHost();
 
     }
@@ -81,6 +87,9 @@ public class RouteActivity extends AppCompatActivity {
     }
 
     public void getRoutesFromHost() {
+
+        Log.e("We are in getRoutes", "Yes");
+
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(120, TimeUnit.SECONDS)
@@ -240,7 +249,7 @@ public class RouteActivity extends AppCompatActivity {
                     //TODO:
                     //enableProgressBar();
 
-                    Intent intent = new Intent(RouteActivity.this, MapActivity.class);
+                    Intent intent = new Intent(RouteActivity.this, MapActivityRoutes.class);
 
                     intent.putExtra("route", hashMapRoutes.get(position));
 

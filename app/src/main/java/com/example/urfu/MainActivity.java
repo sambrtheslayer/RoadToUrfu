@@ -66,6 +66,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         searchView = findViewById(R.id.searchView);
         settingsButton = findViewById(R.id.settingsButton);
 
+        attractionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
 
         try {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -91,11 +98,16 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     protected void onStart() {
         super.onStart();
 
+
         //---------------
-        Intent intent = new Intent(MainActivity.this, RouteActivity.class);
+        /*Intent intent = new Intent(MainActivity.this, RouteActivity.class);
 
         startActivity(intent);
+
+         */
         //---------------
+
+
 
         try {
             getCategoriesFromHost();

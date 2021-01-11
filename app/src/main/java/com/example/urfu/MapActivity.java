@@ -201,7 +201,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
 
         selectedPoint = getIntent().getParcelableExtra("point");
-        selectedRoute = getIntent().getParcelableExtra("route");
+        //selectedRoute = getIntent().getParcelableExtra("route");
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
