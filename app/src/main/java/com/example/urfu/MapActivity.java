@@ -655,6 +655,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
 
             for (Polyline route : allOverlayLines) {
+
                 map.getOverlays().remove(route);
             }
             allOverlayLines.clear();
