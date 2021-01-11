@@ -3,6 +3,7 @@ package com.example.urfu;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -162,7 +163,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     Button attractionsButton;
 
 
-    private Language CURRENT_LANGUAGE = Language.Chinese; // 0 - Chinese
+    private Language CURRENT_LANGUAGE;// 0 - Chinese
 
     //MotionEvent. - содержит набор разновидностей событий. Проверка события через event.getAction()
     @Override
@@ -214,6 +215,9 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
+        // Disable landscape mode
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setContentView(R.layout.map_activity);
 
         campusButton = findViewById(R.id.campus);
@@ -221,7 +225,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         settingsButton = findViewById(R.id.settingsButton);
         buildRouteButton = findViewById(R.id.buildRoute);
 
-        CheckCurrentLanguage();
+        checkCurrentLanguage();
 
         //region Initializing
         initializeAdditionalInfo();
@@ -405,23 +409,24 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         myDialog = new Dialog(this);
     }
 
-    private void CheckCurrentLanguage()
+    private void checkCurrentLanguage()
     {
         String currentLanguage = settings.getString("Language", "N/A");
         if(currentLanguage.equals(Language.Chinese.getId()))
         {
             campusButton.setText(R.string.campus_ch);
+            campusButton.setTextSize(14);
             buildRouteButton.setText(R.string.setRoute_ch);
             attractionsButton.setText(R.string.attractions_ch);
-            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
+            CURRENT_LANGUAGE = Language.Chinese;
         }
         else if(currentLanguage.equals(Language.English.getId()))
         {
             campusButton.setText(R.string.campus_eng);
             campusButton.setTextSize(13);
             buildRouteButton.setText(R.string.setRoute_eng);
-            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
             attractionsButton.setText(R.string.attractions_eng);
+            CURRENT_LANGUAGE = Language.English;
         }
     }
 
@@ -458,7 +463,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         prefEditor.putString("Language", idLanguage);
         prefEditor.apply();
 
-        CheckCurrentLanguage();
+        checkCurrentLanguage();
     }
 
     private void loadSettings() {
@@ -607,30 +612,40 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
     private void showUserInDestPointToast()
     {
-        String alt_text_chinese = "你在那個地方";
-
-        Toast toast = Toast.makeText(ctx, "Вы прибыли на место\n你在那個地方", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(ctx, R.string.reachRoutCh, Toast.LENGTH_SHORT);
 
         switch(CURRENT_LANGUAGE)
         {
-            case Chinese: toast = Toast.makeText(ctx, "Вы прибыли на место\n" + alt_text_chinese, Toast.LENGTH_SHORT); break;
-        }
 
-        toast.show();
+            case English:
+                toast = Toast.makeText(ctx, R.string.reachRoutEng, Toast.LENGTH_SHORT);
+                toast.show();
+                break;
+
+            default:
+                toast.show();
+                break;
+
+        }
     }
 
     private void showRouteHasBeenClearedToast()
     {
-        String alt_text_chinese = "路線已清除";
-
-        Toast toast = Toast.makeText(ctx, "Вы прибыли на место\n路線已清除", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(ctx, R.string.clearRoutCh, Toast.LENGTH_SHORT);
 
         switch(CURRENT_LANGUAGE)
         {
-            case Chinese: toast = Toast.makeText(ctx, "Вы прибыли на место\n" + alt_text_chinese, Toast.LENGTH_SHORT); break;
-        }
 
-        toast.show();
+            case English:
+                toast = Toast.makeText(ctx, R.string.clearRoutEng, Toast.LENGTH_SHORT);
+                toast.show();
+                break;
+
+            default:
+                toast.show();
+                break;
+
+        }
     }
 
     private void debugFunctionDELETE_AFTER_TESTS()

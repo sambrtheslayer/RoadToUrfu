@@ -69,21 +69,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!--
-        <Button
-            android:id="@+id/changeCategorySearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="65dp"
-            android:backgroundTint="#3E73FC"
-            android:text="@string/queryHintCh2"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
-            app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
-            app:layout_constraintTop_toTopOf="parent" />
-         -->
-
         <RadioGroup
             android:id="@+id/radio_group"
             android:layout_width="wrap_content"
@@ -100,15 +85,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:buttonTint="#3E73FC"
                 android:checked="true"
-                android:text="@string/queryHintEng" />
+                android:text="@string/queryHintChCampus" />
 
             <RadioButton
                 android:id="@+id/find_education_audience"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/queryHintEng2" />
+                android:buttonTint="#3E73FC"
+                android:text="@string/queryHintCh2Campus" />
 
         </RadioGroup>
 
@@ -117,8 +104,9 @@
             android:layout_width="365dp"
             android:layout_height="41dp"
             android:layout_marginTop="5dp"
+            android:focusable="false"
             android:iconifiedByDefault="false"
-            android:queryHint="@string/queryHintCh"
+            android:queryHint="@string/queryHintChCampus"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.347"
             app:layout_constraintStart_toStartOf="parent">
@@ -152,17 +140,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Search"
+            android:backgroundTint="#3E73FC"
+            android:text="@string/search_btn_ch"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/guideline_right_lin_lay"
             app:layout_constraintStart_toStartOf="@id/guideline_left_lin_lay"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/classRoomHint"
-            android:layout_width="200dp"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/info_about_class_room" />
+            android:layout_gravity="center_horizontal"
+            android:text="@string/info_about_class_roomCh"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
 
         <androidx.constraintlayout.widget.Guideline

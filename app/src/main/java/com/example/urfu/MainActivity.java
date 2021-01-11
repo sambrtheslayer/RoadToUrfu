@@ -124,28 +124,22 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         Log.e("Main Activ. Resume", "Method has resumed");
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
         Log.e("Main Activ. Pause", "Method has paused");
     }
 
-    private void checkCurrentLanguage()
-    {
+    private void checkCurrentLanguage() {
         String currentLanguage = settings.getString("Language", "N/A");
-        if(currentLanguage.equals(Language.Chinese.getId()))
-        {
+        if (currentLanguage.equals(Language.Chinese.getId())) {
             campusButton.setText(R.string.campus_ch);
+            campusButton.setTextSize(14);
             attractionsButton.setText(R.string.attractions_ch);
-            Log.e("text size ch", String.valueOf(campusButton.getTextSize()));
-        }
-        else if(currentLanguage.equals(Language.English.getId()))
-        {
+        } else if (currentLanguage.equals(Language.English.getId())) {
             campusButton.setText(R.string.campus_eng);
             campusButton.setTextSize(13);
             attractionsButton.setText(R.string.attractions_eng);
-            Log.e("text size eng", String.valueOf(campusButton.getTextSize()));
         }
     }
 
