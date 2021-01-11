@@ -71,4 +71,11 @@
 
     <string name="search_btn_eng">Search\nПоиск</string>
     <string name="search_btn_ch">搜索\nПоиск</string>
+
+    <string name="reachRoutCh">你在那個地方\nВы прибыли на место</string>
+    <string name="reachRoutEng">You have arrived at the place\nВы прибыли на место</string>
+
+    <string name="clearRoutCh">路線已清除\nПуть был удалён</string>
+    <string name="clearRoutEng">The route has been cleared\nПуть был удалён</string>
+
 </resources>
