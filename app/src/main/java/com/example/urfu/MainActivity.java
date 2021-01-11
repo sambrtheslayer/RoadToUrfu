@@ -100,11 +100,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
 
         //---------------
-        /*Intent intent = new Intent(MainActivity.this, RouteActivity.class);
+        Intent intent = new Intent(MainActivity.this, RouteActivity.class);
 
         startActivity(intent);
 
-         */
+
         //---------------
 
 
