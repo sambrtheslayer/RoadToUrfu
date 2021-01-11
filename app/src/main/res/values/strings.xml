@@ -13,16 +13,23 @@
     <string name="chinese">中文</string>
     <string name="english">English</string>
 
-    <string name="queryHintEngCampus">Find a campus building</string>
-    <string name="queryHintEng2Campus">Find a learning auditorium</string>
-    <string name="queryHintChCampus">Поиск учебного корпуса</string>
-    <string name="queryHintCh2Campus">Поиск аудитории</string>
+    <string name="queryHintEngCampus">\n Find a campus\n building\n Поиск аудитории</string>
+    <string name="queryHintEng2Campus">\n Find a learning\n classroom\n Поиск учебного корпуса</string>
+    <string name="queryHintChCampus">\n 搜索教育建筑\n Поиск учебного\n корпуса</string>
+    <string name="queryHintCh2Campus">\n 搜索类\n Поиск аудитории</string>
+
+
+    <string name="HintChCampus">搜索教育建筑</string>
+    <string name="HintCh2Campus">搜索类</string>
+    <string name="HintEngCampus">Find a campus building</string>
+    <string name="HintEng2Campus">Find a learning classroom</string>
+
 
     <string name="queryHintEngSportComplex">Find a sports complex</string>
-    <string name="queryHintChSportComplex">Поиск спортивного комплекса</string>
+    <string name="queryHintChSportComplex">找到一个体育综合体</string>
 
     <string name="queryHintEngDorm">Find a dorm</string>
-    <string name="queryHintChDorm">Поиск общежития</string>
+    <string name="queryHintChDorm">找个宿舍</string>
 
     <string name="queryHintEngMedical">Find a medical facility</string>
     <string name="queryHintChMedical">搜索医疗机构</string>
@@ -34,6 +41,34 @@
     <string name="ToastNotFoundStringCh">观众未找到\nАудитория не найдена</string>
 
 
+    <string name="info_about_class_roomEng">
+        \n
+        For example T216\n
+        The letter T means the name of the\n educational building\n
+        The first digit is the floor number\n
+        The remaining digits are the number of\n the classroom on the floor\n
+        \n
+        Для примера аудитория Т216\n
+        Буква Т означает название корпуса\n
+        Первая цифра - номер этажа\n
+        Остальные цифры - номер\n аудитории на этаже\n
+    </string>
 
-    <string name="info_about_class_room">TODO: Его тоже нужно будет переключать\nSome text with info about class room</string>
+    <string name="info_about_class_roomCh">
+        \n
+        例如，类T216
+        字母T代表建筑物的名称\n
+        第一个数字是楼层编号
+        剩下的数字是地\n
+        板上的樓号
+        \n
+        \n
+        Для примера аудитория Т216\n
+        Буква Т означает название корпуса\n
+        Первая цифра - номер этажа\n
+        Остальные цифры - номер\n аудитории на этаже\n
+    </string>
+
+    <string name="search_btn_eng">Search\nПоиск</string>
+    <string name="search_btn_ch">搜索\nПоиск</string>
 </resources>
