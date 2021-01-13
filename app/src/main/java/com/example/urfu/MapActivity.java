@@ -11,7 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -20,6 +22,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -64,6 +68,7 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
@@ -72,8 +77,10 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -82,6 +89,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -105,10 +113,13 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     //Братюня ниже респектабельный, он помогает делать геолокацию, а также строить маршруты. Также он наследуется от MyLocationNewOverlay,
     //что позволяет переписывать логику работы геолокации
 
-    private MyLocationNewOverlay mLocationOverlay;
+    private MyLocationOverlay mLocationOverlay;
+    private MyLocationOverlay testLocationOverlay;
     private CompassOverlay mCompassOverlay;
 
     private final int MAX_ROUTES = 1;
+    private long INTERVAL_UPDATES = 500; //500
+    private float MINIMAL_DISTANCE = 0; //0.1f
     private Point selectedPoint;
     private Route selectedRoute;
     private OverlayItem selectedOverlayItem;
@@ -124,6 +135,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     private double distanceFromCurrentPosToDestPoint;
     private final double deltaDistance = 0.00005;
     private boolean needToBuildRoute;
+    private GeoPoint currentLocation;
     //endregion
 
     //TODO: переименовать переменные
@@ -303,7 +315,14 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
 
         this.mCompassOverlay = new CompassOverlay(ctx, new InternalCompassOrientationProvider(ctx),
                 map);
-        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
+        //this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map); //Original
+        GpsMyLocationProvider provider = new GpsMyLocationProvider(ctx);
+        provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
+        Log.e("Provider", String.valueOf(provider.getLocationUpdateMinTime()));
+
+        this.mLocationOverlay = new MyLocationOverlay(provider, map);
+        //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
+        //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
         this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
         this.mRoadManager.addRequestOption("vehicle=foot");
 
@@ -311,9 +330,12 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             mDestinationPoint = new GeoPoint(selectedPoint.getLatitude(), selectedPoint.getLongitude());
 
         mLocationOverlay.enableMyLocation();
+        //testLocationOverlay.enableMyLocation();
+        //testLocationOverlay.enableFollowLocation();
         //mLocationOverlay.enableFollowLocation();
 
         mLocationOverlay.setOptionsMenuEnabled(true);
+
         mCompassOverlay.enableCompass();
 
         user_location = findViewById(R.id.user_location);
@@ -399,8 +421,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
+        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
+        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
 
         map.getOverlayManager().add(mLocationOverlay);
 
@@ -519,12 +541,12 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0l, 0f, this);
+            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
         } catch (Exception ex) {
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0l, 0f, this);
+            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
         } catch (Exception ex) {
         }
 
@@ -565,11 +587,14 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         }
     }
 
+
+
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Log.e("LocationListener", location.toString());
+        //appendLog(location.toString() + ", " + Calendar.getInstance().getTime());
 
-        if (lastFixLocation == null)
+        /*if (lastFixLocation == null)
             lastFixLocation = location;
 
         try {
@@ -584,6 +609,36 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             lastFixLocation = location;
         } catch (Exception e) {
             Log.e("onLocationChanged exc", e.getMessage());
+        }*/
+    }
+
+    public void appendLog(String text)
+    {
+        File logFile = new File("sdcard/log.file");
+        if (!logFile.exists())
+        {
+            try
+            {
+                logFile.createNewFile();
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        try
+        {
+            //BufferedWriter for performance, true to set append to file flag
+            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(text);
+            buf.newLine();
+            buf.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
