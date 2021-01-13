@@ -52,6 +52,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -113,8 +114,8 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     //Братюня ниже респектабельный, он помогает делать геолокацию, а также строить маршруты. Также он наследуется от MyLocationNewOverlay,
     //что позволяет переписывать логику работы геолокации
 
-    private MyLocationOverlay mLocationOverlay;
-    private MyLocationOverlay testLocationOverlay;
+    private MyLocationNewOverlay mLocationOverlay;
+    //private MyLocationOverlay testLocationOverlay;
     private CompassOverlay mCompassOverlay;
 
     private final int MAX_ROUTES = 1;
@@ -135,7 +136,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     private double distanceFromCurrentPosToDestPoint;
     private final double deltaDistance = 0.00005;
     private boolean needToBuildRoute;
-    private GeoPoint currentLocation;
+    private Location currentLocation;
     //endregion
 
     //TODO: переименовать переменные
@@ -320,7 +321,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         provider.addLocationSource(LocationManager.NETWORK_PROVIDER);
         Log.e("Provider", String.valueOf(provider.getLocationUpdateMinTime()));
 
-        this.mLocationOverlay = new MyLocationOverlay(provider, map);
+        this.mLocationOverlay = new MyLocationNewOverlay(provider, map);
         //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
         //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
         this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
@@ -415,6 +416,22 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         map.getOverlays().add(mCompassOverlay);
         map.getOverlays().add(this.mLocationOverlay);
         map.getOverlays().add(this.mCompassOverlay);
+
+        if (savedInstanceState == null){
+            Location location = null;
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location == null)
+                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+            if (location != null) {
+                //location known:
+                onLocationChanged(location);
+            } else {
+                //no location known: hide myLocationOverlay
+                mLocationOverlay.setEnabled(false);
+            }
+        }
 
         mapController.setCenter(startPoint);
 
@@ -528,7 +545,9 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
     @Override
     public void onResume() {
         super.onResume();
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean isOneProviderEnabled = startLocationUpdates();
+        mLocationOverlay.setEnabled(isOneProviderEnabled);
+        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
             //this fails on AVD 19s, even with the appcompat check, says no provided named gps is available
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -541,14 +560,16 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
         } catch (Exception ex) {
         }
 
         try {
-            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL_UPDATES, MINIMAL_DISTANCE, this);
         } catch (Exception ex) {
         }
+
+         */
 
         if (needToBuildRoute) {
             mLocationOverlay.enableFollowLocation();
@@ -587,14 +608,24 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         }
     }
 
-
+    boolean startLocationUpdates(){
+        boolean result = false;
+        for (final String provider : locationManager.getProviders(true)) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(provider, 2 * 1000, 0.0f, this);
+                result = true;
+            }
+        }
+        return result;
+    }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Log.e("LocationListener", location.toString());
+        currentLocation = location;
         //appendLog(location.toString() + ", " + Calendar.getInstance().getTime());
 
-        /*if (lastFixLocation == null)
+        if (lastFixLocation == null)
             lastFixLocation = location;
 
         try {
@@ -609,7 +640,15 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             lastFixLocation = location;
         } catch (Exception e) {
             Log.e("onLocationChanged exc", e.getMessage());
-        }*/
+        }
+
+        GeoPoint newLocation = new GeoPoint(location);
+        if (!mLocationOverlay.isEnabled()){
+            //we get the location for the first time:
+            mLocationOverlay.setEnabled(true);
+
+            map.getController().animateTo(newLocation);
+        }
     }
 
     public void appendLog(String text)

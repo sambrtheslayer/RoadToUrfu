@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
+import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -80,7 +82,9 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
     private OverlayItem selectedOverlayItem;
     private CompassOverlay mCompassOverlay;
     private RoadManager mRoadManager;
+    private Polyline roadOverlayLine;
     private LocationManager locationManager;
+    private ArrayList<GeoPoint> mCurrentRoute = new ArrayList<>();
 
     private ArrayList<Bitmap> loadedImages = new ArrayList<>();
     private ListView additionalInfoListView;
@@ -90,6 +94,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
     private ImageButton btnBack;
+    private Road mRoad;
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
     private BottomSheetBehavior mBottomSheetBehavior;
@@ -413,7 +418,10 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
             items.add(hashMapPoints.get(i).getOverlayItem(hashMapPoints.get(i).getId()));
             Log.e("Hashmap Points", items.get(i).getUid());
             items.get(i).setMarker(getDrawable(R.drawable.ic_lens_black));
+            mCurrentRoute.add(new GeoPoint(hashMapPoints.get(i).getLatitude(), hashMapPoints.get(i).getLongitude()));
         }
+
+        initializeCurrentRoute();
 
         map.invalidate();
 
@@ -424,13 +432,25 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         //setupAdapterAndListview(local_points);
     }
 
+    private void initializeCurrentRoute() {
+
+        this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
+        this.mRoadManager.addRequestOption("vehicle=foot");
+
+        mRoad = mRoadManager.getRoad(mCurrentRoute);
+
+        roadOverlayLine = GraphHopperRoadManager.buildRoadOverlay(mRoad);
+        roadOverlayLine.getOutlinePaint().setColor(Color.argb(255, 252, 149, 150));
+        roadOverlayLine.getOutlinePaint().setStrokeWidth(10f);
+        map.getOverlays().add(roadOverlayLine);
+    }
+
     private void initializeMap() {
 
         this.mCompassOverlay = new CompassOverlay(ctx, new InternalCompassOrientationProvider(ctx),
                 map);
         this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
-        this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
-        this.mRoadManager.addRequestOption("vehicle=foot");
+
 
 
         mLocationOverlay.enableMyLocation();
