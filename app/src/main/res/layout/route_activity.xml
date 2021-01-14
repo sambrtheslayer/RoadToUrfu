@@ -97,6 +97,20 @@
     </LinearLayout>
     <!--==========//Search and List layout==========-->
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+        app:layout_constraintStart_toStartOf="@+id/guideline_left"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/travel"
+            android:adjustViewBounds="true"/>
+    </LinearLayout>
+
     <!--==========Guidelines==========-->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_left"
