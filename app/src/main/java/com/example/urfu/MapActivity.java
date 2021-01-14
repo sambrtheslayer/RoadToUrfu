@@ -292,6 +292,13 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             }
         });
 
+        attractionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivity.this, RouteActivity.class);
+                startActivity(intent);
+            }
+        });
 
         mCustomBottomSheet = findViewById(R.id.custom_bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(mCustomBottomSheet);

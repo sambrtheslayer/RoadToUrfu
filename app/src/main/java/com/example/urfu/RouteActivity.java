@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -47,6 +49,7 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
     private ImageButton settingsButton;
     private Button campusButton;
     private Button attractionsButton;
+    private ImageView imageTravel;
     // +=15
     private int position;
 
@@ -65,6 +68,17 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
         settingsButton = findViewById(R.id.settingsButton);
         campusButton = findViewById(R.id.campus);
         attractionsButton = findViewById(R.id.attractions);
+        imageTravel = findViewById(R.id.imageTravel);
+
+        imageTravel.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Background vector created by ibrandify - www.freepik.com", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         campusButton.setOnClickListener(new View.OnClickListener() {
             @Override
