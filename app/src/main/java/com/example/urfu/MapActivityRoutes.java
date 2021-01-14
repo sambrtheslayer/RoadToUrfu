@@ -386,8 +386,11 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         ArrayList<String> additionalInfo = new ArrayList<>();
 
         additionalInfo.add(selectedPoint.getName());
+        additionalInfo.add(selectedPoint.getAltName());
+        additionalInfo.add(selectedPoint.getAltDescription());
         additionalInfo.add(selectedPoint.getDescription());
         additionalInfo.add(selectedPoint.getAddress());
+
 
         additionalInfoAdapter = new ArrayAdapter<>(ctx, R.layout.add_info_adapter_custom_layout, additionalInfo);
 
