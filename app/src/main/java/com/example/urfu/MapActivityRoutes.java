@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -83,6 +84,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
     private Button campusButton;
     private Button attractionsButton;
     private GridView imageGridView;
+    private Button gotoMapActivityButton;
     private MyLocationNewOverlay mLocationOverlay;
     private OverlayItem selectedOverlayItem;
     private CompassOverlay mCompassOverlay;
@@ -143,6 +145,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         attractionsButton = findViewById(R.id.attractions);
         settingsButton = findViewById(R.id.settingsButton);
         clearRoute = findViewById(R.id.clearRoute);
+        gotoMapActivityButton = findViewById(R.id.buildRoute);
 
         clearRoute.setVisibility(View.GONE);
 
@@ -175,7 +178,24 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         mapController.setZoom(19.5);
         //endregion
 
+        gotoMapActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivityRoutes.this, MapActivity.class);
 
+                intent.putExtra("point", selectedPoint);
+
+                startActivity(intent);
+            }
+        });
+
+        campusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivityRoutes.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
         //region Кастомные кнопки зума
         btn_zoom_in = findViewById(R.id.zoom_in);
         btn_zoom_out = findViewById(R.id.zoom_out);
