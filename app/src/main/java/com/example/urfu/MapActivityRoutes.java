@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
@@ -26,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -97,7 +99,9 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
     private ImageButton btn_zoom_out;
     private ImageButton user_location;
     private ImageButton btnBack;
+    private ImageButton clearRoute;
     private Road mRoad;
+
 
     private final long ANIMATION_ZOOM_DELAY = 500L;
     private BottomSheetBehavior mBottomSheetBehavior;
@@ -109,6 +113,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
     private Dialog myDialog;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,9 +142,16 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         campusButton = findViewById(R.id.campus);
         attractionsButton = findViewById(R.id.attractions);
         settingsButton = findViewById(R.id.settingsButton);
+        clearRoute = findViewById(R.id.clearRoute);
+
+        clearRoute.setVisibility(View.GONE);
 
         CheckCurrentLanguage();
 
+        attractionsButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.active_btn)));
+        attractionsButton.setTextColor(Color.parseColor("#FFFFFF"));
+        campusButton.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.nonactive_btn)));
+        campusButton.setTextColor(Color.parseColor("#696767"));
         //region Initializing
         //initializeAdditionalInfo();
         //endregion
@@ -389,11 +401,6 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return false;
-    }
-
     public void loadPointsForSelectedRoute() {
 
         OkHttpClient client = new OkHttpClient().newBuilder()
@@ -636,6 +643,46 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
             if (hashMapPoints.get(i).getId() == id)
                 selectedPoint = hashMapPoints.get(i);
         }
+    }
+
+    public void showLanguageWindow(View v) {
+        PopupMenu languageMenu = new PopupMenu(this, v);
+
+        languageMenu.setOnMenuItemClickListener(this);
+        languageMenu.inflate(R.menu.language_menu);
+        languageMenu.show();
+    }
+
+    @SuppressLint({"ShowToast", "NonConstantResourceId"})
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.chinese_lang:
+                Toast.makeText(this, "选择中文", Toast.LENGTH_SHORT).show();
+                changeLanguage(Language.Chinese.getId());
+                return true;
+
+            case R.id.english_lang:
+                Toast.makeText(this, "English language selected", Toast.LENGTH_SHORT).show();
+                changeLanguage(Language.English.getId());
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void changeLanguage(String idLanguage) {
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", idLanguage);
+        prefEditor.apply();
+
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+
     }
 
     private void initializeTapSettings() {
