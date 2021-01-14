@@ -180,6 +180,13 @@ public class CategoryActivity extends AppCompatActivity implements PopupMenu.OnM
                 }
             }
         });
+        attractionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CategoryActivity.this, RouteActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private String getCodeFromClassroom(String classroom) {

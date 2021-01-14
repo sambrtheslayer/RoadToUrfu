@@ -1,13 +1,21 @@
 package com.example.urfu;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,14 +36,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class RouteActivity extends AppCompatActivity {
+public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     private ListView availableRoutesListView;
     private ArrayAdapter<String> availableRoutesAdapter;
     private String currentLanguage;
     private SharedPreferences settings;
     private HashMap<Integer, Route> hashMapRoutes = new HashMap<>();
-
+    private ProgressBar progressBar;
+    private ImageButton settingsButton;
+    private Button campusButton;
+    private Button attractionsButton;
     // +=15
     private int position;
 
@@ -47,20 +58,28 @@ public class RouteActivity extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        //TODO: привязать Layout для активности
-        setContentView(R.layout.category_activity);
+        setContentView(R.layout.route_activity);
+
+        progressBar = findViewById(R.id.progressbarRoute);
+
+        settingsButton = findViewById(R.id.settingsButton);
+        campusButton = findViewById(R.id.campus);
+        attractionsButton = findViewById(R.id.attractions);
+
+        campusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        checkCurrentLanguage();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        //TODO: delete below after tests
-        SharedPreferences.Editor prefEditor = settings.edit();
-        prefEditor.putString("Language", "0");
-        prefEditor.apply();
-        //-----------------------------
-
         getRoutesFromHost();
 
     }
@@ -69,7 +88,12 @@ public class RouteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        reloadLanguageForActivity();
+        if (availableRoutesListView != null) {
+
+            disableProgressBar();
+            availableRoutesListView.setVisibility(ListView.VISIBLE);
+        }
+        checkCurrentLanguage();
     }
 
     @Override
@@ -82,8 +106,17 @@ public class RouteActivity extends AppCompatActivity {
         currentLanguage = settings.getString("Language", "N/A");
     }
 
-    private void reloadLanguageForActivity() {
-        //TODO: добавить код на переключение языка во всех элементах
+    private void checkCurrentLanguage() {
+        String currentLanguage = settings.getString("Language", "N/A");
+        if (currentLanguage.equals(Language.Chinese.getId())) {
+            campusButton.setText(R.string.campus_ch);
+            campusButton.setTextSize(14);
+            attractionsButton.setText(R.string.attractions_ch);
+        } else if (currentLanguage.equals(Language.English.getId())) {
+            campusButton.setText(R.string.campus_eng);
+            campusButton.setTextSize(13);
+            attractionsButton.setText(R.string.attractions_eng);
+        }
     }
 
     public void getRoutesFromHost() {
@@ -197,11 +230,7 @@ public class RouteActivity extends AppCompatActivity {
     private void setupAdapterAndListview(String[] points) {
         try {
 
-            //TODO: searchview, progressbar
-
-            //disableProgressBar();
-
-            //searchView = findViewById(R.id.searchView);
+            disableProgressBar();
 
             availableRoutesListView = findViewById(R.id.myList);
 
@@ -214,26 +243,62 @@ public class RouteActivity extends AppCompatActivity {
 
                 new MapActivityHandler().run();
 
-                //TODO:
-                //disableProgressBar();
+                disableProgressBar();
 
-            /*Intent intent = new Intent(CategoryActivity.this, MapActivity.class);
-
-            Log.e("position", String.valueOf(position));
-
-            Log.e("hashMapPoints", String.valueOf(hashMapPoints.size()));
-
-            Log.e("hashMapPoints getname", hashMapPoints.get(position).getName());
-
-            Log.e("hash getaltname", hashMapPoints.get(position).getAltName());
-
-            intent.putExtra("point", hashMapPoints.get(position));
-
-            startActivity(intent);*/
             });
         } catch (Exception e) {
         }
     }
+
+    private void disableProgressBar() {
+        progressBar.setVisibility(ProgressBar.GONE);
+    }
+
+    private void enableProgressBar() {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    public void showLanguageWindow(View v) {
+        PopupMenu languageMenu = new PopupMenu(this, v);
+
+        languageMenu.setOnMenuItemClickListener(this);
+        languageMenu.inflate(R.menu.language_menu);
+        languageMenu.show();
+    }
+
+    @SuppressLint({"ShowToast", "NonConstantResourceId"})
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.chinese_lang:
+                Toast.makeText(this, "选择中文", Toast.LENGTH_SHORT).show();
+                changeLanguage("0");
+                return true;
+
+            case R.id.english_lang:
+                Toast.makeText(this, "English language selected", Toast.LENGTH_SHORT).show();
+                changeLanguage("1");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void changeLanguage(String idLanguage) {
+        SharedPreferences.Editor prefEditor = settings.edit();
+        prefEditor.putString("Language", idLanguage);
+        prefEditor.apply();
+
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+
+    }
+
+
     class MapActivityHandler implements Runnable {
 
         @Override
@@ -246,8 +311,7 @@ public class RouteActivity extends AppCompatActivity {
 
                     availableRoutesListView.setVisibility(ListView.GONE);
 
-                    //TODO:
-                    //enableProgressBar();
+                    enableProgressBar();
 
                     Intent intent = new Intent(RouteActivity.this, MapActivityRoutes.class);
 

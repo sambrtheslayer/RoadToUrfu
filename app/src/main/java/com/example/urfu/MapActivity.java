@@ -890,7 +890,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
             }
         }
 
-        imageGridView.setAdapter(new ImageAdapter(ctx, urlList));
+        imageGridView.setAdapter(new ImageAdapter(ctx, urlList, 3));
 
         imageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -920,8 +920,6 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
                 }
             }
         });
-
-
     }
 
     private void getPointsFromHost() {

@@ -16,17 +16,18 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    int imageTotal = 3;
+    int mCountImage;
 
     public static String[] mThumbIds;
 
-    public ImageAdapter(Context c, String[] imagesUrl) {
+    public ImageAdapter(Context c, String[] imagesUrl, int countImage) {
         mContext = c;
         mThumbIds = imagesUrl;
+        mCountImage = countImage;
     }
 
     public int getCount() {
-        return imageTotal;
+        return mCountImage;
     }
 
     @Override

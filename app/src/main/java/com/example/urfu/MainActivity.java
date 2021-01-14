@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         attractionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, RouteActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -97,17 +98,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     protected void onStart() {
         super.onStart();
-
-
-        //---------------
-        Intent intent = new Intent(MainActivity.this, RouteActivity.class);
-
-        startActivity(intent);
-
-
-        //---------------
-
-
 
         try {
             getCategoriesFromHost();

@@ -18,10 +18,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 
@@ -31,6 +33,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,6 +103,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
     private BottomSheetBehavior mBottomSheetBehavior;
     private ConstraintLayout mCustomBottomSheet;
     ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+    private ArrayList<ImageView> images = new ArrayList<>();
     HashMap<Integer, Point> hashMapPoints = new HashMap<>();
     private Point selectedPoint;
 
@@ -214,6 +218,118 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
     }
 
+    private void loadPhotoesFromHostById(int id) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        final String baseHostApiUrl = "http://roadtourfu.ai-info.ru/api";
+
+        // Конечный ресурс
+        String url = baseHostApiUrl + "/data/get_photoes.php";
+
+        FormBody formBody = new FormBody.Builder()
+                .add("id", String.valueOf(id))
+                .build();
+
+        Request request = new Request.Builder()
+                .post(formBody)
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            // Обработка полученного ответа от сервера.
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+
+                    final String myResponse = response.body().string();
+
+                    try {
+                        // Объявляется экземпляр класса JSONObject, где аргумент -
+                        // это полученная строка от сервера.
+                        Log.e("Response", myResponse);
+
+                        JSONArray jsonArray = new JSONArray(myResponse);
+
+                        // Обязательно запускать через этот поток, иначе будет ошибка изменения элементов вне потока
+                        // Формируется Photo из Json
+                        MapActivityRoutes.this.runOnUiThread(() -> buildPhotoesByJson(jsonArray));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void buildPhotoesByJson(JSONArray jsonArray) {
+
+        String[] urlList = new String[jsonArray.length()];
+
+        Log.e("urlList", String.valueOf(urlList.length));
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject object = null;
+            try {
+                object = jsonArray.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                // Помещение точек в список.
+                assert object != null;
+
+                String photoesUrl = object.getString("photoes");
+                Log.e("Full path", "http://roadtourfu.ai-info.ru/image/" + photoesUrl);
+                urlList[i] = "http://roadtourfu.ai-info.ru/image/" + photoesUrl;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        imageGridView.setAdapter(new ImageAdapter(ctx, urlList, 3));
+
+        imageGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    Log.e("Clicked", i + ", " + l);
+                    Log.e("View", imageGridView.getAdapter().getView(i, null, null).toString());
+                    View image = imageGridView.getAdapter().getView(i, null, null);
+
+                    ImageView fullScreenImage;
+
+                    myDialog.setContentView(R.layout.popup_window);
+
+                    fullScreenImage = (ImageView) myDialog.findViewById(R.id.full_screen_image);
+                    Picasso.with(ctx)
+                            .load(imageGridView.getAdapter().getItem(i).toString())
+                            .noFade()
+                            //.fit()
+                            //.centerCrop()
+                            .placeholder(R.drawable.progress_animation)
+                            .into(fullScreenImage);
+
+                    myDialog.show();
+                }
+                catch(Exception e){
+                    Log.e("OnItemClick", e.getMessage());
+                }
+            }
+        });
+    }
+
     private void CheckCurrentLanguage()
     {
         String currentLanguage = settings.getString("Language", "N/A");
@@ -237,9 +353,9 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
         ArrayList<String> additionalInfo = new ArrayList<>();
 
+        additionalInfo.add(selectedPoint.getName());
+        additionalInfo.add(selectedPoint.getDescription());
         additionalInfo.add(selectedPoint.getAddress());
-        additionalInfo.add(selectedPoint.getContacts());
-        additionalInfo.add(selectedPoint.getSite());
 
         additionalInfoAdapter = new ArrayAdapter<>(ctx, R.layout.add_info_adapter_custom_layout, additionalInfo);
 
@@ -410,6 +526,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         //Log.e("Selected point before", selectedPoint.toString());
 
         selectedPoint = hashMapPoints.get(0);
+        initializeAdditionalInfo();
 
         Log.e("Selected point after", selectedPoint.toString());
 
@@ -500,6 +617,27 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
         myDialog = new Dialog(this);
     }
 
+    private void setNullObjectsInImages() {
+        int size = images.size();
+        images = new ArrayList<>(size);
+    }
+
+    private void changeSelectedOverlayItem(int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (Integer.parseInt(items.get(i).getUid()) == id) {
+                selectedOverlayItem = items.get(i);
+                assert loadedImages != null;
+            }
+        }
+    }
+
+    private void findAndSetupNewSelectedPoint(int id) {
+        for (int i = 0; i < hashMapPoints.size(); i++) {
+            if (hashMapPoints.get(i).getId() == id)
+                selectedPoint = hashMapPoints.get(i);
+        }
+    }
+
     private void initializeTapSettings() {
         ItemizedIconOverlay<OverlayItem> mOverlay = new ItemizedIconOverlay<>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -519,13 +657,16 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
                         // на новую - чёрный пин, переназначаем selectedPoint и фокусируемся на новой точке
                         if (currentId != tappingId) {
 
+                            setNullObjectsInImages();
+
                             item.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+                            changeSelectedOverlayItem(currentId);
 
-                            //selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
+                            selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_lens_black));
 
-                            //findAndSetupNewSelectedPoint(tappingId);
+                            findAndSetupNewSelectedPoint(tappingId);
 
-                            //loadPhotoesFromHostById(selectedPoint.getId());
+                            loadPhotoesFromHostById(selectedPoint.getId());
 
                             initializeAdditionalInfo();
 
@@ -541,8 +682,29 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
                 }, ctx);
 
-        //initializePointOnFirstStart();
+        initializePointOnFirstStart();
         mOverlay.setFocus(selectedPoint.getOverlayItem());
         map.getOverlays().add(mOverlay);
+    }
+
+    private void initializePointOnFirstStart() {
+        loadPhotoesFromHostById(selectedPoint.getId());
+        setupMarkerForFirstOverlayItem(selectedPoint.getId());
+
+        Log.e("Selected OverlayItem", selectedOverlayItem.getUid());
+        Log.e("Selected Point", String.valueOf(selectedPoint.getId()));
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void setupMarkerForFirstOverlayItem(int id) {
+        for (int i = 0; i < items.size(); i++) {
+            if (Integer.parseInt(items.get(i).getUid()) == id) {
+                selectedOverlayItem = items.get(i);
+                selectedOverlayItem.setMarker(getDrawable(R.drawable.ic_place_black_36dp));
+
+                assert loadedImages != null;
+
+            }
+        }
     }
 }
