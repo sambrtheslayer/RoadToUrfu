@@ -581,7 +581,7 @@ public class MapActivityRoutes extends AppCompatActivity implements LocationList
 
     private void initializeCurrentRoute() {
 
-        this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
+        this.mRoadManager = new GraphHopperRoadManager("1a84329d-dbec-4afe-a8d7-347cedadc850", false);
         this.mRoadManager.addRequestOption("vehicle=foot");
 
         mRoad = mRoadManager.getRoad(mCurrentRoute);

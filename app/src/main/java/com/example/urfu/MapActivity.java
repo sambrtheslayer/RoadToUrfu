@@ -331,7 +331,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         this.mLocationOverlay = new MyLocationNewOverlay(provider, map);
         //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
         //this.testLocationOverlay = new MyLocationOverlay(new GpsMyLocationProvider(ctx), map);
-        this.mRoadManager = new GraphHopperRoadManager("0382a8c3-5f12-4c7a-918b-f42298e68f7b", false);
+        this.mRoadManager = new GraphHopperRoadManager("1a84329d-dbec-4afe-a8d7-347cedadc850", false);
         this.mRoadManager.addRequestOption("vehicle=foot");
 
         if (selectedPoint != null)
@@ -619,6 +619,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         boolean result = false;
         for (final String provider : locationManager.getProviders(true)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //TODO: зачекировать minTimeMs
                 locationManager.requestLocationUpdates(provider, 2 * 1000, 0.0f, this);
                 result = true;
             }
