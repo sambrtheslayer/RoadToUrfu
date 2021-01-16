@@ -620,6 +620,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener, 
         boolean result = false;
         for (final String provider : locationManager.getProviders(true)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                //TODO: зачекировать minTimeMs
                 locationManager.requestLocationUpdates(provider, 2 * 1000, 0.0f, this);
                 result = true;
             }

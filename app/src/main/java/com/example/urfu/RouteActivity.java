@@ -68,6 +68,7 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
         settingsButton = findViewById(R.id.settingsButton);
         campusButton = findViewById(R.id.campus);
         attractionsButton = findViewById(R.id.attractions);
+
         imageTravel = findViewById(R.id.imageTravel);
 
         imageTravel.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +80,8 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
                 toast.show();
             }
         });
+
+
 
         campusButton.setOnClickListener(new View.OnClickListener() {
             @Override
