@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         // TODO: вынести в константу основной путь
         String url = baseHostApiUrl + "/data/get_categories.php";
         String readLanguageSetting = settings.getString("Language", "N/A");
+        if(readLanguageSetting == "N/A")
+            readLanguageSetting = "0";
 
         FormBody formBody = new FormBody.Builder()
                 .add("lang", readLanguageSetting)
@@ -304,7 +306,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private void loadSettings() {
-        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+        try {
+            settings = getSharedPreferences("Settings", MODE_PRIVATE);
+        }
+        catch(Exception e)
+        {
+            SharedPreferences.Editor prefEditor = settings.edit();
+            prefEditor.putString("Language", "0");
+            prefEditor.apply();
+        }
     }
 
 }
