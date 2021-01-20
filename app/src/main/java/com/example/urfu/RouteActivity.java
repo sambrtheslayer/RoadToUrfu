@@ -258,7 +258,7 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
             availableRoutesListView.setOnItemClickListener((parent, view, position, id) -> {
 
-                new MapActivityHandler().run();
+                new MapActivityHandler(position).run();
 
                 disableProgressBar();
 
@@ -317,6 +317,12 @@ public class RouteActivity extends AppCompatActivity implements PopupMenu.OnMenu
 
 
     class MapActivityHandler implements Runnable {
+
+        private final int position;
+
+        public MapActivityHandler(int position) {
+            this.position = position;
+        }
 
         @Override
         public void run() {
